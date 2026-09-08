@@ -1836,8 +1836,8 @@ function validateGlobalsAndOrder() {
   const expectedOrders = {
     'index.html': ['/assets/js/site-icons.js?v=20260904-icons-v1', '/assets/js/home.js?v=20260904-icons-v2'],
     'WordMaster/index.html': ['/account.js?v=20260904-auth-gate-v1', 'assets/js/words.js?v=20260904-icons-v2', '/assets/js/study-utils.js', 'assets/js/app.js?v=20260904-icons-v2'],
-    'smstudy/index.html': ['/account.js?v=20260904-auth-gate-v1', 'assets/js/data.js', 'assets/js/notebook-data.js', 'assets/js/explanation-data.js', '/assets/js/study-utils.js', 'assets/js/diagram.js?v=20260904-icons-v2', 'assets/js/app.js?v=20260904-icons-v2'],
-    'plstudy/index.html': ['/account.js?v=20260904-auth-gate-v1', 'assets/js/data.js', 'assets/js/app.js?v=20260904-icons-v2'],
+    'smstudy/index.html': ['/account.js?v=20260904-auth-gate-v1', 'assets/js/data.js', 'assets/js/notebook-data.js', 'assets/js/explanation-data.js', '/assets/js/study-utils.js', 'assets/js/diagram.js?v=20260904-icons-v2', 'assets/js/app.js?v=20260908-study-refresh'],
+    'plstudy/index.html': ['/account.js?v=20260904-auth-gate-v1', 'assets/js/data.js', 'assets/js/app.js?v=20260908-study-refresh'],
     'admin/index.html': ['/admin/assets/js/admin.js?v=20260904-icons-v1'],
     'usage/index.html': ['/usage/assets/js/competition.js?v=20260904-icons-v2', '/usage/assets/js/page.js?v=20260904-icons-v2'],
     // 기출은 전역 데이터 선행 계약을 따른다: 세션(account) → pdf-lib → 컨트롤러.
@@ -1863,8 +1863,8 @@ function validateGlobalsAndOrder() {
   const expectedStylesheets = {
     'index.html': ['/assets/css/system.css?v=20260904-icons-v2', '/assets/css/home.css?v=20260904-icons-v1'],
     'WordMaster/index.html': ['/assets/css/system.css?v=20260904-icons-v2', 'assets/css/style.css?v=20260904-mobile-v1'],
-    'smstudy/index.html': ['/assets/css/system.css?v=20260904-icons-v2', 'assets/css/style.css?v=20260904-icons-v2'],
-    'plstudy/index.html': ['/assets/css/system.css?v=20260904-icons-v2', 'assets/css/style.css?v=20260904-ui-v1'],
+    'smstudy/index.html': ['/assets/css/system.css?v=20260904-icons-v2', 'assets/css/style.css?v=20260908-study-refresh'],
+    'plstudy/index.html': ['/assets/css/system.css?v=20260904-icons-v2', 'assets/css/style.css?v=20260908-study-refresh'],
     'admin/index.html': ['/assets/css/system.css?v=20260904-icons-v2', '/admin/assets/css/admin.css?v=20260904-icons-v1'],
     'usage/index.html': ['/assets/css/system.css?v=20260904-icons-v2', '/usage/assets/css/usage.css?v=20260904-icons-v2'],
     'gichul/index.html': ['/assets/css/system.css?v=20260904-icons-v2', '/gichul/gichul.css?v=20260904-icons-v2'],

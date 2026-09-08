@@ -106,6 +106,108 @@
 .pl-back {
   justify-self: start;
 }
+.pl-concept-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.pl-position {
+  margin-left: auto;
+  color: var(--text-2);
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+}
+.pl-concept-head p {
+  max-width: 42em;
+  margin-top: 12px;
+  color: var(--text-2);
+  font-size: var(--fs-body);
+  line-height: 1.75;
+  word-break: keep-all;
+}
+.pl-concept-layout {
+  display: grid;
+  gap: 24px;
+  align-items: start;
+}
+.pl-definitions, .pl-check {
+  min-width: 0;
+}
+.pl-definitions h2, .pl-check h2 {
+  margin-bottom: 16px;
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+.pl-definitions dl {
+  margin: 0;
+  border: 1px solid var(--line-faint);
+  border-radius: var(--radius-l);
+  background: var(--surface);
+  overflow: hidden;
+}
+.pl-definition {
+  padding: 24px;
+}
+.pl-definition + .pl-definition {
+  border-top: 1px solid var(--line);
+}
+.pl-definition dt {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: var(--fs-body-lg);
+  font-weight: 600;
+}
+.pl-concept-number {
+  color: var(--text-3);
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+}
+.pl-definition dd {
+  margin: 0;
+  color: var(--text-2);
+  font-size: var(--fs-body);
+  line-height: 1.75;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.pl-check {
+  padding: 24px;
+  border: 1px solid var(--line-faint);
+  border-radius: var(--radius-l);
+}
+.pl-check ul {
+  display: grid;
+  gap: 16px;
+  margin: 0 0 24px;
+  color: var(--text-2);
+  line-height: 1.75;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.pl-check .btn {
+  width: 100%;
+}
+@media (min-width: 1280px) {
+  .pl-concept-layout {
+    grid-template-columns: minmax(0, 1fr) 290px;
+  }
+}
+@media (max-width: 480px) {
+  .pl-concept-nav > .btn:first-child {
+    flex-basis: 100%;
+    justify-content: flex-start;
+  }
+  .pl-position {
+    margin-left: 0;
+    margin-right: auto;
+  }
+  .pl-definition, .pl-check {
+    padding: 20px;
+  }
+}
 /* ---- 퀴즈 ---- */
 .pl-quiz-head {
   display: flex;

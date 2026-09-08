@@ -523,12 +523,12 @@
         </span>
       </div>`).join('');
     return `
-      <section class="sm-section" aria-labelledby="core-title">
-        ${sectionHead('core-title', '핵심')}
+      <section id="concept-core" class="sm-section sm-core" aria-labelledby="core-title">
+        ${sectionHead('core-title', '핵심 개념')}
         <p class="sm-headline">${esc(note.headline)}</p>
-        <ul class="sm-summary">${summary}</ul>
         <div class="list-group">${keyPoints}</div>
         <p class="list-group-foot">핵심어 ${esc(sub.keywords)}</p>
+        <details class="sm-learning-points"><summary>학습 포인트</summary><ul class="sm-summary">${summary}</ul><p class="list-group-foot">문항 수와 정답률은 이 사이트에 수록된 표본 기준입니다.</p></details>
       </section>`;
   }
 
@@ -537,7 +537,7 @@
     if (!diagrams) return '';
     return `
       <section id="concept-diagrams" class="sm-section" aria-labelledby="diagrams-title">
-        ${sectionHead('diagrams-title', '구조')}
+        ${sectionHead('diagrams-title', '구조로 이해하기')}
         <div class="sm-diagrams">${diagrams}</div>
       </section>`;
   }
@@ -555,10 +555,10 @@
     const steps = note.decision.map((step, index) => `<li><span>${index + 1}</span><p>${esc(step)}</p></li>`).join('');
     return `
       <section id="concept-flow" class="sm-section" aria-labelledby="decision-title">
-        ${sectionHead('decision-title', '시험장 판단 순서')}
+        ${sectionHead('decision-title', '문제 풀이 기준')}
         <ol class="sm-steps">${steps}</ol>
         <div class="sm-callouts">
-          <p class="sm-callout"><span class="kicker"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-info"></use></svg>출제 방식</span>${esc(note.exam.trend)}</p>
+          <p class="sm-callout"><span class="kicker"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-info"></use></svg>수록 문항의 출제 방식</span>${esc(note.exam.trend)}</p>
           <p class="sm-callout is-trap"><span class="kicker"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-alert-triangle"></use></svg>자주 걸리는 함정</span>${esc(note.exam.trap)}</p>
         </div>
       </section>`;
@@ -587,7 +587,7 @@
       </details>`).join('');
     return `
       <section id="recall-lab" class="sm-section" aria-labelledby="recall-title">
-        ${sectionHead('recall-title', '회상 점검', '<span class="sm-sec-hint">답을 말한 뒤 펼치세요</span>')}
+        ${sectionHead('recall-title', '스스로 확인하기', '<span class="sm-sec-hint">답을 생각한 뒤 펼치세요</span>')}
         <div class="sm-recall">${recallItems}</div>
         <p class="list-group-foot">복습 간격 · 오늘 · 1일 뒤 · 3일 뒤 · 7일 뒤</p>
       </section>`;
@@ -665,18 +665,25 @@
         ${appIcon()}
         <div>
           <h1 class="title-1">${esc(sub.title)}</h1>
-          <p class="sm-concept-meta">${esc(sub.unitTitle)} · 약 ${sub.time}분 · 수록 기출 ${questionCount}문항</p>
+          <p class="sm-concept-meta">${esc(sub.unitTitle)} · 약 ${sub.time}분 · ${sub.unitId === 'V' ? '개념 연습' : '수록 기출'} ${questionCount}문항</p>
         </div>
       </header>
+      <nav class="sm-reading-nav" aria-label="개념 노트 바로 가기">
+        <a href="#concept-core">핵심 개념</a><a href="#concept-compare">비교표</a><a href="#concept-flow">풀이 기준</a><a href="#recall-lab">스스로 확인</a>
+      </nav>
       <div class="sm-note-body">
+        <div class="sm-study-main">
         ${renderCore(sub, note)}
         ${renderDiagramSection(note)}
         ${renderComparisonMatrix(note)}
+        ${renderDetailFold(sub, note)}
+        </div>
+        <aside class="sm-study-review" aria-label="개념 복습">
         ${renderDecisionFlow(note)}
         ${renderRecallLab(note)}
         ${renderExamFold(id, note, sub)}
-        ${renderDetailFold(sub, note)}
         ${renderLearningDesign()}
+        </aside>
       </div>
       <div class="toolbar sm-concept-finish">
         <button id="markDone" class="btn btn-secondary btn-sm" type="button">
@@ -687,6 +694,13 @@
       </div>
       <p class="sm-source">개념 검토는 2027 학습 범위를 따랐습니다. 빈출 표시는 평가원 기출 78문항의 자동 집계이며 5단원에는 개념 연습 20문항을 더했습니다. 기출 문항 저작권은 한국교육과정평가원에 있습니다.</p>`;
     document.getElementById('conceptHome').addEventListener('click', renderHome);
+    app.querySelectorAll('.sm-reading-nav a').forEach((link) => link.addEventListener('click', (event) => {
+      event.preventDefault();
+      const target = app.querySelector(link.getAttribute('href'));
+      target.setAttribute('tabindex', '-1');
+      target.focus({ preventScroll: true });
+      target.scrollIntoView({ block: 'start' });
+    }));
     document.getElementById('prevConcept').addEventListener('click', () => renderConcept(SUBUNITS[index - 1]?.id));
     document.getElementById('nextConcept').addEventListener('click', () => renderConcept(SUBUNITS[index + 1]?.id));
     document.getElementById('nextConceptFoot').addEventListener('click', () => renderConcept(SUBUNITS[index + 1]?.id));
@@ -882,7 +896,7 @@
           ${appIcon()}
           <div>
             <span class="kicker">${esc(session.label)} · ${question.sub}</span>
-            <h1>기출 풀이</h1>
+            <h1>${question.kind === 'practice' ? '개념 연습' : '기출 풀이'}</h1>
           </div>
         </div>
         <span class="badge ${session.wrong ? 'badge-red' : 'badge-green'}">정답 ${session.correct} · 오답 ${session.wrong}</span>
@@ -918,7 +932,7 @@
     return `
       <section class="sm-solution ${compact ? 'is-compact' : ''}" aria-label="문항 해설">
         <div class="sm-solution-head">
-          <span class="badge badge-accent">평가원 정답 · EBS 해설 방식</span>
+          <span class="badge badge-accent">${question.kind === 'practice' ? '개념 연습 해설' : '평가원 정답 · EBS 해설 방식'}</span>
           <small>${esc(guide.focus)}</small>
         </div>
         <div class="sm-reason is-correct">
@@ -931,12 +945,11 @@
             <p>${esc(guide.wrongReason)}</p>
           </div>`}
         <div class="sm-solution-checks">
-          <strong>원문 선지에서 다시 확인할 것</strong>
+          <strong>${question.kind === 'practice' ? '개념에서 다시 확인할 것' : '원문 선지에서 다시 확인할 것'}</strong>
           <ul class="sm-bullets">${checks}</ul>
         </div>
         <p class="sm-solution-source">
-          <span>정답 번호는 평가원 정답표와 대조했습니다. 풀이는 EBS의 ‘정답 해설·오답 피하기’ 방식으로 핵심 기준을 재구성했습니다.</span>
-          <a href="${esc(EBS_PAST_EXAMS)}" target="_blank" rel="noopener noreferrer">EBSi 기출 해설 찾기</a>
+          ${question.kind === 'practice' ? '<span>교과 개념을 바탕으로 만든 자체 연습 문항입니다. 평가원 기출 문항이 아닙니다.</span>' : `<span>정답 번호는 평가원 정답표와 대조했습니다. 풀이는 EBS의 ‘정답 해설·오답 피하기’ 방식으로 핵심 기준을 재구성했습니다.</span><a href="${esc(EBS_PAST_EXAMS)}" target="_blank" rel="noopener noreferrer">EBSi 기출 해설 찾기</a>`}
         </p>
       </section>`;
   }

@@ -179,13 +179,13 @@ ul.sm-bullets {
 }
 /* 구분선 조판은 노트 본문 안에서만 적용한다 — 같은 클래스를 쓰는 학습 기록 화면의
    카드 섹션까지 건드리면 안 된다. */
-.sm-note-body > .sm-section {
+.sm-note-body :is(.sm-study-main, .sm-study-review) > .sm-section {
   display: grid;
   gap: var(--space-3);
   padding: var(--space-5) 0;
   border-top: 1px solid var(--line-faint);
 }
-.sm-note-body > .sm-section:first-child {
+.sm-note-body :is(.sm-study-main, .sm-study-review) > .sm-section:first-child {
   padding-top: var(--space-4);
   border-top: 0;
 }
@@ -212,10 +212,10 @@ ul.sm-bullets {
 /* ---- 접히는 부속 섹션 ----
    컨테이너·summary 행·chevron·본문은 system.css의 .disclosure* 프리미티브다.
    여기에는 노트 본문 안에서의 간격과 본문 리드 문장만 남긴다. */
-.sm-note-body > .disclosure {
+.sm-note-body :is(.sm-study-main, .sm-study-review) > .disclosure {
   margin-top: var(--space-4);
 }
-.sm-note-body > .disclosure + .disclosure {
+.sm-note-body :is(.sm-study-main, .sm-study-review) > .disclosure + .disclosure {
   margin-top: var(--space-2);
 }
 .sm-lead {
@@ -1208,7 +1208,114 @@ ul.sm-d-items {
    인쇄 — 개념 노트를 종이로 출력할 때만 라이트 팔레트로 전환한다.
    :root가 아니라 html에 재정의해 토큰 단일 원본 규칙(C-3)을 유지한다.
    ========================================================================== */
+/* 개념은 읽는 영역과 복습 영역으로 나누되, 좁은 화면에서는 읽기 순서를 유지한다. */
+.sm-reading-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 8px;
+}
+.sm-reading-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  color: var(--text-2);
+  font-size: var(--fs-caption);
+}
+.sm-reading-nav a:hover, .sm-reading-nav a:focus-visible {
+  color: var(--text);
+  background: var(--surface);
+  border-color: var(--line-strong);
+}
+.sm-study-main, .sm-study-review {
+  min-width: 0;
+}
+.sm-core .list-row {
+  padding: 20px;
+}
+.sm-core .list-row-title {
+  margin-bottom: 6px;
+  color: var(--text);
+  font-weight: 600;
+}
+.sm-note-body .list-row-sub, .sm-note-body .sm-bullets, .sm-note-body .sm-deep-points li {
+  color: var(--text-2);
+  font-size: var(--fs-body-sm);
+  line-height: 1.75;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.sm-sec-label {
+  font-size: var(--fs-body-sm);
+  color: var(--text);
+}
+.sm-learning-points {
+  padding: 12px 16px;
+  border-left: 2px solid var(--line-strong);
+  color: var(--text-2);
+}
+.sm-learning-points summary {
+  min-height: 32px;
+  cursor: pointer;
+  font-size: var(--fs-caption);
+}
+.sm-learning-points .sm-summary {
+  margin-top: 12px;
+  font-size: var(--fs-body-sm);
+}
+.sm-study-review .sm-callouts {
+  grid-template-columns: minmax(0, 1fr);
+}
+.sm-recall-item summary::after {
+  content: '+';
+  margin-left: auto;
+  color: var(--text-2);
+}
+.sm-recall-item[open] summary::after {
+  content: '−';
+}
+.sm-matrix tbody tr:hover {
+  background: var(--surface-2);
+}
+@media (max-width: 600px) {
+  .sm-reading-nav {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    margin: 0;
+  }
+  .sm-reading-nav a {
+    justify-content: center;
+    padding: 8px 4px;
+    font-size: 12px;
+  }
+}
+@media (min-width: 1400px) {
+  .sm-note-body {
+    grid-template-columns: minmax(0, 1fr) 310px;
+    gap: 32px;
+    align-items: start;
+  }
+  .sm-study-review {
+    padding: 0 20px 20px;
+    border: 1px solid var(--line-faint);
+    border-radius: var(--radius-l);
+    background: var(--surface);
+  }
+  .sm-study-review .sm-recall-item {
+    background: var(--surface-2);
+  }
+}
 @media print {
+  .sm-reading-nav {
+    display: none;
+  }
+  .sm-note-body {
+    display: block;
+  }
   html {
     color-scheme: light;
     --bg: #fff;
