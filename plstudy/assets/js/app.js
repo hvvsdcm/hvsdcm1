@@ -70,9 +70,32 @@
   function renderConcept(id) {
     const sub = subById(id); if (!sub) return renderHome(); activeSub = id; setNav('home');
     const questions = data.QUESTIONS.filter((question) => question.sub === id);
-    // 개념은 카드 3열이 아니라 그룹 리스트 행(용어 + 정의)이고, 함정은 같은 어법의 두 번째 그룹이다.
-    app.innerHTML = `<button class="btn btn-ghost btn-sm pl-back" type="button" data-home>← 단원 목록</button><header class="view-head"><div class="view-head-main"><div><span class="kicker">${esc(sub.unitId)} · ${esc(sub.unitTitle)}</span><h1>${esc(sub.title)}</h1><p>${esc(sub.summary)}</p></div></div><button class="btn btn-primary" type="button" data-start>5문항 풀기</button></header><section aria-labelledby="plConcepts"><h2 class="list-group-head" id="plConcepts">핵심 개념</h2><div class="list-group">${sub.concepts.map((concept) => `<div class="list-row"><span class="list-row-body"><span class="list-row-title">${esc(concept.term)}</span><span class="list-row-sub">${esc(concept.definition)}</span></span></div>`).join('')}</div></section><section aria-labelledby="plTraps"><h2 class="list-group-head" id="plTraps">선지 함정</h2><div class="list-group">${sub.traps.map((trap) => `<div class="list-row"><span class="list-row-body"><span class="list-row-title">${esc(trap)}</span></span></div>`).join('')}</div></section>`;
+    const rows = subunits();
+    const index = rows.findIndex((item) => item.id === id);
+    app.innerHTML = `
+      <nav class="pl-concept-nav" aria-label="중단원 이동">
+        <button class="btn btn-ghost btn-sm" type="button" data-home>← 단원 목록</button>
+        <span class="pl-position">${index + 1} / ${rows.length} 중단원</span>
+        <button class="btn btn-secondary btn-sm" type="button" data-prev ${index === 0 ? 'disabled' : ''}>이전</button>
+        <button class="btn btn-secondary btn-sm" type="button" data-next-sub ${index === rows.length - 1 ? 'disabled' : ''}>다음</button>
+      </nav>
+      <header class="view-head pl-concept-head">
+        <div class="view-head-main"><div><span class="kicker">${esc(sub.unitId)} · ${esc(sub.unitTitle)}</span><h1>${esc(sub.title)}</h1><p>${esc(sub.summary)}</p></div></div>
+      </header>
+      <div class="pl-concept-layout">
+        <section class="pl-definitions" aria-labelledby="plConcepts">
+          <h2 id="plConcepts">핵심 개념</h2>
+          <dl>${sub.concepts.map((concept, n) => `<div class="pl-definition"><dt><span class="pl-concept-number" aria-hidden="true">0${n + 1}</span>${esc(concept.term)}</dt><dd>${esc(concept.definition)}</dd></div>`).join('')}</dl>
+        </section>
+        <aside class="pl-check" aria-labelledby="plTraps">
+          <h2 id="plTraps">문제 풀기 전 확인</h2>
+          <ul>${sub.traps.map((trap) => `<li>${esc(trap)}</li>`).join('')}</ul>
+          <button class="btn btn-primary" type="button" data-start>개념 확인 · 5문항 풀기</button>
+        </aside>
+      </div>`;
     app.querySelector('[data-home]').addEventListener('click', renderHome); app.querySelector('[data-start]').addEventListener('click', () => startQuiz(questions, sub.title));
+    app.querySelector('[data-prev]').addEventListener('click', () => renderConcept(rows[index - 1].id));
+    app.querySelector('[data-next-sub]').addEventListener('click', () => renderConcept(rows[index + 1].id));
   }
   function startQuiz(questions, label) { session = { questions, label, index: 0, correct: 0, answer: null }; renderQuiz(); }
   function choose(index) {

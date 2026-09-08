@@ -1982,13 +1982,13 @@ ul.sm-bullets {
 }
 /* 구분선 조판은 노트 본문 안에서만 적용한다 — 같은 클래스를 쓰는 학습 기록 화면의
    카드 섹션까지 건드리면 안 된다. */
-.sm-note-body > .sm-section {
+.sm-note-body :is(.sm-study-main, .sm-study-review) > .sm-section {
   display: grid;
   gap: var(--space-3);
   padding: var(--space-5) 0;
   border-top: 1px solid var(--line-faint);
 }
-.sm-note-body > .sm-section:first-child {
+.sm-note-body :is(.sm-study-main, .sm-study-review) > .sm-section:first-child {
   padding-top: var(--space-4);
   border-top: 0;
 }
@@ -2015,10 +2015,10 @@ ul.sm-bullets {
 /* ---- 접히는 부속 섹션 ----
    컨테이너·summary 행·chevron·본문은 system.css의 .disclosure* 프리미티브다.
    여기에는 노트 본문 안에서의 간격과 본문 리드 문장만 남긴다. */
-.sm-note-body > .disclosure {
+.sm-note-body :is(.sm-study-main, .sm-study-review) > .disclosure {
   margin-top: var(--space-4);
 }
-.sm-note-body > .disclosure + .disclosure {
+.sm-note-body :is(.sm-study-main, .sm-study-review) > .disclosure + .disclosure {
   margin-top: var(--space-2);
 }
 .sm-lead {
@@ -3011,7 +3011,114 @@ ul.sm-d-items {
    인쇄 — 개념 노트를 종이로 출력할 때만 라이트 팔레트로 전환한다.
    :root가 아니라 html에 재정의해 토큰 단일 원본 규칙(C-3)을 유지한다.
    ========================================================================== */
+/* 개념은 읽는 영역과 복습 영역으로 나누되, 좁은 화면에서는 읽기 순서를 유지한다. */
+.sm-reading-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 8px;
+}
+.sm-reading-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  color: var(--text-2);
+  font-size: var(--fs-caption);
+}
+.sm-reading-nav a:hover, .sm-reading-nav a:focus-visible {
+  color: var(--text);
+  background: var(--surface);
+  border-color: var(--line-strong);
+}
+.sm-study-main, .sm-study-review {
+  min-width: 0;
+}
+.sm-core .list-row {
+  padding: 20px;
+}
+.sm-core .list-row-title {
+  margin-bottom: 6px;
+  color: var(--text);
+  font-weight: 600;
+}
+.sm-note-body .list-row-sub, .sm-note-body .sm-bullets, .sm-note-body .sm-deep-points li {
+  color: var(--text-2);
+  font-size: var(--fs-body-sm);
+  line-height: 1.75;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.sm-sec-label {
+  font-size: var(--fs-body-sm);
+  color: var(--text);
+}
+.sm-learning-points {
+  padding: 12px 16px;
+  border-left: 2px solid var(--line-strong);
+  color: var(--text-2);
+}
+.sm-learning-points summary {
+  min-height: 32px;
+  cursor: pointer;
+  font-size: var(--fs-caption);
+}
+.sm-learning-points .sm-summary {
+  margin-top: 12px;
+  font-size: var(--fs-body-sm);
+}
+.sm-study-review .sm-callouts {
+  grid-template-columns: minmax(0, 1fr);
+}
+.sm-recall-item summary::after {
+  content: '+';
+  margin-left: auto;
+  color: var(--text-2);
+}
+.sm-recall-item[open] summary::after {
+  content: '−';
+}
+.sm-matrix tbody tr:hover {
+  background: var(--surface-2);
+}
+@media (max-width: 600px) {
+  .sm-reading-nav {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    margin: 0;
+  }
+  .sm-reading-nav a {
+    justify-content: center;
+    padding: 8px 4px;
+    font-size: 12px;
+  }
+}
+@media (min-width: 1400px) {
+  .sm-note-body {
+    grid-template-columns: minmax(0, 1fr) 310px;
+    gap: 32px;
+    align-items: start;
+  }
+  .sm-study-review {
+    padding: 0 20px 20px;
+    border: 1px solid var(--line-faint);
+    border-radius: var(--radius-l);
+    background: var(--surface);
+  }
+  .sm-study-review .sm-recall-item {
+    background: var(--surface-2);
+  }
+}
 @media print {
+  .sm-reading-nav {
+    display: none;
+  }
+  .sm-note-body {
+    display: block;
+  }
   html {
     color-scheme: light;
     --bg: #fff;
@@ -3134,12 +3241,15 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 32px 24px 
           <p class="sm-concept-meta">문화와 사회 · 약 22분 · 수록 기출 6문항</p>
         </div>
       </header>
+      <nav class="sm-reading-nav" aria-label="개념 노트 바로 가기">
+        <a href="#concept-core">핵심 개념</a><a href="#concept-compare">비교표</a><a href="#concept-flow">풀이 기준</a><a href="#recall-lab">스스로 확인</a>
+      </nav>
       <div class="sm-note-body">
+        <div class="sm-study-main">
 
-      <section class="sm-section" aria-labelledby="core-title">
-        <div class="sm-sec-head"><h2 class="sm-sec-label" id="core-title">핵심</h2></div>
+      <section id="concept-core" class="sm-section sm-core" aria-labelledby="core-title">
+        <div class="sm-sec-head"><h2 class="sm-sec-label" id="core-title">핵심 개념</h2></div>
         <p class="sm-headline">속성은 소거법 태도는 기준으로</p>
-        <ul class="sm-summary"><li>속성 3문항과 태도 3문항으로 반씩 나뉘어 나왔다.</li><li>사례 하나에 두 속성이 겹쳐 나와 소거법이 필요하다.</li><li>2024학년도 수능 문항은 정답률 37%로 최저권이었다.</li></ul>
         <div class="list-group">
       <div class="list-row">
         <span class="list-row-body">
@@ -3160,10 +3270,11 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 32px 24px 
         </span>
       </div></div>
         <p class="list-group-foot">핵심어 공유성 · 학습성 · 축적성 · 전체성 · 변동성 · 문화 이해 태도</p>
+        <details class="sm-learning-points"><summary>학습 포인트</summary><ul class="sm-summary"><li>속성 3문항과 태도 3문항으로 반씩 나뉘어 나왔다.</li><li>사례 하나에 두 속성이 겹쳐 나와 소거법이 필요하다.</li><li>2024학년도 수능 문항은 정답률 37%로 최저권이었다.</li></ul><p class="list-group-foot">문항 수와 정답률은 이 사이트에 수록된 표본 기준입니다.</p></details>
       </section>
 
       <section id="concept-diagrams" class="sm-section" aria-labelledby="diagrams-title">
-        <div class="sm-sec-head"><h2 class="sm-sec-label" id="diagrams-title">구조</h2></div>
+        <div class="sm-sec-head"><h2 class="sm-sec-label" id="diagrams-title">구조로 이해하기</h2></div>
         <div class="sm-diagrams">
       <figure class="sm-diagram sm-diagram--radial">
         <div class="sm-diagram-head"><strong>문화의 다섯 속성</strong></div>
@@ -3186,46 +3297,6 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 32px 24px 
           </table>
         </div>
       </section>
-
-      <section id="concept-flow" class="sm-section" aria-labelledby="decision-title">
-        <div class="sm-sec-head"><h2 class="sm-sec-label" id="decision-title">시험장 판단 순서</h2></div>
-        <ol class="sm-steps"><li><span>1</span><p>속성 문제는 제시문이 강조한 장면을 먼저 찾는다.</p></li><li><span>2</span><p>두 속성이 겹치면 나머지 사례로 소거해 확정한다.</p></li><li><span>3</span><p>태도 문제는 무엇을 절대 기준으로 삼는지 본다.</p></li><li><span>4</span><p>보편 윤리로 비판하는 발언은 상대주의가 아니다.</p></li></ol>
-        <div class="sm-callouts">
-          <p class="sm-callout"><span class="kicker"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-info"></use></svg>출제 방식</span>사례 표나 대화에서 속성을 소거법으로 확정하게 만든다.</p>
-          <p class="sm-callout is-trap"><span class="kicker"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-alert-triangle"></use></svg>자주 걸리는 함정</span>전체성과 변동성, 공유성과 축적성을 서로 바꿔 쓴다.</p>
-        </div>
-      </section>
-
-      <section id="recall-lab" class="sm-section" aria-labelledby="recall-title">
-        <div class="sm-sec-head"><h2 class="sm-sec-label" id="recall-title">회상 점검</h2><span class="sm-sec-hint">답을 말한 뒤 펼치세요</span></div>
-        <div class="sm-recall">
-      <details class="sm-recall-item">
-        <summary><span class="sm-recall-n num">1</span><span>기존 기술에 새 기능이 계속 더해지면?</span></summary>
-        <p>전승 위에 새 요소가 쌓이는 축적성이다.</p>
-      </details>
-      <details class="sm-recall-item">
-        <summary><span class="sm-recall-n num">2</span><span>기술 변화가 가족과 직업을 함께 바꾸면?</span></summary>
-        <p>요소들이 유기적으로 연결된 전체성이다.</p>
-      </details>
-      <details class="sm-recall-item">
-        <summary><span class="sm-recall-n num">3</span><span>자문화 중심주의와 사대주의의 공통점은?</span></summary>
-        <p>특정 문화를 절대 기준으로 삼는 문화 절대주의다.</p>
-      </details></div>
-        <p class="list-group-foot">복습 간격 · 오늘 · 1일 뒤 · 3일 뒤 · 7일 뒤</p>
-      </section>
-
-      <details class="disclosure" data-print-open>
-        <summary class="disclosure-head">
-          <h2 class="disclosure-title" id="exam-fold-title">빈출 개념과 판별 점검</h2>
-          <span class="disclosure-hint">6개</span>
-        </summary>
-        <div class="disclosure-body">
-      <ol class="sm-freq" aria-label="개념 태그별 출제 빈도 순위"><li class="sm-freq-item">공유성과 학습성</li><li class="sm-freq-item">문화 사대주의</li><li class="sm-freq-item">문화 상대주의</li><li class="sm-freq-item">자문화 중심주의</li><li class="sm-freq-item">축적성과 변동성</li><li class="sm-freq-item">전체성</li></ol>
-      <p class="sm-lead">문화의 속성과 태도를 어떤 기준으로 나눌까?</p>
-      <ol class="sm-flow" aria-label="판별 순서"><li class="sm-flow-step"><span>1</span>속성 판별</li><li class="sm-flow-step"><span>2</span>겹침 소거</li><li class="sm-flow-step"><span>3</span>태도 판별</li></ol>
-      <ul class="sm-bullets"><li>추가면 축적성, 시간에 따른 변화면 변동성이다.</li><li>한 요소의 변화가 다른 영역을 바꾸면 전체성이다.</li><li>우열을 매기면 절대주의, 맥락을 보면 상대주의다.</li></ul>
-      <p class="list-group-foot">선별 수록 표본의 순위입니다. 전수 통계가 아닙니다.</p></div>
-      </details>
 
       <details class="disclosure" data-print-open>
         <summary class="disclosure-head">
@@ -3270,6 +3341,48 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 32px 24px 
         <h3 class="title-3">극단적 상대주의</h3>
         <ul class="sm-deep-points"><li>맥락 존중을 이유로 인권 침해를 정당화할 수 없다.</li><li>보편 윤리에 근거한 비판은 상대주의 밖의 판단이다.</li></ul>
       </article></div></div>
+      </details>
+        </div>
+        <aside class="sm-study-review" aria-label="개념 복습">
+
+      <section id="concept-flow" class="sm-section" aria-labelledby="decision-title">
+        <div class="sm-sec-head"><h2 class="sm-sec-label" id="decision-title">문제 풀이 기준</h2></div>
+        <ol class="sm-steps"><li><span>1</span><p>속성 문제는 제시문이 강조한 장면을 먼저 찾는다.</p></li><li><span>2</span><p>두 속성이 겹치면 나머지 사례로 소거해 확정한다.</p></li><li><span>3</span><p>태도 문제는 무엇을 절대 기준으로 삼는지 본다.</p></li><li><span>4</span><p>보편 윤리로 비판하는 발언은 상대주의가 아니다.</p></li></ol>
+        <div class="sm-callouts">
+          <p class="sm-callout"><span class="kicker"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-info"></use></svg>수록 문항의 출제 방식</span>사례 표나 대화에서 속성을 소거법으로 확정하게 만든다.</p>
+          <p class="sm-callout is-trap"><span class="kicker"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-alert-triangle"></use></svg>자주 걸리는 함정</span>전체성과 변동성, 공유성과 축적성을 서로 바꿔 쓴다.</p>
+        </div>
+      </section>
+
+      <section id="recall-lab" class="sm-section" aria-labelledby="recall-title">
+        <div class="sm-sec-head"><h2 class="sm-sec-label" id="recall-title">스스로 확인하기</h2><span class="sm-sec-hint">답을 생각한 뒤 펼치세요</span></div>
+        <div class="sm-recall">
+      <details class="sm-recall-item">
+        <summary><span class="sm-recall-n num">1</span><span>기존 기술에 새 기능이 계속 더해지면?</span></summary>
+        <p>전승 위에 새 요소가 쌓이는 축적성이다.</p>
+      </details>
+      <details class="sm-recall-item">
+        <summary><span class="sm-recall-n num">2</span><span>기술 변화가 가족과 직업을 함께 바꾸면?</span></summary>
+        <p>요소들이 유기적으로 연결된 전체성이다.</p>
+      </details>
+      <details class="sm-recall-item">
+        <summary><span class="sm-recall-n num">3</span><span>자문화 중심주의와 사대주의의 공통점은?</span></summary>
+        <p>특정 문화를 절대 기준으로 삼는 문화 절대주의다.</p>
+      </details></div>
+        <p class="list-group-foot">복습 간격 · 오늘 · 1일 뒤 · 3일 뒤 · 7일 뒤</p>
+      </section>
+
+      <details class="disclosure" data-print-open>
+        <summary class="disclosure-head">
+          <h2 class="disclosure-title" id="exam-fold-title">빈출 개념과 판별 점검</h2>
+          <span class="disclosure-hint">6개</span>
+        </summary>
+        <div class="disclosure-body">
+      <ol class="sm-freq" aria-label="개념 태그별 출제 빈도 순위"><li class="sm-freq-item">공유성과 학습성</li><li class="sm-freq-item">문화 사대주의</li><li class="sm-freq-item">문화 상대주의</li><li class="sm-freq-item">자문화 중심주의</li><li class="sm-freq-item">축적성과 변동성</li><li class="sm-freq-item">전체성</li></ol>
+      <p class="sm-lead">문화의 속성과 태도를 어떤 기준으로 나눌까?</p>
+      <ol class="sm-flow" aria-label="판별 순서"><li class="sm-flow-step"><span>1</span>속성 판별</li><li class="sm-flow-step"><span>2</span>겹침 소거</li><li class="sm-flow-step"><span>3</span>태도 판별</li></ol>
+      <ul class="sm-bullets"><li>추가면 축적성, 시간에 따른 변화면 변동성이다.</li><li>한 요소의 변화가 다른 영역을 바꾸면 전체성이다.</li><li>우열을 매기면 절대주의, 맥락을 보면 상대주의다.</li></ul>
+      <p class="list-group-foot">선별 수록 표본의 순위입니다. 전수 통계가 아닙니다.</p></div>
       </details>
 
       <details class="disclosure" data-print-open>
@@ -3332,6 +3445,7 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 32px 24px 
       </a></div>
       <p class="list-group-foot">연구 결과는 학습 조건과 개인에 따라 달라질 수 있습니다.</p></div>
       </details>
+        </aside>
       </div>
       <div class="toolbar sm-concept-finish">
         <button id="markDone" class="btn btn-secondary btn-sm" type="button">
