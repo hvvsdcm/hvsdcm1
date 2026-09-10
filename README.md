@@ -86,6 +86,16 @@ The R2 uploader includes `manifest.json` and every referenced PDF. It records co
 
 Apply D1 migrations before deploying Worker code. Migration `0004_session_ip_address.sql` enables exact IP display for requests made after deployment. The historical usage/harness migrations and their D1 rows remain intact, but their ingest/read routes and UI were archived on 2026-09-04; see [`docs/archive/2026-09-04-usage/`](docs/archive/2026-09-04-usage/README.md). Older sessions may only have a one-way IP fingerprint.
 
+## Agent skills
+
+`.claude/skills/virtual-company/` is a Claude Code project skill that turns one idea or topic into a virtual company run: the orchestrator picks 3 to 7 of 12 departments, briefs one subagent per department (`.claude/agents/dept-*.md`), runs them in waves, cross-checks the results and writes an integrated report under `work/company/<date>-<slug>/`. Invoke it with `/virtual-company <idea>` or by asking for a multi-department review. Department playbooks live in `references/departments/`, the routing matrix in `references/routing.md`, and the plugin/tool map in `references/tooling.md`. Validate the skill structure with:
+
+```bash
+node .claude/skills/virtual-company/scripts/check.mjs
+```
+
+`.gitignore` keeps the rest of `.claude/` (local settings) out of the repository; only `skills/` and `agents/` are tracked.
+
 ## Archived features
 
 - 2026-09-04: Codex/Claude usage snapshots and harness task/event UI, routes, scripts, tests, and snapshot were preserved under [`docs/archive/2026-09-04-usage/`](docs/archive/2026-09-04-usage/README.md). D1 schema and rows were not deleted; Behavior Lab and the competition surface remain active.

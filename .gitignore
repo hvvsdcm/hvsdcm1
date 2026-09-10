@@ -4,6 +4,8 @@ gichul-src/
 .learning-dist/
 worker/.wrangler/
 *.log
-.claude/
+.claude/*
+!.claude/skills/
+!.claude/agents/
 .preview/
 .wrangler/
