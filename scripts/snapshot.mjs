@@ -20,7 +20,7 @@ import { writeFileSync } from 'node:fs';
 import path from 'node:path';
 import {
   createAppSandbox, evaluateBrowserData, evaluateDiagramRenderer,
-  NOTEBOOK_SOURCE, readSource, renderGichulScreen, renderIpsiScreen, renderWordMasterHome,
+  NOTEBOOK_SOURCE, readSource, renderGichulScreen, renderWordMasterHome,
 } from './render-sandbox.mjs';
 
 const ROOT = process.cwd();
@@ -38,7 +38,6 @@ export const SNAPSHOT_BY_SCREEN = {
   'usage/index.html': `${SNAPSHOT_DIR}/usage.html`,
   'gichul/index.html': `${SNAPSHOT_DIR}/gichul.html`,
   'behavior-lab/index.html': `${SNAPSHOT_DIR}/behavior-lab.html`,
-  'ipsi/index.html': `${SNAPSHOT_DIR}/ipsi.html`,
 };
 
 export const SNAPSHOT_FILES = {
@@ -90,15 +89,6 @@ const GICHUL_STATE = {
 // 스타일로 조판돼 실제와 다른 화면을 보여 준다(실측으로 확인: .wm-layout 규칙이 없어
 // 320px에서 366px로 넘쳤다).
 const SMSTUDY_CSS = ['assets/css/system.css', 'smstudy/assets/css/style.css'];
-
-// ---- 정시 진단 화면 fixture --------------------------------------------------
-// 데이터는 저장소의 공개 통계(ipsi/assets/js/data.js)를 그대로 쓰고, 성적만 고정 표본이다.
-// 목표 학과는 목록의 첫 대학·첫 모집단위(서울대 첫 행)라 데이터가 바뀌면 스냅샷도 따라 바뀐다.
-const IPSI_STATE = {
-  view: 'target',
-  input: { mode: 'pct', korElective: '언어와매체', mathElective: '미적분', kor: '96', math: '93', eng: '2', hist: '1', inq1Subject: '사회문화', inq1: '95', inq2Subject: '생활과윤리', inq2: '92', gpa: '' },
-  target: { university: 'snu', dept: '' },
-};
 const WORDMASTER_CSS = ['assets/css/system.css', 'WordMaster/assets/css/style.css'];
 
 const SNAPSHOT_CSS = `/* ---- 스냅샷 전용 (원본 CSS 아님) ---- */
@@ -265,7 +255,6 @@ export function buildSnapshots() {
           ['/smstudy/', '사회·문화', 'icon-layers'],
           ['/plstudy/', '정치와 법', 'icon-scale'],
           ['/gichul/', '기출', 'icon-file'],
-          ['/ipsi/', '정시 진단', 'icon-graduation-cap'],
         ])}</div>`)
         .replace('<div id="ownerLinks" class="drawer-group"></div>', `<div id="ownerLinks" class="drawer-group">${drawerGroup('운영', [
           ['/behavior-lab/#paper', 'Behavior Lab', 'icon-bolt'],
@@ -316,22 +305,6 @@ export function buildSnapshots() {
             `<aside id="gichulFilters" class="sidebar" aria-label="기출 필터">${filters}</aside>`)
           .replace('<div id="gichulBody" class="gi-body"></div>',
             `<div id="gichulBody" class="gi-body">${body}</div>`);
-      },
-    }),
-    [SNAPSHOT_BY_SCREEN['ipsi/index.html']]: documentSnapshot('ipsi/index.html', {
-      note: '<strong>무엇인가</strong> — 정시 진단(<code>/ipsi/index.html</code>) 문서를 얼린 스냅샷이다. 링크된 CSS를 인라인하고 스크립트를 걷어냈다.'
-        + '\n  <br><strong>정적으로 반영한 상태</strong> — 본문은 <code>ipsi/assets/js/app.js</code>의 <code>renderTarget()</code>을 <strong>실제로 실행</strong>해 얻은 목표 학과 화면이다.'
-        + ' 입력은 <code>scripts/snapshot.mjs</code>의 고정 표본(백분위 국어 96 · 수학 93 · 영어 2등급 · 사탐 2과목)이고 데이터는 저장소의 <code>data.js</code> 그대로다.'
-        + '\n  <br><strong>여기서 확인할 것</strong> — 판정·필요한 상승·기준 그룹이 모두 <code>system.css</code>의 그룹 리스트·툴바·뱃지만 쓰는지, 값이 말줄임으로 잘리지 않는지.'
-        + '\n  <br><strong>주의</strong> — 미로그인 접근은 <code>account.js</code>와 <code>app.js</code>가 랜딩으로 되돌린다. 정적 사본이라 셀렉트·버튼은 동작하지 않는다.'
-        + `\n  ${GENERATED_NOTE}`,
-      mutate: (html) => {
-        const { body } = renderIpsiScreen(IPSI_STATE);
-        return html
-          .replace(/(<button class="sidebar-item ip-nav is-active" type="button" data-view="scores" aria-current="page">)/u, '<button class="sidebar-item ip-nav" type="button" data-view="scores">')
-          .replace('<button class="sidebar-item ip-nav" type="button" data-view="target">', '<button class="sidebar-item ip-nav is-active" type="button" data-view="target" aria-current="page">')
-          .replace('<main id="app" class="app-main" tabindex="-1"><p class="ip-loading">진단 데이터를 불러오는 중입니다.</p></main>',
-            `<main id="app" class="app-main" tabindex="-1">${body}</main>`);
       },
     }),
     [SNAPSHOT_BY_SCREEN['behavior-lab/index.html']]: documentSnapshot('behavior-lab/index.html', {

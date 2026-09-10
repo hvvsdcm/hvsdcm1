@@ -110,7 +110,6 @@
       ['/smstudy/', '사회·문화', 'smstudy'],
       ['/plstudy/', '정치와 법', 'plstudy'],
       ['/gichul/', '기출', 'gichul'],
-      ['/ipsi/', '정시 진단', 'ipsi'],
     ]);
     if (!ownerUsernames.has(String(savedUsername).toLowerCase())) return;
     appendLinks(elements.ownerLinks, '운영', [
