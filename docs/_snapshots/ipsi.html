@@ -1,20 +1,14 @@
 <!doctype html>
-<html lang="ko" data-snapshot="1">
+<html lang="ko" class="auth-pending">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
   <meta name="theme-color" content="#000000">
   <meta name="color-scheme" content="dark">
-  <meta name="description" content="HVSDCM1">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="HVSDCM1">
-  <meta property="og:description" content="HVSDCM1">
-  <meta property="og:url" content="https://hvsdcm1.xyz/">
-  <meta property="og:image" content="https://hvsdcm1.xyz/assets/og.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://hvsdcm1.xyz/assets/og.png">
-  <title>HVSDCM1</title>
-  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <meta name="description" content="수능 백분위·등급으로 서울 주요 대학 정시 지원 가능선을 진단하는 개인용 도구.">
+  <meta name="robots" content="noindex, nofollow">
+  <title>정시 진단 — hvsdcm</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 <style>/* assets/css/system.css (inlined) */
 /* ==========================================================================
    system.css — hvsdcm 디자인 시스템 단일 원본 (DESIGN.md v2 / plan.md §2)
@@ -1810,220 +1804,126 @@ html.auth-pending body {
   }
 }
 </style>
-<style>/* assets/css/home.css (inlined) */
-.home-page {
-  min-height: 100dvh;
-  overflow: hidden;
-  background: #000;
-  color: #fff;
-}
-.home-page::before, .home-page::after {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  content: "";
-}
-.home-page::before {
-  opacity: .38;
-  background: repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,.09) 0 1px, transparent 1px 4px), repeating-linear-gradient(0deg, transparent 0 3px, rgba(255,255,255,.025) 3px 4px);
-  mask-image: radial-gradient(circle at 50% 50%, #000 0 18%, transparent 62%);
-}
-.home-page::after {
-  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,.08), transparent 32%), radial-gradient(circle at center, transparent 0 46%, #000 82%);
-}
-#main {
-  display: grid;
-  min-height: 100dvh;
-  place-items: center;
-  padding: 28px;
-}
-.wordmark {
-  position: relative;
-  z-index: 1;
-  padding: .18em .24em;
-  border: 0;
-  background: transparent;
-  color: #fff;
-  font: 900 clamp(3.2rem, 12vw, 10.5rem)/.86 var(--font-mono);
-  letter-spacing: -.095em;
-  text-transform: uppercase;
-  cursor: pointer;
-  isolation: isolate;
-}
-.wordmark::before, .wordmark::after {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  color: transparent;
-  content: "HVSDCM1";
-  -webkit-text-stroke: 1px rgba(255,255,255,.55);
-  filter: blur(.35px);
-}
-.wordmark::before {
-  transform: translate(-3px, 2px);
-  clip-path: polygon(0 9%,100% 9%,100% 17%,0 17%,0 49%,100% 49%,100% 55%,0 55%);
-  opacity: .54;
-}
-.wordmark::after {
-  transform: translate(3px, -2px);
-  clip-path: polygon(0 27%,100% 27%,100% 33%,0 33%,0 72%,100% 72%,100% 80%,0 80%);
-  opacity: .38;
-}
-.wordmark span {
-  display: block;
-  background: linear-gradient(96deg, #fff 5%, #8b8b8b 34%, #fff 52%, #606060 72%, #fff 96%);
-  background-size: 220% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 0 18px rgba(255,255,255,.22)) contrast(1.25);
-  animation: wordmark-shine 7s ease-in-out infinite;
-}
-.wordmark:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 14px;
-}
-.wordmark:hover span {
-  filter: drop-shadow(0 0 26px rgba(255,255,255,.4)) contrast(1.4);
-}
-@keyframes wordmark-shine {
-  0%,100% {
-    background-position: 100% 0;
-  }
-  50% {
-    background-position: 0 0;
-  }
-}
-.shade {
-  position: fixed;
-  inset: 0;
-  z-index: 30;
-  visibility: hidden;
-  background: rgba(0,0,0,.8);
-  opacity: 0;
-  backdrop-filter: blur(8px);
-  transition: opacity .18s ease, visibility .18s;
-}
-.shade.open {
-  visibility: visible;
-  opacity: 1;
-}
-/* ---- 드로어 (DESIGN.md §5 v14 · §6 · §7.1) ----
-   폭은 데스크톱 320px, 모바일은 화면 폭 - 24px. 안은 그룹 리스트 두 개(학습 / 운영)뿐이다 —
-   링크 7개를 각각 테두리 카드로 세로 스택하던 조판을 폐기했다. 행은 48px, [아이콘 17px][라벨][chevron],
-   행 사이 인셋 헤어라인은 system.css의 .list-row 규칙이 그린다. */
-.drawer {
-  position: fixed;
-  z-index: 40;
-  inset: 0 0 0 auto;
-  display: flex;
-  width: 320px;
-  max-width: calc(100vw - 24px);
-  padding: 16px 16px 20px;
-  flex-direction: column;
-  gap: 20px;
-  overflow-y: auto;
-  border-left: 1px solid var(--line);
-  background: var(--bg-alt);
-  transform: translateX(102%);
-  visibility: hidden;
-  transition: transform .22s ease, visibility .22s;
-}
-.drawer.open {
-  visibility: visible;
-  transform: none;
-}
-.drawer-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 48px;
-  padding-left: 4px;
-  border-bottom: 1px solid var(--line-faint);
-}
-.drawer-head strong {
-  font-family: var(--font-mono);
-  letter-spacing: -.04em;
-}
-/* 닫기 — 테두리형 icon-x 하나(16px, 툴바·버튼 단). 터치 타깃 44px. */
-.drawer-head button {
-  display: grid;
-  width: 44px;
-  height: 44px;
-  place-items: center;
-  border: 0;
-  border-radius: var(--radius-m);
-  background: transparent;
+<style>/* ipsi/ipsi.css (inlined) */
+/* ==========================================================================
+   정시 진단 화면 (ipsi) — 화면 전용 글루만 담는다.
+   레퍼런스는 조작 화면의 macOS 앱 어법(DESIGN.md §1: 툴바·사이드바·그룹 리스트)이고, 골격·행·
+   툴바·세그먼티드·접힘 그룹·뱃지는 전부 system.css의 프리미티브를 그대로 소비한다(§7).
+   여기 있는 것은 그 프리미티브가 다루지 않는 배치뿐이다: 입력 행의 두 컨트롤, 진단 목록의
+   판정 그룹 간격, 목표 화면의 값 강조, 좁은 폭의 줄바꿈.
+   색 토큰을 정의하지 않는다 — 단일 원본은 assets/css/system.css다(§3). 강조색은 --accent 하나이고
+   판정 뱃지는 상태색(안정 green · 위험 red · 상향 orange)을 상태 표시에만 쓴다.
+   깊이는 명도 단차 + 1px 헤어라인이며 그림자·그라디언트를 쓰지 않는다(§4).
+   대비: --text-2 on --surface 7.03:1 (부제) · --text-3 on --bg 5.80:1 (각주) — 상단 전수표 값.
+   ========================================================================== */
+/* ---- 로드·오류 상태 — 한 문장 (§6.1) ---- */
+.ip-loading, .ip-error {
+  padding: var(--space-5);
+  border: 1px solid var(--line-faint);
+  border-radius: var(--radius-l);
+  background: var(--surface);
   color: var(--text-2);
-  cursor: pointer;
+  font-size: var(--fs-caption);
 }
-.drawer-head button:hover {
-  background: var(--line-faint);
+.ip-error h1 {
+  margin-bottom: var(--space-2);
   color: var(--text);
+  font-size: var(--fs-title-3);
+  line-height: var(--lh-title);
 }
-.drawer-head button .ui-icon {
-  width: 16px;
-  height: 16px;
-}
-.drawer-links {
+/* ---- 본문 세로 리듬 ---- */
+.ip-view {
   display: grid;
-  gap: 0;
+  gap: var(--space-5);
   align-content: start;
 }
-.drawer-group {
+.ip-section {
   display: grid;
   gap: 0;
 }
-/* 두 번째 그룹(운영)은 첫 그룹과 iOS 설정의 섹션 간격으로 뗀다. 비어 있는 마운트는 자리를 먹지 않는다. */
-.drawer-group:empty {
-  display: none;
+/* ---- 입력 행: 제목 + 우측 컨트롤 2개(선택과목 · 값) ---- */
+.ip-controls {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-2);
 }
-.drawer-group + .drawer-group:not(:empty) {
-  margin-top: var(--space-5);
+.ip-controls .field-input-inline {
+  min-width: 0;
 }
-.drawer .list-row {
-  min-height: 48px;
-  padding-top: 0;
-  padding-bottom: 0;
+.ip-controls select.field-input-inline {
+  max-width: 11em;
 }
-.drawer .list-row-title {
-  font-weight: 500;
+.ip-controls input.field-input-inline {
+  width: 5.5em;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
 }
-.drawer-logout {
-  min-height: 48px;
-  margin-top: auto;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-full);
-  background: transparent;
-  color: var(--text);
-  font: inherit;
+/* ---- 툴바의 검색·셀렉트 폭 ---- */
+.ip-toolbar .field-input-sm {
+  min-width: 0;
+}
+.ip-toolbar input[type="search"] {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1 1 12em;
+}
+/* ---- 진단 목록 ---- */
+.ip-count {
+  color: var(--text-2);
   font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+}
+.ip-row-value {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-2);
+}
+.ip-more {
+  justify-self: start;
+  margin-top: var(--space-2);
+}
+.ip-empty {
+  margin: 0;
+  padding: var(--space-5) var(--space-3);
+  color: var(--text-2);
+  font-size: var(--fs-body-sm);
+}
+/* ---- 목표 화면: 값 강조는 크기 한 단(title-2)까지만 (§2) ---- */
+.ip-gap {
+  font-size: var(--fs-title-2);
   font-weight: 600;
-  cursor: pointer;
+  letter-spacing: var(--ls-title);
+  font-variant-numeric: tabular-nums;
 }
-.drawer-logout:hover {
-  border-color: var(--text-3);
+.ip-inline-note {
+  color: var(--text-3);
+  font-size: var(--fs-caption);
 }
-.login-sheet {
-  border-color: #333;
-  background: #0b0b0b;
+/* 뱃지 안 숫자도 표 숫자처럼 정렬한다. */
+.badge.num {
+  font-variant-numeric: tabular-nums;
 }
-@media (prefers-reduced-motion: reduce) {
-  .wordmark span {
-    animation: none;
+/* ---- 좁은 폭: 입력 행은 제목 아래로 컨트롤을 내리고, 값 묶음은 줄바꿈을 허용한다 ---- */
+@media (max-width: 560px) {
+  .ip-input-row {
+    flex-wrap: wrap;
   }
-  .drawer, .shade {
-    transition: none;
+  .ip-input-row .list-row-body {
+    flex: 1 0 100%;
   }
-}
-@media (max-width: 520px) {
-  .wordmark {
-    font-size: clamp(2.75rem, 15vw, 5rem);
+  .ip-controls {
+    flex: 1 0 100%;
+    justify-content: flex-end;
   }
-  /* 모바일: 화면 폭 - 24px (375px에서 351px). */
-  .drawer {
-    width: calc(100vw - 24px);
-    padding: 12px 12px 16px;
+  .ip-controls select.field-input-inline {
+    flex: 1 1 auto;
+    max-width: none;
+  }
+  .ip-row-value {
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
 }
 </style>
@@ -2033,35 +1933,68 @@ html.auth-pending body {
 .snap-note code { color: var(--text); }
 </style>
 </head>
-<body class="home-page">
-  <div class="snap-note"><strong>무엇인가</strong> — 랜딩(<code>/index.html</code>) 문서를 그대로 얼린 스냅샷이다. 링크된 CSS를 인라인하고 스크립트를 걷어냈다.
-  <br><strong>정적으로 반영한 상태</strong> — <code>home.js</code>가 사람 소유자 로그인 뒤 만드는 드로어의 학습·운영 그룹 리스트와 테두리형 아이콘을 주입했다. 즉 <strong>사람 소유자 계정으로 로그인한 화면</strong>이다.
-  <br><strong>여기서 확인할 것</strong> — 본문에는 학습 콘텐츠가 노출되지 않고, 사람 소유자 전용 Behavior Lab 카드만 연락 섹션 앞에 나타나는지. 일반 학습·사용량 진입은 드로어에 있고, 드로어는 닫힌 상태(화면 밖)다.
-  <br><strong>주의</strong> — 등장 애니메이션(<code>.reveal</code>)은 <code>html.js</code>가 없어 처음부터 보인 상태로 조판된다.
+<body>
+  <div class="snap-note"><strong>무엇인가</strong> — 정시 진단(<code>/ipsi/index.html</code>) 문서를 얼린 스냅샷이다. 링크된 CSS를 인라인하고 스크립트를 걷어냈다.
+  <br><strong>정적으로 반영한 상태</strong> — 본문은 <code>ipsi/assets/js/app.js</code>의 <code>renderTarget()</code>을 <strong>실제로 실행</strong>해 얻은 목표 학과 화면이다. 입력은 <code>scripts/snapshot.mjs</code>의 고정 표본(백분위 국어 96 · 수학 93 · 영어 2등급 · 사탐 2과목)이고 데이터는 저장소의 <code>data.js</code> 그대로다.
+  <br><strong>여기서 확인할 것</strong> — 판정·필요한 상승·기준 그룹이 모두 <code>system.css</code>의 그룹 리스트·툴바·뱃지만 쓰는지, 값이 말줄임으로 잘리지 않는지.
+  <br><strong>주의</strong> — 미로그인 접근은 <code>account.js</code>와 <code>app.js</code>가 랜딩으로 되돌린다. 정적 사본이라 셀렉트·버튼은 동작하지 않는다.
   <br><strong>기준</strong> — 이 파일은 <code>node scripts/snapshot.mjs</code>가 만든 생성물이다. 손으로 고치지 않는다. <code>npm run validate</code>가 같은 생성기를 다시 돌려 이 파일과 대조하므로, 데이터·렌더러·CSS를 바꾸면 반드시 다시 만들어야 한다. 이 디렉터리는 밑줄로 시작하므로 GitHub Pages(Jekyll)가 게시하지 않는다 — 학습 내용이 들어 있어도 공개면에 오르지 않는다.</div>
-  <main id="main">
-    <button id="wordmark" class="wordmark" type="button" data-login-trigger aria-label="HVSDCM1 열기"><span aria-hidden="true">HVSDCM1</span></button>
-  </main>
+  <a class="skip-link" href="#app">본문으로 건너뛰기</a>
 
-  <div id="shade" class="shade" aria-hidden="true"></div>
-  <aside id="drawer" class="drawer logged" aria-label="개인 메뉴" aria-hidden="true">
-    <header class="drawer-head"><strong>HVSDCM1</strong><button id="closeDrawer" type="button" aria-label="메뉴 닫기"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-x"></use></svg></button></header>
-    <!-- 두 마운트는 비어 있다. 로그인 뒤 home.js가 그룹 헤드 + 그룹 리스트를 만든다. -->
-    <nav class="drawer-links" aria-label="바로가기">
-      <div id="studyLinks" class="drawer-group"><h2 class="list-group-head">학습</h2><div class="list-group"><a class="list-row list-row-nav" href="/WordMaster/"><span class="list-row-lead"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-book-open"></use></svg></span><span class="list-row-body"><span class="list-row-title">WordMaster</span></span></a><a class="list-row list-row-nav" href="/smstudy/"><span class="list-row-lead"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-layers"></use></svg></span><span class="list-row-body"><span class="list-row-title">사회·문화</span></span></a><a class="list-row list-row-nav" href="/plstudy/"><span class="list-row-lead"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-scale"></use></svg></span><span class="list-row-body"><span class="list-row-title">정치와 법</span></span></a><a class="list-row list-row-nav" href="/gichul/"><span class="list-row-lead"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-file"></use></svg></span><span class="list-row-body"><span class="list-row-title">기출</span></span></a><a class="list-row list-row-nav" href="/ipsi/"><span class="list-row-lead"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-graduation-cap"></use></svg></span><span class="list-row-body"><span class="list-row-title">정시 진단</span></span></a></div></div>
-      <div id="ownerLinks" class="drawer-group"><h2 class="list-group-head">운영</h2><div class="list-group"><a class="list-row list-row-nav" href="/behavior-lab/#paper"><span class="list-row-lead"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-bolt"></use></svg></span><span class="list-row-body"><span class="list-row-title">Behavior Lab</span></span></a><a class="list-row list-row-nav" href="/usage/"><span class="list-row-lead"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-trophy"></use></svg></span><span class="list-row-body"><span class="list-row-title">공모전</span></span></a><a class="list-row list-row-nav" href="/admin/"><span class="list-row-lead"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-shield"></use></svg></span><span class="list-row-body"><span class="list-row-title">관리자</span></span></a></div></div>
-    </nav>
-    <button id="drawerLogout" class="drawer-logout" type="button">로그아웃</button>
-  </aside>
+  <header class="topbar">
+    <div class="topbar-inner container-wide">
+      <a class="brand" href="/" aria-label="hvsdcm 홈"><img class="brand-mark" src="/assets/logo.svg" alt="">hvsdcm</a>
+      <span class="topbar-crumb">정시 진단</span>
+      <nav class="topbar-nav" aria-label="사이트 이동">
+        <a class="topbar-link" href="/"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-home"></use></svg>홈</a>
+        <a class="topbar-link" href="/gichul/"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-file"></use></svg>기출</a>
+      </nav>
+    </div>
+  </header>
+  <div class="topbar-spacer"></div>
 
-  <div id="loginModal" class="sheet-backdrop" aria-hidden="true">
-    <form id="loginForm" class="sheet login-sheet" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
-      <div><h1 id="loginTitle" class="sheet-title">로그인</h1></div>
-      <div class="field"><label class="field-label" for="username">아이디</label><input class="field-input" id="username" autocomplete="username" required></div>
-      <div class="field"><label class="field-label" for="password">비밀번호</label><input class="field-input" id="password" type="password" autocomplete="current-password" required></div>
-      <div id="loginError" class="field-error" role="alert"></div>
-      <div class="sheet-actions"><button class="btn btn-primary btn-lg" type="submit">계속</button><button class="btn btn-ghost" type="button" id="closeLogin">닫기</button></div>
-    </form>
+  <div class="container-wide app-page">
+    <div class="app-shell">
+      <!-- 사이드바는 화면 이동만 담는다(라벨 한 줄, DESIGN.md §6.1). 대학·학과 목록은 app.js가
+           data.js에서 도출해 본문에 그린다 — 마크업에 손으로 적은 사본을 두지 않는다. -->
+      <aside class="sidebar" aria-label="진단 메뉴">
+        <nav class="sidebar-group" aria-label="화면 이동">
+          <span class="sidebar-label">화면</span>
+          <button class="sidebar-item ip-nav" type="button" data-view="scores"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-pen"></use></svg>성적 입력</button>
+          <button class="sidebar-item ip-nav" type="button" data-view="diagnose"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-target"></use></svg>지원 진단</button>
+          <button class="sidebar-item ip-nav is-active" type="button" data-view="target" aria-current="page"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-bookmark"></use></svg>목표 학과</button>
+          <button class="sidebar-item ip-nav" type="button" data-view="rules"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-layers"></use></svg>반영 방법</button>
+          <button class="sidebar-item ip-nav" type="button" data-view="sources"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-info"></use></svg>자료 출처</button>
+        </nav>
+      </aside>
+
+      <main id="app" class="app-main" tabindex="-1"><div class="ip-view"><header class="view-head"><div class="view-head-main"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-bookmark"></use></svg><div><h1>서울대 (학부대학)광역</h1><p>자유전공</p></div></div></header><div class="toolbar ip-toolbar" role="group" aria-label="목표 선택">
+      <select class="field-input field-input-sm" name="targetUniversity" aria-label="대학"><option value="snu" selected>서울대</option><option value="yonsei">연세대</option><option value="korea">고려대</option><option value="sogang">서강대</option><option value="skku">성균관대</option><option value="hanyang">한양대</option><option value="cau">중앙대</option><option value="khu">경희대</option><option value="hufs">한국외대</option><option value="uos">서울시립대</option><option value="ewha">이화여대</option><option value="konkuk">건국대</option><option value="dongguk">동국대</option><option value="hongik">홍익대</option><option value="sookmyung">숙명여대</option><option value="kookmin">국민대</option><option value="soongsil">숭실대</option><option value="sejong">세종대</option><option value="dankook">단국대</option><option value="kw">광운대</option><option value="mju">명지대</option><option value="smu">상명대</option><option value="catholic">가톨릭대</option><option value="hansung">한성대</option><option value="skuniv">서경대</option><option value="syu">삼육대</option></select>
+      <select class="field-input field-input-sm" name="targetDept" aria-label="학과"><option value="(학부대학)광역" selected>(학부대학)광역</option><option value="간호대학">간호대학</option><option value="건설환경도시공학부">건설환경도시공학부</option><option value="건축학과">건축학과</option><option value="경영대학">경영대학</option><option value="경제학부">경제학부</option><option value="공과대학 광역">공과대학 광역</option><option value="국어교육과">국어교육과</option><option value="기계공학부">기계공학부</option><option value="농경제사회학부">농경제사회학부</option><option value="물리·천문학부(물리학전공)">물리·천문학부(물리학전공)</option><option value="물리·천문학부(천문학전공)">물리·천문학부(천문학전공)</option><option value="물리교육과">물리교육과</option><option value="바이오시스템・소재학부">바이오시스템・소재학부</option><option value="사회교육과">사회교육과</option><option value="사회복지학과">사회복지학과</option><option value="사회학과">사회학과</option><option value="산림과학부">산림과학부</option><option value="산업공학과">산업공학과</option><option value="생명과학부">생명과학부</option><option value="생물교육과">생물교육과</option><option value="소비자아동학부(소비자학전공)">소비자아동학부(소비자학전공)</option><option value="소비자아동학부(아동가족학전공)">소비자아동학부(아동가족학전공)</option><option value="수리과학부">수리과학부</option><option value="수의예과">수의예과</option><option value="수학교육과">수학교육과</option><option value="스마트시스템과학과">스마트시스템과학과</option><option value="식물생산과학부">식물생산과학부</option><option value="식품・동물생명공학부">식품・동물생명공학부</option><option value="식품영양학과">식품영양학과</option><option value="심리학과">심리학과</option><option value="약학계열(6년제)">약학계열(6년제)</option><option value="언론정보학과">언론정보학과</option><option value="에너지자원공학과">에너지자원공학과</option><option value="역사교육과">역사교육과</option><option value="역사학부">역사학부</option><option value="영어교육과">영어교육과</option><option value="원자핵공학과">원자핵공학과</option><option value="윤리교육과">윤리교육과</option><option value="응용생물화학부">응용생물화학부</option><option value="의류학과">의류학과</option><option value="의예과">의예과</option><option value="인류학과">인류학과</option><option value="인문계열">인문계열</option><option value="자유전공학부">자유전공학부</option><option value="재료공학부">재료공학부</option><option value="전기・정보공학부">전기・정보공학부</option><option value="정치외교학부">정치외교학부</option><option value="조경・지역시스템공학부">조경・지역시스템공학부</option><option value="조선해양공학과">조선해양공학과</option><option value="지구과학교육과">지구과학교육과</option><option value="지구환경과학부">지구환경과학부</option><option value="지리교육과">지리교육과</option><option value="지리학과">지리학과</option><option value="첨단융합학부">첨단융합학부</option><option value="체육교육과">체육교육과</option><option value="치의학대학원 치의학과">치의학대학원 치의학과</option><option value="컴퓨터공학부">컴퓨터공학부</option><option value="통계학과">통계학과</option><option value="항공우주공학과">항공우주공학과</option><option value="화학교육과">화학교육과</option><option value="화학부">화학부</option><option value="화학생물공학부">화학생물공학부</option></select>
+    </div><section class="ip-section" aria-labelledby="ipVerdictHead"><h2 class="list-group-head" id="ipVerdictHead">판정</h2><div class="list-group">
+      <div class="list-row"><span class="list-row-body"><span class="list-row-title">내 환산 백분위 − 컷</span><span class="list-row-sub">2026 70%컷 97.0 기준</span></span><span class="ip-row-value"><span class="ip-gap num">-3.0</span><span class="badge badge-red">위험</span></span></div>
+      <div class="list-row"><span class="list-row-body"><span class="list-row-title">가중 백분위 → 환산</span><span class="list-row-sub">국어 33% · 수학 40% · 탐구 27%</span></span><span class="list-row-value num">94.1 → 94.0</span></div>
+      <div class="list-row"><span class="list-row-body"><span class="list-row-title">영어 2등급 감점</span></span><span class="list-row-value num">-0.12</span></div>
+
+    </div></section><section class="ip-section" aria-labelledby="ipPlanHead"><h2 class="list-group-head" id="ipPlanHead">필요한 상승 · 적정(컷 +0.7)까지 3.7점 더 필요</h2><div class="list-group">
+      <div class="list-row"><span class="list-row-body"><span class="list-row-title">모든 영역을 같이 올릴 때</span></span><span class="list-row-value num">각 +3.7점</span></div>
+      <div class="list-row"><span class="list-row-body"><span class="list-row-title">수학(미적분) <span class="badge badge-accent">추천</span></span><span class="list-row-sub">이 영역만 올릴 때 93.0 → 도달 불가 (2등급)</span></span><span class="list-row-value num">1점당 +0.40</span></div><div class="list-row"><span class="list-row-body"><span class="list-row-title">국어(언어와매체)</span><span class="list-row-sub">이 영역만 올릴 때 96.0 → 도달 불가 (1등급)</span></span><span class="list-row-value num">1점당 +0.33</span></div><div class="list-row"><span class="list-row-body"><span class="list-row-title">탐구 생활과윤리</span><span class="list-row-sub">이 영역만 올릴 때 92.0 → 도달 불가 (2등급)</span></span><span class="list-row-value num">1점당 +0.13</span></div><div class="list-row"><span class="list-row-body"><span class="list-row-title">탐구 사회문화</span><span class="list-row-sub">이 영역만 올릴 때 95.0 → 도달 불가 (2등급)</span></span><span class="list-row-value num">1점당 +0.13</span></div><div class="list-row"><span class="list-row-body"><span class="list-row-title">영어 2등급 → 1등급</span></span><span class="list-row-value num">+0.12</span></div>
+    </div><p class="list-group-foot">1점당 값은 그 영역 백분위 1점이 환산 백분위에 더하는 양입니다. 추천은 비중과 남은 여지를 함께 봅니다.</p></section><section class="ip-section" aria-labelledby="ipFactHead"><h2 class="list-group-head" id="ipFactHead">기준</h2><div class="list-group">
+      <div class="list-row"><span class="list-row-body"><span class="list-row-title">2026학년도 70%컷</span></span><span class="list-row-value num">97.0</span></div>
+      <div class="list-row"><span class="list-row-body"><span class="list-row-title">2026 모집인원 · 경쟁률 · 충원</span></span><span class="list-row-value num">36명 · 3.50 · 3</span></div>
+      <div class="list-row"><span class="list-row-body"><span class="list-row-title">2027 반영 방법</span><span class="list-row-sub">인문 국어 100 · 수학 120 · 탐구 80점 · 영어 감산</span></span></div>
+
+    </div><p class="list-group-foot">컷은 최종등록자 상위 70% 지점의 국·수·탐(2) 백분위 평균입니다.</p></section></div></main>
+    </div>
   </div>
+
+  <footer class="app-footer">
+    <div class="container-wide app-footer-inner">
+      <span>입시 결과는 대입정보포털 어디가 공개값, 반영 방법은 각 대학 2027학년도 시행계획을 따릅니다. 합격을 보장하지 않습니다.</span>
+      <span class="text-tertiary">hvsdcm</span>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 </body>
 </html>

@@ -1,7 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg">
   <!-- hvsdcm UI 아이콘 단일 세트 (DESIGN.md §5 v14) — Lucide 규격 24×24, stroke 1.75, round cap/join.
        모든 심볼은 fill="none" + stroke="currentColor"다. 채움 경로를 두지 않는다.
-       소비: <svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-…"></use></svg> -->
+       소비: <svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-…"></use>  <symbol id="icon-graduation-cap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></symbol>
+</svg> -->
   <symbol id="icon-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m3 11 9-8 9 8v10h-6v-6H9v6H3z"/></symbol>
   <symbol id="icon-book-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4.5A3.5 3.5 0 0 1 5.5 1H11v18H5.5A3.5 3.5 0 0 0 2 22.5zM22 4.5A3.5 3.5 0 0 0 18.5 1H13v18h5.5a3.5 3.5 0 0 1 3.5 3.5z"/></symbol>
   <symbol id="icon-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 9 5-9 5-9-5zM3 12l9 5 9-5M3 17l9 5 9-5"/></symbol>

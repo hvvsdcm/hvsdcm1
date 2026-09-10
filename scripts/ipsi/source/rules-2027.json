@@ -1,0 +1,402 @@
+{
+  "_comment": "2027학년도 정시(수능위주) 수능 반영 방법. 출처는 각 대학 '2027학년도 대학입학전형 시행계획'(2025.4~5 공개) 본문이며, 확인하지 못한 값은 note에 '미확인'으로 적고 2026 기준으로 대체했다. unit=percent 이면 weights 는 반영비율(%), unit=points 이면 배점이다. bestOf 는 '우수한 영역 순' 반영이다. english.total/history.total 은 가감점을 백분위 단위로 바꿀 때 나누는 기준 총점이다.",
+  "universities": {
+    "snu": {
+      "name": "서울대학교", "year": 2027, "basis": "표준점수(탐구 변환 없음)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "인문·사회계열 전 모집단위", "unit": "points", "weights": { "kor": 100, "math": 120, "eng": 0, "inq": 80 },
+          "english": { "method": "감산", "table": { "1": 0, "2": -0.5, "3": -2, "4": -4, "5": -6, "6": -8, "7": -10, "8": -12, "9": -14 }, "total": 420, "note": "표준점수 총점(약 420점 만점) 기준 감점" },
+          "history": { "method": "감산", "table": { "1": 0, "2": 0, "3": 0, "4": -0.4, "5": -0.8, "6": -1.2, "7": -1.6, "8": -2.0, "9": -2.4 }, "total": 420 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두", "scienceBonus": 0, "socialBonus": 0 } },
+        { "name": "자연", "appliesTo": "자연계열(공대·자연대·농생대·생활대 자연·간호·의약 등)", "unit": "points", "weights": { "kor": 100, "math": 120, "eng": 0, "inq": 80 },
+          "english": { "method": "감산", "table": { "1": 0, "2": -0.5, "3": -2, "4": -4, "5": -6, "6": -8, "7": -10, "8": -12, "9": -14 }, "total": 420 },
+          "history": { "method": "감산", "table": { "1": 0, "2": 0, "3": 0, "4": -0.4, "5": -0.8, "6": -1.2, "7": -1.6, "8": -2.0, "9": -2.4 }, "total": 420 },
+          "inquiry": { "count": 2, "allowed": "과탐만", "scienceBonus": 0, "note": "과탐 Ⅰ+Ⅱ 조합 3점, Ⅱ+Ⅱ 조합 5점 조정점수" },
+          "mathRequirement": "제한 없음", "note": "2027 수능 응시영역기준: 자연계열은 과학탐구 2과목 필수(수학 선택과목 지정은 폐지)" }
+      ],
+      "changes2027": "국어 100 : 수학 120 : 탐구 80 상대 반영비율 유지. 영어 2등급 -0.5점부터 차등 감점, 한국사 4등급부터 감점.",
+      "sources": [ { "title": "2027학년도 서울대학교 대학 신입학생 입학전형 시행계획", "url": "https://admission.snu.ac.kr/" } ]
+    },
+    "yonsei": {
+      "name": "연세대학교", "year": 2027, "basis": "표준점수(탐구 변환표준점수)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "유형 Ⅰ 인문계열", "unit": "points", "weights": { "kor": 300, "math": 200, "eng": 100, "inq": 200 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 95, "3": 87.5, "4": 75, "5": 60, "6": 40, "7": 25, "8": 12.5, "9": 5 } },
+          "history": { "method": "감산", "table": { "1": 0, "2": 0, "3": 0, "4": 0, "5": -0.2, "6": -0.4, "7": -0.6, "8": -0.8, "9": -1.0 }, "total": 800 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두", "scienceBonus": 0, "socialBonus": 0, "note": "2026학년도에는 사탐 응시 시 변환점수 3% 가산. 2027 가산 여부 미확인" } },
+        { "name": "자연", "appliesTo": "유형 Ⅱ 자연계열(의예 포함)", "unit": "points", "weights": { "kor": 200, "math": 300, "eng": 100, "inq": 300 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 95, "3": 87.5, "4": 75, "5": 60, "6": 40, "7": 25, "8": 12.5, "9": 5 } },
+          "history": { "method": "감산", "table": { "1": 0, "2": 0, "3": 0, "4": 0, "5": -0.2, "6": -0.4, "7": -0.6, "8": -0.8, "9": -1.0 }, "total": 900 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두", "scienceBonus": 0, "note": "2027 과탐 가산 여부 미확인" } },
+        { "name": "통합", "appliesTo": "유형 Ⅲ 언더우드국제대학·상경대학·생활과학대학·간호대학", "unit": "points", "weights": { "kor": 200, "math": 200, "eng": 100, "inq": 100 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 95, "3": 87.5, "4": 75, "5": 60, "6": 40, "7": 25, "8": 12.5, "9": 5 } },
+          "history": { "method": "감산", "table": { "1": 0, "2": 0, "3": 0, "4": 0, "5": -0.2, "6": -0.4, "7": -0.6, "8": -0.8, "9": -1.0 }, "total": 600 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } }
+      ],
+      "changes2027": "유형 Ⅰ(인문) 국어 300·수학 200·영어 100·탐구 200, 유형 Ⅱ(자연) 국어 200·수학 300·영어 100·탐구 300, 유형 Ⅲ(상경·생활과학·간호·UIC) 200·200·100·100.",
+      "sources": [ { "title": "2027학년도 연세대학교 입학전형 시행계획(서울캠퍼스)", "url": "https://admission.yonsei.ac.kr/" } ]
+    },
+    "korea": {
+      "name": "고려대학교", "year": 2027, "basis": "표준점수(탐구 변환점수)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "인문계열 전 모집단위", "unit": "points", "weights": { "kor": 200, "math": 200, "eng": 0, "inq": 160 },
+          "english": { "method": "감산", "table": { "1": 0, "2": -3, "3": -6, "4": -9, "5": -12, "6": -15, "7": -18, "8": -21, "9": -24 }, "total": 560 },
+          "history": { "method": "감산", "table": { "1": 0, "2": 0, "3": 0, "4": 0, "5": -0.2, "6": -0.4, "7": -0.6, "8": -0.8, "9": -2.0 }, "total": 560 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } },
+        { "name": "자연", "appliesTo": "자연·의학계열(가정교육과·간호대학 제외)", "unit": "points", "weights": { "kor": 200, "math": 240, "eng": 0, "inq": 200 },
+          "english": { "method": "감산", "table": { "1": 0, "2": -3, "3": -6, "4": -9, "5": -12, "6": -15, "7": -18, "8": -21, "9": -24 }, "total": 640 },
+          "history": { "method": "감산", "table": { "1": 0, "2": 0, "3": 0, "4": 0, "5": -0.2, "6": -0.4, "7": -0.6, "8": -0.8, "9": -2.0 }, "total": 640 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두", "scienceBonus": 0.03, "note": "과탐 응시 과목별 변환점수 3% 가산" } }
+      ],
+      "changes2027": "인문 200·200·160(국·수·탐), 자연 200·240·200. 영어 등급당 3점 감점, 한국사 5등급부터 감점.",
+      "sources": [ { "title": "고려대학교 2027학년도 입학전형시행계획(2025.04)", "url": "https://admission.korea.ac.kr/" } ]
+    },
+    "sogang": {
+      "name": "서강대학교", "year": 2027, "basis": "표준점수(탐구 변환표준점수)",
+      "tracks": [
+        { "name": "전 계열", "appliesTo": "전 모집단위 동일", "unit": "percent", "weights": { "kor": 0, "math": 0, "eng": 0, "inq": 20 },
+          "bestOf": [ { "areas": [ "kor", "math" ], "weights": [ 43.3, 36.7 ] } ],
+          "english": { "method": "가산", "table": { "1": 100, "2": 99.5, "3": 98.5, "4": 97, "5": 95, "6": 92.5, "7": 89.5, "8": 86, "9": 82 }, "total": 530, "note": "국어·수학·탐구 가중 표준점수 합(약 420) + 영어 100 + 한국사 10 ≈ 530 기준" },
+          "history": { "method": "가산", "table": { "1": 10, "2": 10, "3": 10, "4": 10, "5": 9.5, "6": 9, "7": 8.5, "8": 8, "9": 7.5 }, "total": 530 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } }
+      ],
+      "changes2027": "국어·수학 중 우수 영역 가중치 1.3, 다른 영역 1.1, 탐구 0.6 (43.3% : 36.7% : 20%). 계열 구분 없음.",
+      "sources": [ { "title": "서강대학교 2027학년도 입학전형 시행계획", "url": "https://admission.sogang.ac.kr/" } ]
+    },
+    "skku": {
+      "name": "성균관대학교", "year": 2027, "basis": "백분위(영어 자체 변환백분위)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "가군 자유전공계열·사회과학계열 (나군 경영·영상 45/30/15/10, 인문과학·글로벌리더 35/30/15/20)", "unit": "percent", "weights": { "kor": 0, "math": 0, "eng": 10, "inq": 10 },
+          "bestOf": [ { "areas": [ "kor", "math" ], "weights": [ 45, 35 ] } ],
+          "english": { "method": "비율반영", "table": { "1": 100 }, "note": "등급별 자체 변환백분위 표 미확인" },
+          "history": { "method": "감산", "table": { "1": 0, "2": 0, "3": 0, "4": 0, "5": -1, "6": -2, "7": -5, "8": -10, "9": -20 }, "total": 1000 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } },
+        { "name": "자연", "appliesTo": "가군 자연과학계열·반도체시스템·약학·글로벌융합 (나군 공학계열·소프트웨어 45/30/15/10, 전자전기 35/30/15/20)", "unit": "percent", "weights": { "kor": 15, "math": 0, "eng": 15, "inq": 0 },
+          "bestOf": [ { "areas": [ "math", "inq" ], "weights": [ 40, 30 ] } ],
+          "english": { "method": "비율반영", "table": { "1": 100 }, "note": "등급별 자체 변환백분위 표 미확인" },
+          "history": { "method": "감산", "table": { "1": 0, "2": 0, "3": 0, "4": 0, "5": -1, "6": -2, "7": -5, "8": -10, "9": -20 }, "total": 1000 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두", "scienceBonus": 0.05, "note": "공학계열·전자전기·소프트웨어는 과탐 최대 5% 가산" } },
+        { "name": "의약", "appliesTo": "의예과", "unit": "percent", "weights": { "kor": 30, "math": 30, "eng": 20, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100 } },
+          "history": { "method": "감산", "table": { "1": 0, "2": 0, "3": 0, "4": 0, "5": -1, "6": -2, "7": -5, "8": -10, "9": -20 }, "total": 1000 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } }
+      ],
+      "changes2027": "백분위 반영. 인문은 국·수 중 우수 영역 45·35 + 탐구 10 + 영어 10, 자연은 국어 15 + 수·탐 중 우수 40·30 + 영어 15. 경영학과 미적분 최대 3% 가산.",
+      "sources": [ { "title": "2027학년도 성균관대학교 입학전형 시행계획", "url": "https://admission.skku.edu/" } ]
+    },
+    "hanyang": {
+      "name": "한양대학교", "year": 2027, "basis": "표준점수(탐구 변환표준점수)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "인문계열", "unit": "percent", "weights": { "kor": 35, "math": 30, "eng": 10, "inq": 25 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 96, "3": 90, "4": 82, "5": 72, "6": 60, "7": 46, "8": 30, "9": 12 } },
+          "history": { "method": "감산", "table": { "1": 0, "2": 0, "3": 0 }, "note": "등급별 감점표 미확인(소폭)" },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } },
+        { "name": "상경", "appliesTo": "상경계열·의류학과·실내건축디자인·한양인터칼리지", "unit": "percent", "weights": { "kor": 35, "math": 35, "eng": 10, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 96, "3": 90, "4": 82, "5": 72, "6": 60, "7": 46, "8": 30, "9": 12 } },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } },
+        { "name": "자연", "appliesTo": "자연계열", "unit": "percent", "weights": { "kor": 25, "math": 40, "eng": 10, "inq": 25 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 98, "3": 94, "4": 88, "5": 80, "6": 70, "7": 58, "8": 44, "9": 28 } },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두", "scienceBonus": 0, "note": "당해 연도 난이도를 고려해 변환표준점수에 가산점 부여(정률 아님)" } }
+      ],
+      "changes2027": "자연 25·40·10·25, 인문 35·30·10·25, 상경 35·35·10·20. 영어 비율 10% 등급 환산.",
+      "sources": [ { "title": "한양대학교 2027학년도 입학전형 시행계획", "url": "https://go.hanyang.ac.kr/" } ]
+    },
+    "cau": {
+      "name": "중앙대학교", "year": 2027, "basis": "표준점수(탐구 변환표준점수)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "인문대·사범대", "unit": "percent", "weights": { "kor": 35, "math": 30, "eng": 0, "inq": 35 },
+          "english": { "method": "가산", "table": { "1": 100, "2": 98, "3": 95, "4": 92, "5": 86, "6": 75, "7": 64, "8": 58, "9": 50 }, "total": 1000 },
+          "history": { "method": "가산", "table": { "1": 10, "2": 10, "3": 10, "4": 10, "5": 9.6, "6": 9.2, "7": 8.8, "8": 8.4, "9": 8 }, "total": 1000 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두", "socialBonus": 0.05, "note": "인문대·사범대 사탐 5% 가산" } },
+        { "name": "상경", "appliesTo": "사회과학대·경영경제대·간호(인문)", "unit": "percent", "weights": { "kor": 30, "math": 40, "eng": 0, "inq": 30 },
+          "english": { "method": "가산", "table": { "1": 100, "2": 98, "3": 95, "4": 92, "5": 86, "6": 75, "7": 64, "8": 58, "9": 50 }, "total": 1000 },
+          "history": { "method": "가산", "table": { "1": 10, "2": 10, "3": 10, "4": 10, "5": 9.6, "6": 9.2, "7": 8.8, "8": 8.4, "9": 8 }, "total": 1000 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } },
+        { "name": "자연", "appliesTo": "자연계열 전체", "unit": "percent", "weights": { "kor": 30, "math": 35, "eng": 0, "inq": 35 },
+          "english": { "method": "가산", "table": { "1": 100, "2": 98, "3": 95, "4": 92, "5": 86, "6": 75, "7": 64, "8": 58, "9": 50 }, "total": 1000 },
+          "history": { "method": "가산", "table": { "1": 10, "2": 10, "3": 10, "4": 10, "5": 9.6, "6": 9.2, "7": 8.8, "8": 8.4, "9": 8 }, "total": 1000 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두", "scienceBonus": 0.05, "note": "자연계열 과탐 5% 가산" } }
+      ],
+      "changes2027": "인문대·사범대 35·30·35(사탐 5% 가산), 사회과학·경영경제 30·40·30, 자연 30·35·35(과탐 5% 가산). 영어·한국사는 가산점.",
+      "sources": [ { "title": "중앙대학교 2027학년도 입학전형 시행계획", "url": "https://admission.cau.ac.kr/" } ]
+    },
+    "khu": {
+      "name": "경희대학교", "year": 2027, "basis": "표준점수(탐구 변환표준점수)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "문과대학·외국어대학·생활과학대학", "unit": "percent", "weights": { "kor": 40, "math": 25, "eng": 0, "inq": 35 },
+          "english": { "method": "감산", "table": { "1": 0, "2": 0, "3": -2, "4": -4, "5": -8, "6": -12, "7": -18, "8": -24, "9": -30 }, "total": 800, "note": "총점 기준 미확인(800점 가정)" },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } },
+        { "name": "상경", "appliesTo": "자율전공·정경대·경영대·국제대·호텔관광대·지리(인문)·한의예(인문)", "unit": "percent", "weights": { "kor": 35, "math": 35, "eng": 0, "inq": 30 },
+          "english": { "method": "감산", "table": { "1": 0, "2": 0, "3": -2, "4": -4, "5": -8, "6": -12, "7": -18, "8": -24, "9": -30 }, "total": 800 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } },
+        { "name": "자연", "appliesTo": "자연계열(이과대·공대·전자정보·SW융합·응용과학·생명과학·의약·간호)", "unit": "percent", "weights": { "kor": 25, "math": 40, "eng": 0, "inq": 35 },
+          "english": { "method": "감산", "table": { "1": 0, "2": 0, "3": -2, "4": -4, "5": -8, "6": -12, "7": -18, "8": -24, "9": -30 }, "total": 800 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두", "scienceBonus": 0.06, "note": "과탐 과목당 변환표준점수 +4점(약 6%). 자유전공학부는 미적용" } }
+      ],
+      "changes2027": "영어를 비율 반영에서 등급별 감점(1·2등급 만점, 3등급 -2점부터)으로 전환. 인문 40·25·35, 사회 35·35·30, 자연 25·40·35.",
+      "sources": [ { "title": "2027학년도 경희대학교 입학전형 시행계획", "url": "https://iphak.khu.ac.kr/" } ]
+    },
+    "hufs": {
+      "name": "한국외국어대학교", "year": 2027, "basis": "표준점수(탐구 변환표준점수)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "서울캠퍼스 전 모집단위", "unit": "percent", "weights": { "kor": 30, "math": 30, "eng": 20, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100 }, "note": "등급별 환산표 미확인" },
+          "history": { "method": "감산", "table": { "1": 0, "2": 0, "3": 0 }, "note": "감점표 미확인" },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } }
+      ],
+      "changes2027": "국어 30·수학 30·영어 20·탐구 20, 총점 1,000점.",
+      "sources": [ { "title": "한국외국어대학교 2027학년도 입학전형 시행계획", "url": "https://adms.hufs.ac.kr/" } ]
+    },
+    "uos": {
+      "name": "서울시립대학교", "year": 2027, "basis": "표준점수(탐구 변환표준점수)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "인문계열Ⅰ (인문계열Ⅱ는 35·25·20·20)", "unit": "percent", "weights": { "kor": 35, "math": 35, "eng": 15, "inq": 15 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 97.3, "3": 90, "4": 80, "5": 63.3, "6": 50, "7": 30 }, "note": "150점 기준 150/146/135/120/95/75/45를 100 기준으로 환산" },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } },
+        { "name": "자연", "appliesTo": "자연계열", "unit": "percent", "weights": { "kor": 30, "math": 40, "eng": 10, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 97.3, "3": 90, "4": 80, "5": 63.3, "6": 50, "7": 30 } },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } }
+      ],
+      "changes2027": "인문Ⅰ 35·35·15·15, 인문Ⅱ 35·25·20·20, 자연 30·40·10·20.",
+      "sources": [ { "title": "서울시립대학교 2027학년도 입학전형 시행계획", "url": "https://admission.uos.ac.kr/" } ]
+    },
+    "ewha": {
+      "name": "이화여자대학교", "year": 2027, "basis": "표준점수(탐구 변환표준점수)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "인문계열", "unit": "percent", "weights": { "kor": 30, "math": 30, "eng": 20, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 98, "3": 94, "4": 88, "5": 84, "6": 80, "7": 76, "8": 72, "9": 68 } },
+          "history": { "method": "가산", "table": { "1": 10, "2": 10, "3": 10, "4": 9.8, "5": 9.6, "6": 9.4, "7": 9.2, "8": 9.0, "9": 8.5 }, "total": 1000 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } },
+        { "name": "자연", "appliesTo": "자연계열(의예·약학 포함)", "unit": "percent", "weights": { "kor": 25, "math": 30, "eng": 20, "inq": 25 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 98, "3": 94, "4": 88, "5": 84, "6": 80, "7": 76, "8": 72, "9": 68 } },
+          "history": { "method": "가산", "table": { "1": 10, "2": 10, "3": 10, "4": 9.8, "5": 9.6, "6": 9.4, "7": 9.2, "8": 9.0, "9": 8.5 }, "total": 1000 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두", "scienceBonus": 0.06, "note": "과탐 1과목당 변환표준점수 6% 가산(미래산업약학 제외)" } }
+      ],
+      "changes2027": "인문 30·30·20·20, 자연 25·30·25·20(과탐 6% 가산).",
+      "sources": [ { "title": "2027학년도 이화여자대학교 입학전형 시행계획", "url": "https://admission.ewha.ac.kr/" } ]
+    },
+    "konkuk": {
+      "name": "건국대학교", "year": 2027, "basis": "표준점수(탐구 변환표준점수)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "언어중심(A) 11개 학과: 국어국문·미디어커뮤니케이션·문화콘텐츠·교육공학 등", "unit": "percent", "weights": { "kor": 40, "math": 30, "eng": 10, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100 }, "note": "등급별 환산표 미확인" },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } },
+        { "name": "상경", "appliesTo": "수리중심(B) 27개 학과: 경영·경제·건축 및 자연계열 대부분", "unit": "percent", "weights": { "kor": 30, "math": 40, "eng": 10, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100 } },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } },
+        { "name": "자연", "appliesTo": "수리중심(B) 자연계열", "unit": "percent", "weights": { "kor": 30, "math": 40, "eng": 10, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100 } },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } }
+      ],
+      "changes2027": "언어중심(A) 40·30·10·20 / 수리중심(B) 30·40·10·20 두 유형. (시행계획 PDF 본문이 이미지라 뉴스 요약으로 확인)",
+      "sources": [ { "title": "2027 건국대 정시 반영비율 정리(입시호구탈출)", "url": "https://ipsihogu.com/2027-konkuk-jungsi-calc/" } ]
+    },
+    "dongguk": {
+      "name": "동국대학교", "year": 2027, "basis": "표준점수(탐구 변환표준점수)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "인문계열·체육교육·영화영상", "unit": "percent", "weights": { "kor": 35, "math": 25, "eng": 15, "inq": 25 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 99.5, "3": 98.5, "4": 95, "5": 90, "6": 70, "7": 45, "8": 10, "9": 0 }, "note": "200점 기준 200/199/197/190/180/140/90/20/0" },
+          "history": { "method": "감산", "table": { "1": 0, "2": 0, "3": 0, "4": 0, "5": -2, "6": -4, "7": -6, "8": -8, "9": -10 }, "total": 1000 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } },
+        { "name": "자연", "appliesTo": "자연계열", "unit": "percent", "weights": { "kor": 25, "math": 35, "eng": 15, "inq": 25 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 99.5, "3": 98.5, "4": 95, "5": 90, "6": 70, "7": 45, "8": 10, "9": 0 } },
+          "history": { "method": "감산", "table": { "1": 0, "2": 0, "3": 0, "4": 0, "5": -2, "6": -4, "7": -6, "8": -8, "9": -10 }, "total": 1000 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두", "scienceBonus": 0.03, "note": "유형②·③ 학과 과탐 3% 가산" },
+          "mathBonus": 0.03, "note": "유형①·③ 학과 미적분·기하 표준점수 3% 가산" }
+      ],
+      "changes2027": "인문 35·25·15·25, 자연 25·35·15·25. 자연 모집단위 유형별로 미적분·기하 3%, 과탐 3% 가산.",
+      "sources": [ { "title": "2027학년도 동국대학교 대학입학전형 시행계획", "url": "https://ipsi.dongguk.edu/" } ]
+    },
+    "hongik": {
+      "name": "홍익대학교", "year": 2027, "basis": "표준점수",
+      "tracks": [
+        { "name": "인문", "appliesTo": "인문계열·캠퍼스자율전공(인문·예능)", "unit": "percent", "weights": { "kor": 30, "math": 30, "eng": 15, "inq": 25 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 95, "3": 88, "4": 79, "5": 68, "6": 55, "7": 40, "8": 23, "9": 4 } },
+          "history": { "method": "가산", "table": { "1": 10, "2": 10, "3": 10, "4": 9.9, "5": 9.8, "6": 9.7, "7": 9.6, "8": 9.5, "9": 9.4 }, "total": 1000 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } },
+        { "name": "자연", "appliesTo": "자연계열·캠퍼스자율전공(자연·예능)", "unit": "percent", "weights": { "kor": 20, "math": 35, "eng": 15, "inq": 30 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 95, "3": 88, "4": 79, "5": 68, "6": 55, "7": 40, "8": 23, "9": 4 } },
+          "history": { "method": "가산", "table": { "1": 10, "2": 10, "3": 10, "4": 9.9, "5": 9.8, "6": 9.7, "7": 9.6, "8": 9.5, "9": 9.4 }, "total": 1000 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두", "scienceBonus": 0.03 }, "mathBonus": 0.03 }
+      ],
+      "changes2027": "인문 30·30·15·25, 자연 20·35·15·30. 자연 미적분·기하 3%, 과탐 3% 가산.",
+      "sources": [ { "title": "홍익대학교(서울) 2027학년도 입학전형 시행계획", "url": "https://ibsi.hongik.ac.kr/" } ]
+    },
+    "sookmyung": {
+      "name": "숙명여자대학교", "year": 2027, "basis": "표준점수(탐구 변환표준점수)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "인문계", "unit": "percent", "weights": { "kor": 35, "math": 25, "eng": 15, "inq": 25 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 98, "3": 94, "4": 88, "5": 80, "6": 70, "7": 60, "8": 40, "9": 20 } },
+          "history": { "method": "가산", "table": { "1": 3, "2": 2, "3": 1, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0 }, "total": 1000 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두", "socialBonus": 0.03, "note": "사탐 과목당 변환표준점수 3% 가산" } },
+        { "name": "자연", "appliesTo": "자연계", "unit": "percent", "weights": { "kor": 25, "math": 35, "eng": 15, "inq": 25 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 98, "3": 94, "4": 88, "5": 80, "6": 70, "7": 60, "8": 40, "9": 20 } },
+          "history": { "method": "가산", "table": { "1": 3, "2": 2, "3": 1, "4": 0, "5": 0, "6": 0, "7": 0, "8": 0, "9": 0 }, "total": 1000 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두", "scienceBonus": 0.03 } },
+        { "name": "자유전공", "appliesTo": "자유전공학부", "unit": "percent", "weights": { "kor": 30, "math": 30, "eng": 15, "inq": 25 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 98, "3": 94, "4": 88, "5": 80, "6": 70, "7": 60, "8": 40, "9": 20 } },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } }
+      ],
+      "changes2027": "인문 35·25·15·25(사탐 3%), 자연 25·35·15·25(과탐 3%), 자유전공 30·30·15·25.",
+      "sources": [ { "title": "숙명여자대학교 2027학년도 입학전형 시행계획", "url": "https://admission.sookmyung.ac.kr/" } ]
+    },
+    "kookmin": {
+      "name": "국민대학교", "year": 2027, "basis": "표준점수(탐구 변환표준점수)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "인문계 전체", "unit": "percent", "weights": { "kor": 40, "math": 30, "eng": 10, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 98, "3": 95, "4": 90, "5": 85, "6": 80, "7": 75, "8": 70, "9": 0 } },
+          "history": { "method": "감산", "table": { "1": 0, "2": 0, "3": 0, "4": 0 }, "note": "5등급부터 감점(표 미확인)" },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } },
+        { "name": "자연", "appliesTo": "자연계 전체", "unit": "percent", "weights": { "kor": 30, "math": 40, "eng": 10, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 98, "3": 95, "4": 90, "5": 85, "6": 80, "7": 75, "8": 70, "9": 0 } },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } }
+      ],
+      "changes2027": "인문 40·30·10·20, 자연 30·40·10·20.",
+      "sources": [ { "title": "국민대학교 2027학년도 입학전형 시행계획", "url": "https://admission.kookmin.ac.kr/" } ]
+    },
+    "soongsil": {
+      "name": "숭실대학교", "year": 2027, "basis": "표준점수(탐구 백분위)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "인문계열 (자유전공 인문 30·30·15·25)", "unit": "percent", "weights": { "kor": 35, "math": 20, "eng": 20, "inq": 25 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 100, "3": 98.5, "4": 96.5, "5": 80, "6": 72, "7": 60, "8": 36, "9": 0 } },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두", "socialBonus": 0.03, "note": "사탐 과목당 백분위 3% 가산" } },
+        { "name": "상경", "appliesTo": "경상계열", "unit": "percent", "weights": { "kor": 25, "math": 35, "eng": 15, "inq": 25 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 100, "3": 98.7, "4": 96.7, "5": 80, "6": 72, "7": 60, "8": 36, "9": 0 } },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두", "socialBonus": 0.03 } },
+        { "name": "자연", "appliesTo": "자연1·자연2계열·자유전공(자연)", "unit": "percent", "weights": { "kor": 20, "math": 35, "eng": 15, "inq": 30 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 100, "3": 98.7, "4": 96.7, "5": 80, "6": 72, "7": 60, "8": 36, "9": 0 } },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두", "scienceBonus": 0.07, "note": "자연1계열 과탐 가산(비율 미확인, 수학과 같은 7%로 가정)" },
+          "mathBonus": 0.07, "note": "자연1계열 미적분·기하 표준점수 7% 가산" }
+      ],
+      "changes2027": "인문 35·20·20·25, 경상 25·35·15·25, 자연 20·35·15·30.",
+      "sources": [ { "title": "숭실대학교 2027학년도 입학전형 시행계획", "url": "https://ipsi.ssu.ac.kr/" } ]
+    },
+    "sejong": {
+      "name": "세종대학교", "year": 2027, "basis": "표준점수(탐구 변환표준점수)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "인문계열", "unit": "percent", "weights": { "kor": 30, "math": 30, "eng": 20, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 97.5, "3": 95, "4": 92.5, "5": 85, "6": 75, "7": 60, "8": 50, "9": 0 } },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" }, "note": "영역별 비율은 2026학년도 기준(2027 표 미확인)" },
+        { "name": "자연", "appliesTo": "자연계열·자유전공학부", "unit": "percent", "weights": { "kor": 20, "math": 40, "eng": 20, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 99, "3": 98, "4": 97, "5": 85, "6": 75, "7": 60, "8": 50, "9": 0 } },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" }, "note": "영역별 비율은 2026학년도 기준(2027 표 미확인)" }
+      ],
+      "changes2027": "영어 등급별 환산점수(200점 기준) 인문 200/195/190/185/170…, 자연 200/198/196/194/170….",
+      "sources": [ { "title": "세종대학교 2027학년도 입학전형 시행계획", "url": "https://ipsi.sejong.ac.kr/" } ]
+    },
+    "dankook": {
+      "name": "단국대학교(죽전)", "year": 2027, "basis": "백분위",
+      "tracks": [
+        { "name": "인문", "appliesTo": "인문계열광역·문과대·법과대·사회과학대 등", "unit": "percent", "weights": { "kor": 35, "math": 25, "eng": 20, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100 }, "note": "등급별 가산점표 미확인" },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } },
+        { "name": "상경", "appliesTo": "경영경제대학·국제경영학과 (퇴계혁신칼리지·사회계열광역은 30·30·20·20)", "unit": "percent", "weights": { "kor": 25, "math": 35, "eng": 20, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100 } },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } },
+        { "name": "자연", "appliesTo": "공학계열광역·공과대학 (SW융합계열은 20·35·15·30)", "unit": "percent", "weights": { "kor": 20, "math": 35, "eng": 20, "inq": 25 },
+          "english": { "method": "비율반영", "table": { "1": 100 } },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두", "scienceBonus": 0.05 }, "mathBonus": 0.05, "note": "미적분·기하 5%, 과탐 5% 가산" }
+      ],
+      "changes2027": "백분위 반영. 인문 35·25·20·20, 경영경제 25·35·20·20, 공학 20·35·20·25(+가산 5%).",
+      "sources": [ { "title": "단국대학교 2027학년도 대학입학전형시행계획", "url": "https://ipsi.dankook.ac.kr/" } ]
+    },
+    "kw": {
+      "name": "광운대학교", "year": 2027, "basis": "표준점수(탐구 변환표준점수)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "인문계열·자율전공(인문)", "unit": "percent", "weights": { "kor": 30, "math": 25, "eng": 20, "inq": 25 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 99, "3": 97.5, "4": 95, "5": 91, "6": 85, "7": 79, "8": 73, "9": 0 } },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } },
+        { "name": "자연", "appliesTo": "자연계열·자율전공(자연)", "unit": "percent", "weights": { "kor": 20, "math": 35, "eng": 20, "inq": 25 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 99, "3": 97.5, "4": 95, "5": 91, "6": 85, "7": 79, "8": 73, "9": 0 } },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } }
+      ],
+      "changes2027": "인문 30·25·20·25, 자연 20·35·20·25. 영어 200점 기준 200/198/195/190/182/170/158/146/0.",
+      "sources": [ { "title": "광운대학교 2027학년도 입학전형 시행계획", "url": "https://iphak.kw.ac.kr/" } ]
+    },
+    "mju": {
+      "name": "명지대학교", "year": 2027, "basis": "백분위(탐구 상위 1과목)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "인문사회계열(경영대학 외)", "unit": "percent", "weights": { "kor": 35, "math": 25, "eng": 20, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 98, "3": 96, "4": 90, "5": 80, "6": 60, "7": 40, "8": 20, "9": 0 } },
+          "history": { "method": "가산", "table": { "1": 3, "2": 2.8, "3": 2.6, "4": 2.4, "5": 2.2, "6": 2, "7": 1.8, "8": 1.6, "9": 1.4 }, "total": 1000 },
+          "inquiry": { "count": 1, "allowed": "사탐/과탐 모두" } },
+        { "name": "상경", "appliesTo": "경영대학", "unit": "percent", "weights": { "kor": 30, "math": 30, "eng": 20, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 98, "3": 96, "4": 90, "5": 80, "6": 60, "7": 40, "8": 20, "9": 0 } },
+          "inquiry": { "count": 1, "allowed": "사탐/과탐 모두" } },
+        { "name": "자연", "appliesTo": "자연공학계열", "unit": "percent", "weights": { "kor": 25, "math": 35, "eng": 20, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 98, "3": 96, "4": 90, "5": 80, "6": 60, "7": 40, "8": 20, "9": 0 } },
+          "inquiry": { "count": 1, "allowed": "사탐/과탐 모두" } }
+      ],
+      "changes2027": "탐구 상위 1과목 반영. 인문 35·25·20·20, 경영 30·30·20·20, 자연 25·35·20·20.",
+      "sources": [ { "title": "명지대학교 2027학년도 대학입학전형 시행계획", "url": "https://ipsi.mju.ac.kr/" } ]
+    },
+    "smu": {
+      "name": "상명대학교", "year": 2027, "basis": "백분위",
+      "tracks": [
+        { "name": "인문", "appliesTo": "인문계열", "unit": "percent", "weights": { "kor": 35, "math": 25, "eng": 20, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100 }, "note": "등급별 환산표 미확인" },
+          "history": { "method": "가산", "table": { "1": 10, "2": 10, "3": 10 }, "total": 1000 },
+          "inquiry": { "count": 1, "allowed": "사탐/과탐 모두", "note": "반영 과목 수 미확인(1과목 가정)" }, "note": "인문 비율은 2026 기준" },
+        { "name": "자연", "appliesTo": "자연계열(IT·공학)", "unit": "percent", "weights": { "kor": 25, "math": 35, "eng": 20, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100 } },
+          "history": { "method": "가산", "table": { "1": 10, "2": 10, "3": 10 }, "total": 1000 },
+          "inquiry": { "count": 1, "allowed": "사탐/과탐 모두", "scienceBonus": 0.05 }, "mathBonus": 0.10, "note": "미적분·기하 10%, 과탐 5% 가산(시행계획 산출 예시 기준)" }
+      ],
+      "changes2027": "백분위 반영. 자연 25·35·20·20(미적분·기하 10%, 과탐 5% 가산).",
+      "sources": [ { "title": "상명대학교 2027학년도 입학전형 시행계획", "url": "https://admission.smu.ac.kr/" } ]
+    },
+    "catholic": {
+      "name": "가톨릭대학교", "year": 2027, "basis": "백분위(간호·약학은 표준점수)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "일반전형Ⅰ 전 모집단위(약학·간호 제외)", "unit": "percent", "weights": { "kor": 0, "math": 0, "eng": 20, "inq": 20 },
+          "bestOf": [ { "areas": [ "kor", "math" ], "weights": [ 35, 25 ] } ],
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 98, "3": 95, "4": 85, "5": 70, "6": 50, "7": 30, "8": 10, "9": 0 } },
+          "inquiry": { "count": 1, "allowed": "사탐/과탐 모두", "note": "반영 과목 수 미확인(1과목 가정)" } },
+        { "name": "자연", "appliesTo": "일반전형Ⅰ 자연공학계열(약학·간호 제외)", "unit": "percent", "weights": { "kor": 0, "math": 0, "eng": 20, "inq": 20 },
+          "bestOf": [ { "areas": [ "kor", "math" ], "weights": [ 35, 25 ] } ],
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 98, "3": 95, "4": 85, "5": 70, "6": 50, "7": 30, "8": 10, "9": 0 } },
+          "inquiry": { "count": 1, "allowed": "사탐/과탐 모두" } },
+        { "name": "의약", "appliesTo": "약학과(30·40·30 표준점수, 과탐 과목당 3% 가산) / 간호학과(30·40·30, 영어 감점)", "unit": "percent", "weights": { "kor": 30, "math": 40, "eng": 0, "inq": 30 },
+          "english": { "method": "감산", "table": { "1": 0, "2": -1, "3": -3, "4": -5, "5": -7, "6": -9, "7": -12, "8": -15, "9": -20 }, "total": 1000 },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두", "scienceBonus": 0.03 } }
+      ],
+      "changes2027": "일반전형Ⅰ: 국·수 중 우수 영역 35·25 + 영어 20 + 탐구 20(백분위).",
+      "sources": [ { "title": "가톨릭대학교 2027학년도 입학전형 시행계획", "url": "https://ipsi.catholic.ac.kr/" } ]
+    },
+    "hansung": {
+      "name": "한성대학교", "year": 2027, "basis": "백분위(탐구 1과목)",
+      "tracks": [
+        { "name": "인문", "appliesTo": "크리에이티브인문학부·미래융합사회과학대학·글로벌패션산업·ICT디자인·뷰티디자인·문학문화콘텐츠", "unit": "percent", "weights": { "kor": 35, "math": 25, "eng": 20, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100 }, "note": "등급별 환산표 미확인" },
+          "inquiry": { "count": 1, "allowed": "사탐/과탐 모두" } },
+        { "name": "자연", "appliesTo": "IT공과대학·AI응용·융합보안·미래모빌리티", "unit": "percent", "weights": { "kor": 25, "math": 35, "eng": 20, "inq": 20 },
+          "english": { "method": "비율반영", "table": { "1": 100 } },
+          "inquiry": { "count": 1, "allowed": "사탐/과탐 모두" } }
+      ],
+      "changes2027": "백분위 반영. 인문 35·25·20·20, IT공대 25·35·20·20. 상상력인재학부는 우수 영역순 40·30·20·10. 야간은 국·수·탐 중 상위 2과목.",
+      "sources": [ { "title": "한성대학교 2027학년도 입학전형 시행계획", "url": "https://hansung.ac.kr/" } ]
+    },
+    "skuniv": {
+      "name": "서경대학교", "year": 2027, "basis": "백분위(탐구 2과목 평균)",
+      "tracks": [
+        { "name": "전 계열", "appliesTo": "전 모집단위", "unit": "percent", "weights": { "kor": 0, "math": 0, "eng": 20, "inq": 0 },
+          "bestOf": [ { "areas": [ "kor", "math", "inq" ], "weights": [ 40, 40, 0 ] } ],
+          "english": { "method": "비율반영", "table": { "1": 100 }, "note": "등급별 환산표 미확인" },
+          "history": { "method": "가산", "table": { "1": 0 }, "note": "등급별 가산점표 미확인" },
+          "inquiry": { "count": 2, "allowed": "사탐/과탐 모두" } }
+      ],
+      "changes2027": "국어·수학·탐구 3개 영역 중 점수 높은 2개 영역 40+40, 영어 20.",
+      "sources": [ { "title": "서경대학교 2027학년도 입학전형 시행계획", "url": "https://skuniv.ac.kr/" } ]
+    },
+    "syu": {
+      "name": "삼육대학교", "year": 2027, "basis": "등급 환산 배점",
+      "tracks": [
+        { "name": "전 계열", "appliesTo": "일반학과", "unit": "percent", "weights": { "kor": 25, "math": 25, "eng": 25, "inq": 25 },
+          "english": { "method": "비율반영", "table": { "1": 100, "2": 96.9, "3": 93.9, "4": 88.8, "5": 83.7, "6": 71.4, "7": 51, "8": 40.8, "9": 30.6 }, "note": "등급별 배점 98/95/92/87/82/70/50/40/30을 100 기준으로 환산" },
+          "inquiry": { "count": 1, "allowed": "사탐/과탐 모두" }, "note": "영역별 반영 비율 미확인(균등 가정). 삼육대는 영역별 등급을 배점으로 환산해 합산한다" }
+      ],
+      "changes2027": "수능 등급 환산 배점표(1등급 98점 … 9등급 30점) 적용.",
+      "sources": [ { "title": "삼육대학교 2027학년도 대학입학전형계획 주요사항", "url": "https://ipsi.syu.ac.kr/" } ]
+    }
+  }
+}

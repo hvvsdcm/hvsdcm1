@@ -1844,6 +1844,8 @@ function validateGlobalsAndOrder() {
     // 목록 데이터는 이 순서 어디에도 없다 — 로그인 뒤 API에서만 온다 (plan.md §3).
     'gichul/index.html': ['/account.js?v=20260904-auth-gate-v1', '/assets/vendor/pdf-lib/pdf-lib.min.js', '/gichul/app.js?v=20260904-icons-v2'],
     'behavior-lab/index.html': ['/behavior-lab/assets/js/app.js?v=20260901-v16'],
+    // 정시 진단은 게이트 전용 세션(account) → 공개 통계 데이터 → 계산 엔진 → 컨트롤러 순이다.
+    'ipsi/index.html': ['/account.js?v=20260904-auth-gate-v1', '/ipsi/assets/js/data.js?v=20260910-ipsi-v1', '/ipsi/assets/js/engine.js?v=20260910-ipsi-v1', '/ipsi/assets/js/app.js?v=20260910-ipsi-v1'],
   };
   for (const [file, order] of Object.entries(expectedOrders)) {
     check(scriptSources(file).join(' → ') === order.join(' → '), `${file}: script load order must be ${order.join(' → ')}`);
@@ -1869,6 +1871,7 @@ function validateGlobalsAndOrder() {
     'usage/index.html': ['/assets/css/system.css?v=20260904-icons-v2', '/usage/assets/css/usage.css?v=20260904-icons-v2'],
     'gichul/index.html': ['/assets/css/system.css?v=20260904-icons-v2', '/gichul/gichul.css?v=20260904-icons-v2'],
     'behavior-lab/index.html': ['/assets/css/system.css?v=20260904-icons-v2', '/behavior-lab/assets/css/app.css?v=20260904-ui-v1'],
+    'ipsi/index.html': ['/assets/css/system.css?v=20260904-icons-v2', '/ipsi/ipsi.css?v=20260910-ipsi-v1'],
   };
   for (const [file, order] of Object.entries(expectedStylesheets)) {
     check(stylesheetSources(file).join(' → ') === order.join(' → '), `${file}: stylesheet hrefs (order + cache-buster) must be ${order.join(' → ')}`);
@@ -1914,7 +1917,7 @@ function validateGlobalsAndOrder() {
   const systemCss = readFileSync(path.join(ROOT, 'assets/css/system.css'), 'utf8');
   check(/html\.auth-pending body\s*\{[^}]*visibility:\s*hidden/u.test(systemCss),
     'system.css: learning pages must stay hidden until account validation');
-  for (const file of ['WordMaster/index.html', 'smstudy/index.html', 'plstudy/index.html', 'gichul/index.html']) {
+  for (const file of ['WordMaster/index.html', 'smstudy/index.html', 'plstudy/index.html', 'gichul/index.html', 'ipsi/index.html']) {
     check(/<html\b[^>]*class="[^"]*auth-pending/u.test(readFileSync(path.join(ROOT, file), 'utf8')),
       `${file}: first-paint account cover is missing`);
   }

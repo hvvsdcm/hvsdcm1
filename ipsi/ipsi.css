@@ -1,0 +1,121 @@
+/* ==========================================================================
+   정시 진단 화면 (ipsi) — 화면 전용 글루만 담는다.
+   레퍼런스는 조작 화면의 macOS 앱 어법(DESIGN.md §1: 툴바·사이드바·그룹 리스트)이고, 골격·행·
+   툴바·세그먼티드·접힘 그룹·뱃지는 전부 system.css의 프리미티브를 그대로 소비한다(§7).
+   여기 있는 것은 그 프리미티브가 다루지 않는 배치뿐이다: 입력 행의 두 컨트롤, 진단 목록의
+   판정 그룹 간격, 목표 화면의 값 강조, 좁은 폭의 줄바꿈.
+   색 토큰을 정의하지 않는다 — 단일 원본은 assets/css/system.css다(§3). 강조색은 --accent 하나이고
+   판정 뱃지는 상태색(안정 green · 위험 red · 상향 orange)을 상태 표시에만 쓴다.
+   깊이는 명도 단차 + 1px 헤어라인이며 그림자·그라디언트를 쓰지 않는다(§4).
+   대비: --text-2 on --surface 7.03:1 (부제) · --text-3 on --bg 5.80:1 (각주) — 상단 전수표 값.
+   ========================================================================== */
+/* ---- 로드·오류 상태 — 한 문장 (§6.1) ---- */
+.ip-loading, .ip-error {
+  padding: var(--space-5);
+  border: 1px solid var(--line-faint);
+  border-radius: var(--radius-l);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: var(--fs-caption);
+}
+.ip-error h1 {
+  margin-bottom: var(--space-2);
+  color: var(--text);
+  font-size: var(--fs-title-3);
+  line-height: var(--lh-title);
+}
+/* ---- 본문 세로 리듬 ---- */
+.ip-view {
+  display: grid;
+  gap: var(--space-5);
+  align-content: start;
+}
+.ip-section {
+  display: grid;
+  gap: 0;
+}
+/* ---- 입력 행: 제목 + 우측 컨트롤 2개(선택과목 · 값) ---- */
+.ip-controls {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-2);
+}
+.ip-controls .field-input-inline {
+  min-width: 0;
+}
+.ip-controls select.field-input-inline {
+  max-width: 11em;
+}
+.ip-controls input.field-input-inline {
+  width: 5.5em;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+/* ---- 툴바의 검색·셀렉트 폭 ---- */
+.ip-toolbar .field-input-sm {
+  min-width: 0;
+}
+.ip-toolbar input[type="search"] {
+  -webkit-appearance: none;
+  appearance: none;
+  flex: 1 1 12em;
+}
+/* ---- 진단 목록 ---- */
+.ip-count {
+  color: var(--text-2);
+  font-size: var(--fs-caption);
+  font-variant-numeric: tabular-nums;
+}
+.ip-row-value {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--space-2);
+}
+.ip-more {
+  justify-self: start;
+  margin-top: var(--space-2);
+}
+.ip-empty {
+  margin: 0;
+  padding: var(--space-5) var(--space-3);
+  color: var(--text-2);
+  font-size: var(--fs-body-sm);
+}
+/* ---- 목표 화면: 값 강조는 크기 한 단(title-2)까지만 (§2) ---- */
+.ip-gap {
+  font-size: var(--fs-title-2);
+  font-weight: 600;
+  letter-spacing: var(--ls-title);
+  font-variant-numeric: tabular-nums;
+}
+.ip-inline-note {
+  color: var(--text-3);
+  font-size: var(--fs-caption);
+}
+/* 뱃지 안 숫자도 표 숫자처럼 정렬한다. */
+.badge.num {
+  font-variant-numeric: tabular-nums;
+}
+/* ---- 좁은 폭: 입력 행은 제목 아래로 컨트롤을 내리고, 값 묶음은 줄바꿈을 허용한다 ---- */
+@media (max-width: 560px) {
+  .ip-input-row {
+    flex-wrap: wrap;
+  }
+  .ip-input-row .list-row-body {
+    flex: 1 0 100%;
+  }
+  .ip-controls {
+    flex: 1 0 100%;
+    justify-content: flex-end;
+  }
+  .ip-controls select.field-input-inline {
+    flex: 1 1 auto;
+    max-width: none;
+  }
+  .ip-row-value {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+}

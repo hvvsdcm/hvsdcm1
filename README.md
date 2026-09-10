@@ -11,6 +11,7 @@ Static learning site served by GitHub Pages, with account synchronization and ad
 | `/smstudy/` | Social studies concepts and 78 sortable KICE questions | `smstudy/assets/js/app.js` | `samun2027.study.v1` |
 | `/plstudy/` | Politics and Law concepts and 90 five-choice review questions | `plstudy/assets/js/app.js` | `politicslaw2027.study.v1` |
 | `/gichul/` | Login-only KICE past-paper filtering, viewing and client-side PDF merge | `gichul/app.js` | filter settings |
+| `/ipsi/` | Login-only 정시 admission diagnosis: percentile/grade input, verdict per department against 어디가 70% cuts, target-department effort plan, 2027 reflection rules | `ipsi/assets/js/app.js` | `hvsdcm.ipsi.profile.v1` |
 | `/behavior-lab/` | Human-owner-only Bitget behavior dashboard and bounded real-time adaptive $100 paper-session status | `behavior-lab/assets/js/app.js` | account token |
 | `/admin/` | User, activity, device/IP and shared-answer administration | `admin/assets/js/admin.js` | session-only admin token |
 | `/usage/` | Owner-only competition candidates and approval queue | `usage/assets/js/competition.js` | account token |
@@ -27,6 +28,17 @@ npm test
 ```
 
 The command checks every JavaScript file, local HTML asset references, the WordMaster 50 × 40 data shape, all 17 social-studies subunits and 98 questions, all 18 Politics and Law subunits and 90 questions, shared study sorting behavior, then runs Worker utility and routing tests.
+
+## 정시 진단 data
+
+`/ipsi/` ships public admission statistics as a static file. `scripts/ipsi/source/adiga-2026.json` holds the 2026 어디가 70% cuts per department, `rules-2027.json` the 2027 정시 reflection rules per university, and `scales-2026.json` the 수능 grade-cut table. Regenerate the browser payload after editing any of them:
+
+```bash
+node scripts/ipsi/build-data.mjs
+node scripts/snapshot.mjs
+```
+
+The generated `ipsi/assets/js/data.js` is checked by `scripts/ipsi/ipsi.test.mjs` (value ranges, source URLs, rule weights) and the engine in `ipsi/assets/js/engine.js` is unit-tested in the same file.
 
 ## Protected learning content
 

@@ -9,6 +9,7 @@ window.SITE_ICONS = Object.freeze({
   smstudy: 'icon-layers',
   plstudy: 'icon-scale',
   gichul: 'icon-file',
+  ipsi: 'icon-graduation-cap',
   behaviorLab: 'icon-bolt',
   usage: 'icon-trophy',
   admin: 'icon-shield',

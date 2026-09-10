@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "test:abc-paper": "node --test worker/abc-paper-experiment.test.mjs worker/multi-paper-experiment.test.mjs scripts/behavior-lab.test.mjs && node scripts/behavior-lab-ui.e2e.mjs",
-    "test": "node scripts/format-css.mjs --check && node scripts/validate.mjs && node scripts/behavior-lab-ui.e2e.mjs && node --test scripts/behavior-lab.test.mjs scripts/competition-crawl.test.mjs scripts/competition-discord.test.mjs scripts/competition-evidence.test.mjs scripts/competition-report.test.mjs scripts/competition-secret.test.mjs scripts/competition-ui.test.mjs scripts/gichul/gichul.test.mjs scripts/learning/learning.test.mjs scripts/study-utils.test.mjs scripts/validate.test.mjs worker/abc-paper-experiment.test.mjs worker/multi-paper-experiment.test.mjs worker/live-trading.test.mjs worker/paper-report.test.mjs worker/test.mjs",
+    "test": "node scripts/format-css.mjs --check && node scripts/validate.mjs && node scripts/behavior-lab-ui.e2e.mjs && node --test scripts/behavior-lab.test.mjs scripts/competition-crawl.test.mjs scripts/competition-discord.test.mjs scripts/competition-evidence.test.mjs scripts/competition-report.test.mjs scripts/competition-secret.test.mjs scripts/competition-ui.test.mjs scripts/gichul/gichul.test.mjs scripts/ipsi/ipsi.test.mjs scripts/learning/learning.test.mjs scripts/study-utils.test.mjs scripts/validate.test.mjs worker/abc-paper-experiment.test.mjs worker/multi-paper-experiment.test.mjs worker/live-trading.test.mjs worker/paper-report.test.mjs worker/test.mjs",
     "validate": "node scripts/validate.mjs",
     "format:css": "node scripts/format-css.mjs",
     "format:css:check": "node scripts/format-css.mjs --check",

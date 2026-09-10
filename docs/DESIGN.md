@@ -302,6 +302,7 @@
 | 사회·문화 (smstudy) | `icon-layers` | 드로어·앱 사이드바 엠블럼 |
 | 정치와 법 (plstudy) | `icon-scale` | 드로어·앱 사이드바 엠블럼 |
 | 기출 (gichul) | `icon-file` | 드로어·앱 사이드바 엠블럼 |
+| 정시 진단 (ipsi) | `icon-graduation-cap` | 드로어 |
 | Behavior Lab | `icon-bolt` | 드로어(소유자) |
 | 공모전 (`/usage/`) | `icon-trophy` | 드로어(소유자)·사이드바 |
 | 관리자 (`/admin/`) | `icon-shield` | 드로어(소유자) |

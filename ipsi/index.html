@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ko" class="auth-pending">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#000000">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="수능 백분위·등급으로 서울 주요 대학 정시 지원 가능선을 진단하는 개인용 도구.">
+  <meta name="robots" content="noindex, nofollow">
+  <title>정시 진단 — hvsdcm</title>
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="/assets/css/system.css?v=20260904-icons-v2">
+  <link rel="stylesheet" href="/ipsi/ipsi.css?v=20260910-ipsi-v1">
+</head>
+<body>
+  <a class="skip-link" href="#app">본문으로 건너뛰기</a>
+
+  <header class="topbar">
+    <div class="topbar-inner container-wide">
+      <a class="brand" href="/" aria-label="hvsdcm 홈"><img class="brand-mark" src="/assets/logo.svg" alt="">hvsdcm</a>
+      <span class="topbar-crumb">정시 진단</span>
+      <nav class="topbar-nav" aria-label="사이트 이동">
+        <a class="topbar-link" href="/"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-home"></use></svg>홈</a>
+        <a class="topbar-link" href="/gichul/"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-file"></use></svg>기출</a>
+      </nav>
+    </div>
+  </header>
+  <div class="topbar-spacer"></div>
+
+  <div class="container-wide app-page">
+    <div class="app-shell">
+      <!-- 사이드바는 화면 이동만 담는다(라벨 한 줄, DESIGN.md §6.1). 대학·학과 목록은 app.js가
+           data.js에서 도출해 본문에 그린다 — 마크업에 손으로 적은 사본을 두지 않는다. -->
+      <aside class="sidebar" aria-label="진단 메뉴">
+        <nav class="sidebar-group" aria-label="화면 이동">
+          <span class="sidebar-label">화면</span>
+          <button class="sidebar-item ip-nav is-active" type="button" data-view="scores" aria-current="page"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-pen"></use></svg>성적 입력</button>
+          <button class="sidebar-item ip-nav" type="button" data-view="diagnose"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-target"></use></svg>지원 진단</button>
+          <button class="sidebar-item ip-nav" type="button" data-view="target"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-bookmark"></use></svg>목표 학과</button>
+          <button class="sidebar-item ip-nav" type="button" data-view="rules"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-layers"></use></svg>반영 방법</button>
+          <button class="sidebar-item ip-nav" type="button" data-view="sources"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-info"></use></svg>자료 출처</button>
+        </nav>
+      </aside>
+
+      <main id="app" class="app-main" tabindex="-1"><p class="ip-loading">진단 데이터를 불러오는 중입니다.</p></main>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    <div class="container-wide app-footer-inner">
+      <span>입시 결과는 대입정보포털 어디가 공개값, 반영 방법은 각 대학 2027학년도 시행계획을 따릅니다. 합격을 보장하지 않습니다.</span>
+      <span class="text-tertiary">hvsdcm</span>
+    </div>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="/account.js?v=20260904-auth-gate-v1" data-app="ipsi"></script>
+  <script src="/ipsi/assets/js/data.js?v=20260910-ipsi-v1"></script>
+  <script src="/ipsi/assets/js/engine.js?v=20260910-ipsi-v1"></script>
+  <script src="/ipsi/assets/js/app.js?v=20260910-ipsi-v1"></script>
+</body>
+</html>
