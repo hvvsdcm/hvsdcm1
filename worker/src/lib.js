@@ -136,19 +136,14 @@ export async function logActivity(env, userId, event, app = null, detail = null)
   `).bind(userId || null, event, app, now(), detail).run();
 }
 
-export async function issueSession(env, userId, role, request) {
+export async function issueSession(env, userId, role, request, expectedPasswordHash = null) {
   const rawToken = createToken();
   const issuedAt = now();
   const ipAddress = clientIp(request);
   const ipHash = await sha256(ipAddress);
   const userAgent = (request.headers.get('user-agent') || '').slice(0, 240);
 
-  await env.DB.prepare(`
-    INSERT INTO sessions(
-      token_hash, user_id, role, created_at, expires_at, last_seen_at,
-      ip_hash, ip_address, user_agent
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).bind(
+  const values = [
     await sha256(rawToken),
     userId || null,
     role,
@@ -158,7 +153,21 @@ export async function issueSession(env, userId, role, request) {
     ipHash,
     ipAddress,
     userAgent,
-  ).run();
+  ];
+  // Bind the session insert to the password snapshot that was verified. A login already in
+  // flight when an administrator resets the password must not recreate a usable session.
+  const passwordGuard = expectedPasswordHash === null ? '' : `
+    WHERE EXISTS (SELECT 1 FROM users WHERE id = ? AND password_hash = ? AND disabled = 0)
+  `;
+  if (expectedPasswordHash !== null) values.push(userId, expectedPasswordHash);
+  const result = await env.DB.prepare(`
+    INSERT INTO sessions(
+      token_hash, user_id, role, created_at, expires_at, last_seen_at,
+      ip_hash, ip_address, user_agent
+    ) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?
+    ${passwordGuard}
+  `).bind(...values).run();
+  if (expectedPasswordHash !== null && result.meta?.changes !== 1) return null;
 
   return rawToken;
 }

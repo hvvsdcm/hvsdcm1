@@ -19,6 +19,16 @@
     overviewNav: document.getElementById('overviewNav'),
     panel: document.getElementById('panel'),
     refresh: document.getElementById('refresh'),
+    passwordResetDialog: document.getElementById('passwordResetDialog'),
+    passwordResetForm: document.getElementById('passwordResetForm'),
+    passwordResetUsername: document.getElementById('passwordResetUsername'),
+    passwordResetError: document.getElementById('passwordResetError'),
+    passwordResetCancel: document.getElementById('passwordResetCancel'),
+    passwordResetSubmit: document.getElementById('passwordResetSubmit'),
+    resetPassword: document.getElementById('resetPassword'),
+    resetPasswordConfirm: document.getElementById('resetPasswordConfirm'),
+    resetPasswordShow: document.getElementById('resetPasswordShow'),
+    userStatus: document.getElementById('userStatus'),
     sessionCount: document.getElementById('sessionCount'),
     sessions: document.getElementById('sessions'),
     sessionUserFilter: document.getElementById('sessionUserFilter'),
@@ -30,6 +40,8 @@
     viewTitle: document.getElementById('viewTitle'),
   };
   let sessionRows = [];
+  let passwordResetTarget = null;
+  let passwordResetPending = false;
   const appLabels = {
     wordmaster: '영단어',
     smstudy: '사회문화',
@@ -174,6 +186,7 @@
         <td>
           <div class="ad-row-actions">
             <button type="button" class="btn btn-secondary btn-sm view-sessions" data-id="${Number(user.id)}">접속</button>
+            <button type="button" class="btn btn-secondary btn-sm reset-password" data-id="${Number(user.id)}" data-name="${escapeHtml(user.username)}" aria-label="${escapeHtml(user.username)} 비밀번호 초기화">비밀번호 초기화</button>
             <button
               type="button"
               class="btn btn-danger btn-sm delete-user"
@@ -311,6 +324,21 @@
   });
 
   elements.users.addEventListener('click', async (event) => {
+    const resetButton = event.target.closest('.reset-password');
+    if (resetButton) {
+      if (passwordResetPending || !/^[1-9]\d*$/.test(resetButton.dataset.id)) return;
+      elements.passwordResetForm.reset();
+      elements.resetPassword.type = 'password';
+      elements.resetPasswordConfirm.type = 'password';
+      elements.passwordResetError.textContent = '';
+      elements.userError.textContent = '';
+      elements.userStatus.textContent = '';
+      passwordResetTarget = { id: resetButton.dataset.id, name: resetButton.dataset.name };
+      elements.passwordResetUsername.textContent = passwordResetTarget.name;
+      elements.passwordResetDialog.showModal();
+      elements.resetPassword.focus();
+      return;
+    }
     const sessionButton = event.target.closest('.view-sessions');
     if (sessionButton) {
       elements.sessionUserFilter.value = sessionButton.dataset.id;
@@ -333,6 +361,79 @@
     } catch (error) {
       button.disabled = false;
       elements.userError.textContent = `삭제 실패: ${error.message}`;
+    }
+  });
+
+  function setPasswordResetPending(pending) {
+    passwordResetPending = pending;
+    elements.passwordResetForm.setAttribute('aria-busy', String(pending));
+    for (const control of elements.passwordResetForm.elements) control.disabled = pending;
+    elements.passwordResetSubmit.textContent = pending ? '초기화 중…' : '초기화하기';
+  }
+
+  elements.passwordResetCancel.addEventListener('click', () => {
+    if (!passwordResetPending) elements.passwordResetDialog.close();
+  });
+  elements.passwordResetDialog.addEventListener('cancel', (event) => {
+    if (passwordResetPending) event.preventDefault();
+  });
+  elements.passwordResetDialog.addEventListener('close', () => {
+    elements.passwordResetForm.reset();
+    elements.resetPassword.type = 'password';
+    elements.resetPasswordConfirm.type = 'password';
+    elements.passwordResetError.textContent = '';
+    elements.passwordResetUsername.textContent = '';
+    passwordResetTarget = null;
+  });
+  elements.resetPasswordShow.addEventListener('change', () => {
+    const type = elements.resetPasswordShow.checked ? 'text' : 'password';
+    elements.resetPassword.type = type;
+    elements.resetPasswordConfirm.type = type;
+  });
+  elements.passwordResetForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (passwordResetPending || !passwordResetTarget) return;
+    elements.passwordResetError.textContent = '';
+    if (!elements.passwordResetForm.reportValidity()) return;
+    if (!elements.resetPassword.value.trim()) {
+      elements.passwordResetError.textContent = '공백만으로 된 비밀번호는 사용할 수 없습니다.';
+      elements.resetPassword.focus();
+      return;
+    }
+    if (elements.resetPassword.value !== elements.resetPasswordConfirm.value) {
+      elements.passwordResetError.textContent = '비밀번호가 서로 일치하지 않습니다.';
+      elements.resetPasswordConfirm.focus();
+      return;
+    }
+    const target = passwordResetTarget;
+    setPasswordResetPending(true);
+    try {
+      const result = await request(`/api/admin/users/${target.id}/password`, {
+        method: 'POST',
+        body: JSON.stringify({ password: elements.resetPassword.value }),
+        signal: AbortSignal.timeout(20_000),
+      });
+      if (result.ok !== true) {
+        throw new Error('초기화 결과를 확인하지 못했습니다. 변경되었을 수 있으니 로그인 상태를 확인해 주세요.');
+      }
+    } catch (error) {
+      elements.passwordResetError.textContent = error.name === 'TimeoutError' || error instanceof TypeError
+        ? '서버 응답을 확인하지 못했습니다. 변경되었을 수 있으니 로그인 상태를 확인한 뒤 다시 시도해 주세요.'
+        : error.message || '비밀번호 초기화에 실패했습니다.';
+      setPasswordResetPending(false);
+      return;
+    }
+    // A successful mutation stays successful even if refreshing the dashboard later fails.
+    elements.passwordResetForm.reset();
+    elements.passwordResetDialog.close();
+    elements.userStatus.textContent = `${target.name} 계정의 비밀번호를 초기화했습니다. 기존 로그인은 만료되었으며 학습 기록은 유지됩니다.`;
+    try {
+      await loadDashboard();
+    } catch {
+      elements.userError.textContent = '비밀번호는 변경되었습니다. 목록을 불러오지 못했으니 새로고침해 주세요.';
+    } finally {
+      setPasswordResetPending(false);
+      elements.users.querySelector(`.reset-password[data-id="${target.id}"]`)?.focus();
     }
   });
 

@@ -67,6 +67,7 @@ The historical usage and harness migrations remain in `worker/migrations/`, and 
 | `POST /api/answers/accept` | user | Add a shared accepted answer |
 | `GET/POST /api/admin/users` | admin | List or create users |
 | `DELETE /api/admin/users/:id` | admin | Delete a user and related data |
+| `POST /api/admin/users/:id/password` | admin | Atomically replace the salted password hash, expire target sessions, and record a secret-free audit event; preserve learning data |
 | `GET /api/admin/stats` | admin | Aggregate activity |
 | `GET /api/admin/sessions` | admin | Recent device, IP and session activity |
 | `GET /api/admin/answers` | admin | Review accepted answers |
