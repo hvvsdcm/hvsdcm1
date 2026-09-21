@@ -1,0 +1,156 @@
+/* Social & Culture presentation layer for the shared Toss-inspired study shell. */
+.smstudy-page .sm-layout {
+  grid-template-columns: minmax(0, 1fr) minmax(270px, 320px);
+  gap: 28px;
+}
+.smstudy-page .sm-panel {
+  position: sticky;
+  top: calc(var(--topbar-h) + 18px);
+}
+.smstudy-page .sm-panel .card {
+  padding: 24px;
+}
+.smstudy-page .sm-metrics {
+  gap: 8px;
+  padding: 6px 0;
+}
+.smstudy-page .stat {
+  border: 0;
+  border-radius: 16px;
+  background: var(--surface-2);
+}
+.smstudy-page .stat-value {
+  color: var(--text);
+  font-weight: 750;
+}
+.smstudy-page .sm-unit-jump {
+  position: sticky;
+  top: calc(var(--topbar-h) + 10px);
+  z-index: 20;
+  margin-bottom: 22px;
+  box-shadow: var(--study-shadow-soft);
+}
+.smstudy-page .sm-unit {
+  scroll-margin-top: calc(var(--topbar-h) + 90px);
+}
+.smstudy-page .list-group-head {
+  color: var(--text-2);
+  font-weight: 700;
+}
+.smstudy-page .sm-sub-id {
+  color: var(--text-3);
+  font-weight: 700;
+}
+.smstudy-page .sm-concept-head {
+  margin: 6px 0 18px;
+  padding: clamp(24px, 4vw, 34px);
+  border: 0;
+  border-radius: 26px;
+  background: var(--surface);
+  box-shadow: var(--study-shadow-soft);
+}
+.smstudy-page .sm-concept-head > .ui-icon {
+  color: #3182f6;
+}
+.smstudy-page .sm-concept-meta {
+  color: var(--text-3);
+}
+.smstudy-page .sm-reading-nav {
+  border: 0;
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--study-shadow-soft);
+}
+.smstudy-page .sm-reading-nav a {
+  color: var(--text-2);
+  font-weight: 650;
+}
+.smstudy-page .sm-reading-nav a:hover {
+  color: #3182f6;
+}
+.smstudy-page .sm-note-body {
+  gap: 28px;
+}
+.smstudy-page .sm-section {
+  border: 0;
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: var(--study-shadow-soft);
+}
+.smstudy-page .sm-headline {
+  color: var(--text);
+  font-size: clamp(1.35rem, 2.5vw, 1.9rem);
+  font-weight: 750;
+}
+.smstudy-page .sm-callout {
+  border: 0;
+  border-radius: 18px;
+  background: var(--surface-2);
+}
+.smstudy-page .sm-callout .kicker {
+  color: #3182f6;
+}
+.smstudy-page .sm-recall-item {
+  border: 0;
+  border-radius: 16px;
+  background: var(--surface-2);
+}
+.smstudy-page .sm-recall-item[open] {
+  background: rgba(49,130,246,.14);
+}
+.smstudy-page .sm-recall-n {
+  background: #3182f6;
+  color: #fff;
+}
+.smstudy-page .sm-concept-card, .smstudy-page .sm-deep-item {
+  border-color: var(--line-faint);
+  background: var(--surface-2);
+}
+.smstudy-page .disclosure {
+  border-radius: 20px;
+  overflow: clip;
+}
+.smstudy-page .disclosure-head {
+  min-height: 58px;
+}
+.smstudy-page .sm-options {
+  gap: 10px;
+}
+.smstudy-page .sm-full {
+  min-height: 54px;
+}
+@media (max-width: 1040px) {
+  .smstudy-page .sm-layout {
+    grid-template-columns: 1fr;
+  }
+  .smstudy-page .sm-panel {
+    position: static;
+  }
+}
+@media (max-width: 620px) {
+  .smstudy-page .sm-concept-head {
+    padding: 22px 18px;
+    border-radius: 20px;
+  }
+  .smstudy-page .sm-reading-nav {
+    display: flex;
+    margin-inline: -16px;
+    padding-inline: 16px;
+    border-radius: 0;
+    box-shadow: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .smstudy-page .sm-reading-nav::-webkit-scrollbar {
+    display: none;
+  }
+  .smstudy-page .sm-reading-nav a {
+    flex: 0 0 auto;
+  }
+  .smstudy-page .sm-section {
+    border-radius: 20px;
+  }
+  .smstudy-page .sm-concept-nav {
+    margin-inline: -8px;
+  }
+}

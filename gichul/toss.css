@@ -1,0 +1,126 @@
+/* Past-paper presentation layer for the shared Toss-inspired study shell. */
+.gichul-page .app-shell {
+  grid-template-columns: 240px minmax(0, 1fr);
+}
+.gichul-page #gichulFilters {
+  padding: 8px;
+  border: 0;
+  background: transparent;
+}
+.gichul-page .gi-filter {
+  margin: 0 0 8px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: none;
+}
+.gichul-page .gi-filter .disclosure-head {
+  min-height: 50px;
+  padding: 10px 12px;
+}
+.gichul-page .gi-filter .disclosure-body {
+  padding: 0 4px 6px;
+}
+.gichul-page .gi-subjects {
+  gap: 4px;
+}
+.gichul-page .gi-subjects .sidebar-item {
+  min-height: 42px;
+}
+.gichul-page .gi-body {
+  gap: 22px;
+}
+.gichul-page .toolbar {
+  padding: 10px;
+  gap: 8px;
+}
+.gichul-page .gi-count {
+  color: var(--text-3);
+  font-weight: 650;
+}
+.gichul-page .gi-group {
+  scroll-margin-top: calc(var(--topbar-h) + 90px);
+}
+.gichul-page .gi-group .list-group {
+  overflow: clip;
+}
+.gichul-page .gi-group .list-row {
+  min-height: 64px;
+}
+.gichul-page .gi-group .list-row-title {
+  font-size: .98rem;
+}
+.gichul-page .gi-group .list-row-value {
+  font-size: .85rem;
+}
+.gichul-page .gi-accessory .btn {
+  color: #3182f6;
+}
+.gichul-page .gi-empty, .gichul-page .gi-alert {
+  border: 0;
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: var(--study-shadow-soft);
+}
+.gichul-page input[type="checkbox"] {
+  accent-color: #3182f6;
+}
+@media (max-width: 860px) {
+  .gichul-page .app-shell {
+    display: block;
+  }
+  .gichul-page #gichulFilters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0 0 22px;
+    padding: 0;
+    overflow: visible;
+  }
+  .gichul-page #gichulFilters > * {
+    min-width: 0;
+    margin: 0;
+  }
+  .gichul-page #gichulFilters > .sidebar-group {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 620px) {
+  .gichul-page #gichulFilters {
+    grid-template-columns: 1fr;
+  }
+  .gichul-page #gichulFilters > .sidebar-group {
+    grid-column: auto;
+  }
+  .gichul-page .toolbar {
+    position: sticky;
+    top: calc(var(--topbar-h) + 6px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 10px;
+  }
+  .gichul-page .toolbar .segmented {
+    grid-column: 1 / -1;
+  }
+  .gichul-page .toolbar .toolbar-spacer {
+    display: none;
+  }
+  .gichul-page .toolbar .gi-count {
+    align-self: center;
+  }
+  .gichul-page #gichulMerge {
+    grid-column: 1 / -1;
+    min-height: 50px;
+  }
+  .gichul-page .gi-group .list-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 6px 10px;
+  }
+  .gichul-page .gi-group .list-row-value {
+    grid-column: 1;
+  }
+  .gichul-page .gi-accessory {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}

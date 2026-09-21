@@ -1,0 +1,394 @@
+/* Toss-inspired study shell. Theme tokens are owned by system.css. */
+body.study-toss {
+  background: var(--bg);
+  transition: background .28s ease, color .28s ease;
+}
+.study-toss .topbar {
+  border-bottom: 0;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+}
+.study-toss .topbar-inner {
+  max-width: 1180px;
+}
+.study-toss .topbar-crumb {
+  border: 0;
+  background: transparent;
+  color: var(--text-2);
+  font-weight: 650;
+}
+.study-toss .topbar-link {
+  border-radius: 12px;
+  color: var(--text-2);
+}
+.study-toss .topbar-link:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+.study-theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+  border-radius: 14px;
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: background .16s ease, transform .16s ease, color .16s ease;
+}
+.study-theme-toggle:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+.study-theme-toggle:active {
+  transform: scale(.94);
+}
+.study-theme-toggle svg {
+  width: 19px;
+  height: 19px;
+}
+.study-theme-toggle .theme-sun {
+  display: none;
+}
+html[data-theme="dark"] .study-theme-toggle .theme-sun {
+  display: block;
+}
+html[data-theme="dark"] .study-theme-toggle .theme-moon {
+  display: none;
+}
+.study-toss .app-page {
+  max-width: 1180px;
+  padding-top: clamp(22px, 4vw, 48px);
+  padding-bottom: 100px;
+}
+.study-toss .app-shell {
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: clamp(28px, 4vw, 56px);
+}
+.study-toss .sidebar {
+  top: calc(var(--topbar-h) + 24px);
+  gap: 20px;
+  max-height: calc(100dvh - var(--topbar-h) - 48px);
+  padding: 8px;
+  border: 0;
+  border-radius: 22px;
+  background: transparent;
+}
+.study-toss .sidebar-product {
+  padding: 10px 8px 12px;
+}
+.study-toss .sidebar-emblem {
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 14px;
+  background: rgba(49,130,246,.14);
+  color: #3182f6;
+}
+.study-toss .sidebar-product-copy span {
+  color: var(--text-3);
+}
+.study-toss .sidebar-product-copy strong {
+  color: var(--text);
+}
+.study-toss .sidebar-label {
+  padding: 0 12px 6px;
+  color: var(--text-3);
+  font-size: .7rem;
+  font-weight: 650;
+  letter-spacing: .02em;
+  text-transform: none;
+}
+.study-toss .sidebar-item {
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 14px;
+  color: var(--text-2);
+  font-size: .92rem;
+  font-weight: 600;
+}
+.study-toss .sidebar-item:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+.study-toss .sidebar-item.is-active, .study-toss .sidebar-item[aria-current] {
+  border: 0;
+  background: rgba(49,130,246,.14);
+  color: #3182f6;
+}
+.study-toss .sidebar-item .ui-icon, .study-toss .sidebar-item:hover .ui-icon, .study-toss .sidebar-item.is-active .ui-icon, .study-toss .sidebar-item[aria-current] .ui-icon {
+  color: currentColor;
+}
+.study-toss .side-facts {
+  padding: 8px 12px;
+  border-top: 0;
+  color: var(--text-3);
+}
+.study-toss .app-main {
+  max-width: 860px;
+}
+.study-toss .view-head {
+  align-items: flex-end;
+  margin-bottom: 28px;
+  padding: 4px 2px 0;
+  border: 0;
+}
+.study-toss .view-head h1, .study-toss .view-head .title-1 {
+  color: var(--text);
+  font-size: clamp(1.8rem, 1.55rem + 1.2vw, 2.55rem);
+  font-weight: 750;
+  line-height: 1.15;
+  letter-spacing: -.035em;
+}
+.study-toss .view-head p {
+  margin-top: 8px;
+  color: var(--text-3);
+}
+.study-toss .view-head-main > .ui-icon {
+  display: none;
+}
+.study-toss .kicker {
+  color: #3182f6;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+.study-toss .card, .study-toss .list-group, .study-toss .wm-goal-card, .study-toss .wm-review-card, .study-toss .wm-review-overview, .study-toss .wm-session-goal, .study-toss .disclosure {
+  border: 0;
+  background: var(--surface);
+  box-shadow: var(--study-shadow-soft);
+}
+.study-toss .card, .study-toss .wm-goal-card, .study-toss .wm-review-card, .study-toss .wm-review-overview, .study-toss .wm-session-goal {
+  border-radius: 24px;
+}
+.study-toss .list-group {
+  border-radius: 20px;
+}
+.study-toss .list-row {
+  min-height: 58px;
+  padding: 13px 18px;
+}
+.study-toss .list-row + .list-row::before {
+  background: var(--line-faint);
+}
+.study-toss .list-row-title {
+  color: var(--text);
+  font-weight: 650;
+}
+.study-toss .list-row-sub, .study-toss .list-row-value {
+  color: var(--text-3);
+}
+.study-toss .list-row:hover {
+  background: var(--surface-2);
+}
+.study-toss .btn {
+  min-height: 44px;
+  border: 0;
+  border-radius: 14px;
+  font-weight: 700;
+  transition: transform .14s ease, background .18s ease, color .18s ease, opacity .18s ease;
+}
+.study-toss .btn:hover {
+  transform: translateY(-1px);
+}
+.study-toss .btn:active {
+  transform: scale(.975);
+}
+.study-toss .btn-primary {
+  background: #3182f6;
+  color: #fff;
+  box-shadow: 0 8px 22px rgba(49,130,246,.22);
+}
+.study-toss .btn-primary:hover {
+  background: #1b64da;
+}
+.study-toss .btn-secondary {
+  background: var(--surface-3);
+  color: var(--text);
+}
+.study-toss .btn-secondary:hover {
+  background: var(--surface-4);
+}
+.study-toss .btn-ghost {
+  color: var(--text-2);
+}
+.study-toss .btn-ghost:hover {
+  background: var(--surface-3);
+  color: var(--text);
+}
+.study-toss .segmented {
+  padding: 4px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--surface-3);
+}
+.study-toss .segmented-btn {
+  min-height: 38px;
+  border-radius: 11px;
+  color: var(--text-2);
+}
+.study-toss .segmented-btn.is-active, .study-toss .segmented-btn[aria-pressed="true"], .study-toss .segmented-btn[aria-selected="true"] {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-1);
+}
+.study-toss .field-input {
+  min-height: 48px;
+  border: 0;
+  border-radius: 14px;
+  background-color: var(--surface-3);
+  color: var(--text);
+}
+.study-toss .field-input:focus {
+  background-color: var(--surface);
+  box-shadow: var(--focus-ring);
+}
+.study-toss .toolbar {
+  border: 0;
+  border-radius: 18px;
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  box-shadow: var(--study-shadow-soft);
+}
+.study-toss .toolbar-sticky {
+  top: calc(var(--topbar-h) + 10px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.study-toss .badge {
+  border: 0;
+  border-radius: 999px;
+  background: rgba(49,130,246,.14);
+  color: #3182f6;
+}
+.study-toss .app-footer {
+  border-top-color: var(--line-faint);
+  color: var(--text-3);
+}
+.study-toss .toast {
+  border: 0;
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--text) 92%, transparent);
+  color: var(--bg);
+  box-shadow: var(--shadow-3);
+}
+.study-toss dialog {
+  border: 0 !important;
+  box-shadow: var(--shadow-3) !important;
+}
+.study-toss dialog::backdrop {
+  background: rgba(0,0,0,.46) !important;
+  backdrop-filter: blur(3px);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .study-toss .app-main > * {
+    animation: study-enter .38s cubic-bezier(.22,.8,.24,1) both;
+  }
+  .study-toss .list-row, .study-toss .card, .study-toss .wm-goal-card, .study-toss .wm-review-card {
+    transition: background .18s ease, transform .18s ease, box-shadow .18s ease;
+  }
+  .study-toss .card:hover, .study-toss .wm-goal-card:hover, .study-toss .wm-review-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--study-shadow);
+  }
+}
+@keyframes study-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (max-width: 860px) {
+  .study-toss .app-shell {
+    display: block;
+  }
+  .study-toss .app-page {
+    padding-top: 14px;
+  }
+  .study-toss .sidebar {
+    position: static;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    margin: 0 0 24px;
+    padding: 4px 0 8px;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+  }
+  .study-toss .sidebar::-webkit-scrollbar {
+    display: none;
+  }
+  .study-toss .sidebar-product, .study-toss .side-facts, .study-toss .sidebar-label {
+    display: none;
+  }
+  .study-toss .sidebar-group {
+    display: flex;
+    flex: 0 0 auto;
+    gap: 6px;
+  }
+  .study-toss .sidebar-item {
+    flex: 0 0 auto;
+    min-height: 42px;
+    padding: 9px 13px;
+    white-space: nowrap;
+  }
+  .study-toss .app-main {
+    max-width: none;
+  }
+}
+@media (max-width: 620px) {
+  .study-toss .topbar {
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+  .study-toss .topbar-inner {
+    padding-inline: 16px;
+  }
+  .study-toss .topbar .brand {
+    font-size: 0;
+  }
+  .study-toss .topbar .brand-mark {
+    width: 28px;
+    height: 28px;
+  }
+  .study-toss .topbar-crumb {
+    margin-left: 2px;
+  }
+  .study-toss .topbar-nav {
+    gap: 2px;
+  }
+  .study-toss .topbar-link {
+    display: none;
+  }
+  .study-toss .app-page {
+    padding-inline: 16px;
+    padding-bottom: 84px;
+  }
+  .study-toss .view-head {
+    margin-bottom: 20px;
+  }
+  .study-toss .view-head h1, .study-toss .view-head .title-1 {
+    font-size: 1.75rem;
+  }
+  .study-toss .card, .study-toss .wm-goal-card, .study-toss .wm-review-card, .study-toss .wm-review-overview, .study-toss .wm-session-goal {
+    border-radius: 20px;
+  }
+  .study-toss .list-group {
+    border-radius: 18px;
+  }
+  .study-toss .list-row {
+    min-height: 56px;
+    padding-inline: 16px;
+  }
+  .study-toss .toolbar {
+    border-radius: 16px;
+  }
+}
