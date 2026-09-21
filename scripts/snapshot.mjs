@@ -89,7 +89,7 @@ const GICHUL_STATE = {
 // 스타일로 조판돼 실제와 다른 화면을 보여 준다(실측으로 확인: .wm-layout 규칙이 없어
 // 320px에서 366px로 넘쳤다).
 const SMSTUDY_CSS = ['assets/css/system.css', 'smstudy/assets/css/style.css'];
-const WORDMASTER_CSS = ['assets/css/system.css', 'WordMaster/assets/css/style.css'];
+const WORDMASTER_CSS = ['assets/css/system.css', 'WordMaster/assets/css/style.css', 'WordMaster/assets/css/daily.css'];
 
 const SNAPSHOT_CSS = `/* ---- 스냅샷 전용 (원본 CSS 아님) ---- */
 body { background: var(--bg); color: var(--text); margin: 0; padding: 32px 24px 64px; }
@@ -228,12 +228,12 @@ export function buildSnapshots() {
       )],
     ),
     [SNAPSHOT_BY_SCREEN['WordMaster/index.html']]: page(
-      'WordMaster 화면 스냅샷 — 시험 설정(첫 화면)',
-      '<strong>무엇인가</strong> — <code>WordMaster/assets/js/app.js</code>가 로드 직후 <code>#app</code>에 쓰는 첫 화면(시험 설정) 마크업 전체다.'
-      + '\n  출제 범위·학습 현황·오답 다루기 그룹과 행 안의 값 컨트롤(<code>.field-input-inline</code>)이 들어 있다.'
+      'WordMaster 화면 스냅샷 — 오늘의 학습(첫 화면)',
+      '<strong>무엇인가</strong> — <code>WordMaster/assets/js/app.js</code>가 로드 직후 <code>#app</code>에 쓰는 첫 화면(오늘의 학습) 마크업 전체다.'
+      + '\n  하루 목표·바로 시작·맞춤 복습·최근 7일 기록과 DAY별 학습 진입이 들어 있다. 날짜는 2026-09-21로 고정한다.'
       + '\n  <br><strong>주의</strong> — 학습 기록이 비어 있는 새 브라우저 상태다(localStorage 없음). 정적 사본이라 버튼은 동작하지 않는다.'
       + `\n  ${GENERATED_NOTE}`,
-      [section('WordMaster — 시험 설정 (#app 전체)', `<div class="app-main">${renderWordMasterHome()}</div>`)],
+      [section('WordMaster — 오늘의 학습 (#app 전체)', `<div class="app-main">${renderWordMasterHome()}</div>`)],
       WORDMASTER_CSS,
     ),
     [SNAPSHOT_BY_SCREEN['plstudy/index.html']]: documentSnapshot('plstudy/index.html', {

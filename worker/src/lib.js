@@ -136,29 +136,27 @@ export async function logActivity(env, userId, event, app = null, detail = null)
   `).bind(userId || null, event, app, now(), detail).run();
 }
 
-export async function issueSession(env, userId, role, request) {
+export async function issueSession(env, userId, role, request, expectedPasswordHash = null) {
   const rawToken = createToken();
   const issuedAt = now();
   const ipAddress = clientIp(request);
   const ipHash = await sha256(ipAddress);
   const userAgent = (request.headers.get('user-agent') || '').slice(0, 240);
 
-  await env.DB.prepare(`
+  // Bind session issuance to the exact password checked before an asynchronous reset.
+  const guard = expectedPasswordHash === null ? '' : ' WHERE EXISTS (SELECT 1 FROM users WHERE id = ? AND password_hash = ? AND disabled = 0)';
+  const values = [
+    await sha256(rawToken), userId || null, role, issuedAt, issuedAt + SESSION_DURATION_MS,
+    issuedAt, ipHash, ipAddress, userAgent,
+  ];
+  if (expectedPasswordHash !== null) values.push(userId, expectedPasswordHash);
+  const inserted = await env.DB.prepare(`
     INSERT INTO sessions(
       token_hash, user_id, role, created_at, expires_at, last_seen_at,
       ip_hash, ip_address, user_agent
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).bind(
-    await sha256(rawToken),
-    userId || null,
-    role,
-    issuedAt,
-    issuedAt + SESSION_DURATION_MS,
-    issuedAt,
-    ipHash,
-    ipAddress,
-    userAgent,
-  ).run();
+    ) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?${guard}
+  `).bind(...values).run();
 
+  if (expectedPasswordHash !== null && inserted.meta?.changes === 0) return null;
   return rawToken;
 }

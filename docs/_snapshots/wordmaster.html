@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>WordMaster 화면 스냅샷 — 시험 설정(첫 화면)</title>
+<title>WordMaster 화면 스냅샷 — 오늘의 학습(첫 화면)</title>
 <style>/* assets/css/system.css (inlined) */
 /* ==========================================================================
    system.css — hvsdcm 디자인 시스템 단일 원본 (DESIGN.md v2 / plan.md §2)
@@ -2089,6 +2089,282 @@ html.auth-pending body {
   }
 }
 </style>
+<style>/* WordMaster/assets/css/daily.css (inlined) */
+/* Daily learning surfaces share the site's color and type tokens. */
+.wm-today-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(240px, 0.85fr);
+  gap: var(--space-4);
+}
+.wm-goal-card, .wm-review-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-l);
+  min-width: 0;
+}
+.wm-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+.wm-section-title h2, .wm-review-card h2, .wm-session-goal h2 {
+  font-size: var(--fs-title-3);
+  font-weight: 650;
+}
+.wm-section-title > .text-secondary, .wm-streak {
+  font-size: var(--fs-micro);
+}
+.wm-streak {
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  color: var(--text-2);
+}
+.wm-goal-number {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+  font-variant-numeric: tabular-nums;
+}
+.wm-goal-number strong {
+  font-size: clamp(2.8rem, 4vw, 4rem);
+  font-weight: 750;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+.wm-goal-number span {
+  font-size: var(--fs-title-3);
+  color: var(--text-2);
+}
+.wm-goal-message, .wm-plan-summary, .wm-today-breakdown, .wm-review-card > p {
+  font-size: var(--fs-caption);
+  line-height: 1.6;
+}
+.wm-daily-progress {
+  display: block;
+  appearance: none;
+  border: 0;
+  width: 100%;
+  height: 10px;
+  background: var(--surface-3);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  color: var(--accent);
+  accent-color: var(--accent);
+}
+.wm-daily-progress::-webkit-progress-bar {
+  background: var(--surface-3);
+  border-radius: var(--radius-full);
+}
+.wm-daily-progress::-webkit-progress-value {
+  background: var(--accent);
+  border-radius: var(--radius-full);
+}
+.wm-daily-progress::-moz-progress-bar {
+  background: var(--accent);
+  border-radius: var(--radius-full);
+}
+.wm-today-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2);
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+.wm-wide-button {
+  width: 100%;
+  min-height: 48px;
+}
+.wm-start-button {
+  margin-top: var(--space-3);
+}
+.wm-plan-summary {
+  text-align: center;
+  color: var(--text-2);
+}
+.wm-card-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-2);
+}
+.wm-review-count {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-2);
+}
+.wm-review-count strong {
+  font-size: var(--fs-title-1);
+  color: var(--text);
+}
+.wm-review-card .wm-wide-button {
+  margin-top: auto;
+}
+.wm-week-section {
+  padding: var(--space-2) 0;
+}
+.wm-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+.wm-week-day {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  color: var(--text-2);
+  font-size: var(--fs-micro);
+  border-radius: var(--radius-m);
+}
+.wm-week-day.is-today {
+  background: var(--surface);
+  color: var(--text);
+}
+.wm-week-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+  font-variant-numeric: tabular-nums;
+}
+.wm-week-day.is-studied .wm-week-dot {
+  border: 1px solid var(--line-strong);
+}
+.wm-week-day.is-complete .wm-week-dot {
+  background: var(--accent);
+  color: var(--bg);
+}
+.wm-week-day small {
+  font-size: var(--fs-micro);
+  color: var(--text-3);
+}
+.wm-dialog {
+  width: min(440px, calc(100% - 32px));
+  max-height: 85dvh;
+  margin: auto;
+  padding: var(--space-5);
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-xl);
+  overflow-y: auto;
+}
+.wm-dialog::backdrop {
+  background: rgba(0,0,0,.72);
+}
+.wm-dialog-form {
+  display: grid;
+  gap: var(--space-4);
+}
+.wm-dialog-form .wm-section-title {
+  margin-bottom: 0;
+}
+.wm-goal-presets {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+.wm-goal-presets button, .wm-recall-grades button {
+  min-height: 44px;
+}
+.wm-goal-presets [aria-pressed="true"], .wm-recall-grades [aria-pressed="true"] {
+  color: var(--bg);
+  background: var(--accent);
+}
+.wm-day-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.wm-day-fields legend {
+  margin-bottom: var(--space-2);
+  font-size: var(--fs-caption);
+  color: var(--text-2);
+}
+.wm-review-overview, .wm-session-goal {
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: var(--radius-l);
+  display: grid;
+  gap: var(--space-2);
+}
+.wm-review-overview h2 {
+  font-size: var(--fs-title-3);
+}
+.wm-review-overview p, .wm-session-goal p {
+  color: var(--text-2);
+  font-size: var(--fs-caption);
+}
+.wm-how-review {
+  font-size: var(--fs-caption);
+  color: var(--text-2);
+  padding: var(--space-3) 0;
+}
+.wm-how-review summary {
+  min-height: 44px;
+  color: var(--text);
+  cursor: pointer;
+}
+.wm-how-review p + p {
+  margin-top: var(--space-2);
+}
+.wm-due-now {
+  color: var(--text);
+  font-weight: 650;
+}
+.wm-more-button {
+  margin-top: var(--space-3);
+}
+.wm-recall-info {
+  display: grid;
+  width: 100%;
+  gap: var(--space-2);
+  font-size: var(--fs-caption);
+}
+.wm-recall-grades {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+@media (max-width: 900px) {
+  .wm-today-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .wm-goal-card, .wm-review-card, .wm-review-overview, .wm-session-goal {
+    padding: var(--space-4);
+  }
+  .wm-week {
+    gap: 2px;
+  }
+  .wm-week-dot {
+    width: 30px;
+    height: 30px;
+  }
+  .wm-dialog {
+    padding: var(--space-4);
+  }
+  .wm-goal-presets {
+    gap: var(--space-1);
+  }
+}
+</style>
 <style>
 /* ---- 스냅샷 전용 (원본 CSS 아님) ---- */
 body { background: var(--bg); color: var(--text); margin: 0; padding: 32px 24px 64px; }
@@ -2102,97 +2378,57 @@ body { background: var(--bg); color: var(--text); margin: 0; padding: 32px 24px 
 </head>
 <body>
 <div class="snap-wrap">
-<div class="snap-note"><strong>무엇인가</strong> — <code>WordMaster/assets/js/app.js</code>가 로드 직후 <code>#app</code>에 쓰는 첫 화면(시험 설정) 마크업 전체다.
-  출제 범위·학습 현황·오답 다루기 그룹과 행 안의 값 컨트롤(<code>.field-input-inline</code>)이 들어 있다.
+<div class="snap-note"><strong>무엇인가</strong> — <code>WordMaster/assets/js/app.js</code>가 로드 직후 <code>#app</code>에 쓰는 첫 화면(오늘의 학습) 마크업 전체다.
+  하루 목표·바로 시작·맞춤 복습·최근 7일 기록과 DAY별 학습 진입이 들어 있다. 날짜는 2026-09-21로 고정한다.
   <br><strong>주의</strong> — 학습 기록이 비어 있는 새 브라우저 상태다(localStorage 없음). 정적 사본이라 버튼은 동작하지 않는다.
   <br><strong>기준</strong> — 이 파일은 <code>node scripts/snapshot.mjs</code>가 만든 생성물이다. 손으로 고치지 않는다. <code>npm run validate</code>가 같은 생성기를 다시 돌려 이 파일과 대조하므로, 데이터·렌더러·CSS를 바꾸면 반드시 다시 만들어야 한다. 이 디렉터리는 밑줄로 시작하므로 GitHub Pages(Jekyll)가 게시하지 않는다 — 학습 내용이 들어 있어도 공개면에 오르지 않는다.</div>
-<section class="snap-item"><h2 class="snap-head">WordMaster — 시험 설정 (#app 전체)</h2><div class="app-main">
-      <header class="view-head">
-        <div class="view-head-main">
-          <svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-book-open"></use></svg>
-          <div>
-            <h1>시험 설정</h1>
-          </div>
+<section class="snap-item"><h2 class="snap-head">WordMaster — 오늘의 학습 (#app 전체)</h2><div class="app-main">
+        <header class="view-head"><div class="view-head-main"><div><span class="kicker">WORDMASTER 2000</span><h1>오늘의 학습</h1></div></div><button id="editDailyGoal" class="btn btn-secondary btn-sm" type="button">목표 설정</button></header>
+        <div class="wm-today-layout">
+          <section class="wm-goal-card" aria-labelledby="dailyGoalHeading">
+            <div class="wm-section-title"><h2 id="dailyGoalHeading">하루 목표</h2><span class="wm-streak"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-bolt"></use></svg> 0일 연속 학습</span></div>
+            <div class="wm-goal-number"><strong>0</strong><span> / 20개</span></div>
+            <p class="wm-goal-message">오늘도 한 단어씩, 기억에 남겨볼까요?</p>
+            <progress class="wm-daily-progress" max="20" value="0" aria-label="오늘 학습 목표" aria-valuetext="0개 학습, 목표 20개">0%</progress>
+            <div class="wm-today-breakdown"><span>새 단어 0개</span><span>복습 0개</span><span>0% 달성</span></div>
+            <button id="dailyStartBtn" class="btn btn-primary wm-wide-button wm-start-button" type="button" >바로 시작하기</button>
+            <p id="dailyPlanSummary" class="wm-plan-summary">이번 학습: 복습 0개 · 새 단어 20개</p>
+
+          </section>
+          <section class="wm-review-card" aria-labelledby="dailyReviewHeading">
+            <span class="wm-card-icon"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-refresh"></use></svg></span>
+            <h2 id="dailyReviewHeading">잊기 전에 복습</h2>
+            <p class="wm-review-count"><strong>0</strong>개</p>
+            <p class="text-secondary">단어를 학습하면 나에게 맞는 복습 일정이 생겨요.</p>
+            <button id="dailyReviewBtn" class="btn btn-secondary wm-wide-button" type="button">복습 일정 보기</button>
+            <span class="wm-hint">정답과 난이도에 따라 복습 간격이 달라져요.</span>
+          </section>
         </div>
-        <button id="startQuizBtn" class="btn btn-primary" type="button">시험 시작</button>
-      </header>
-
-      <div class="wm-layout">
-        <section class="wm-col" aria-labelledby="rangeHead">
-          <h2 class="list-group-head" id="rangeHead">시험 설정</h2>
-          <div class="list-group">
-            <div class="list-row">
-              <span class="list-row-lead"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-calendar"></use></svg></span>
-              <span class="list-row-body"><span class="list-row-title">DAY 범위</span></span>
-              <span class="list-row-value wm-range">
-                <input id="startDay" class="wm-num field-input-inline" type="number" min="1" max="50" inputmode="numeric" aria-label="시작 DAY" value="1">
-                <span aria-hidden="true">–</span>
-                <input id="endDay" class="wm-num field-input-inline" type="number" min="1" max="50" inputmode="numeric" aria-label="끝 DAY" value="1">
-              </span>
-            </div>
-            <div class="list-row is-stacked">
-              <span class="list-row-lead"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-bolt"></use></svg></span>
-              <span class="list-row-body"><span class="list-row-title">빠른 선택</span></span>
-              <span class="segmented wm-presets" role="group" aria-label="DAY 범위 빠른 선택">
-                <button class="segmented-btn preset" type="button" data-start="1" data-end="1">1</button>
-                <button class="segmented-btn preset" type="button" data-start="1" data-end="10">1–10</button>
-                <button class="segmented-btn preset" type="button" data-start="1" data-end="25">1–25</button>
-                <button class="segmented-btn preset" type="button" data-start="26" data-end="50">26–50</button>
-                <button class="segmented-btn preset" type="button" data-start="1" data-end="50">전체</button>
-              </span>
-            </div>
-            <div class="list-row">
-              <span class="list-row-lead"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-hash"></use></svg></span>
-              <span class="list-row-body"><label class="list-row-title" for="questionCount">문제 수</label></span>
-              <span class="list-row-value">
-                <select id="questionCount" class="field-input-inline">
-                  <option value="25" >25개</option>
-                  <option value="50" >50개</option>
-                  <option value="100" >100개</option>
-                  <option value="all" selected>전체</option>
-                </select>
-              </span>
-            </div>
-            <div class="list-row">
-              <span class="list-row-lead"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-shuffle"></use></svg></span>
-              <span class="list-row-body"><label class="list-row-title" for="orderMode">출제 순서</label></span>
-              <span class="list-row-value"><select id="orderMode" class="field-input-inline"><option value="random" selected>랜덤</option><option value="sequential" >DAY 순서</option><option value="wrong-high" >오답률 높은 순</option><option value="wrong-low" >오답률 낮은 순</option><option value="recent" >최근 풀이 순</option></select></span>
-            </div>
-          </div>
+        <section class="wm-week-section" aria-labelledby="dailyWeekHeading">
+          <div class="wm-section-title"><h2 id="dailyWeekHeading">차곡차곡, 최근 7일</h2><span class="text-secondary">하루 한 번의 작은 성취</span></div>
+          <div class="wm-week"><div class="wm-week-day  " aria-label="2026-09-15, 0개 학습, 목표 20개"><span>화</span><span class="wm-week-dot">·</span><small>09.15</small></div><div class="wm-week-day  " aria-label="2026-09-16, 0개 학습, 목표 20개"><span>수</span><span class="wm-week-dot">·</span><small>09.16</small></div><div class="wm-week-day  " aria-label="2026-09-17, 0개 학습, 목표 20개"><span>목</span><span class="wm-week-dot">·</span><small>09.17</small></div><div class="wm-week-day  " aria-label="2026-09-18, 0개 학습, 목표 20개"><span>금</span><span class="wm-week-dot">·</span><small>09.18</small></div><div class="wm-week-day  " aria-label="2026-09-19, 0개 학습, 목표 20개"><span>토</span><span class="wm-week-dot">·</span><small>09.19</small></div><div class="wm-week-day  " aria-label="2026-09-20, 0개 학습, 목표 20개"><span>일</span><span class="wm-week-dot">·</span><small>09.20</small></div><div class="wm-week-day is-today " aria-label="2026-09-21, 0개 학습, 목표 20개"><span>오늘</span><span class="wm-week-dot">·</span><small>09.21</small></div></div>
         </section>
-
-        <!-- 현황은 값만 낸다(.list-row-value). 오답 행동 두 개는 같은 그룹의 이동 행이다 —
-             현황·오답을 그룹 둘로 나눠 카드 3연속을 만들지 않는다 (DESIGN.md §6). -->
-        <aside class="wm-panel">
-          <h2 class="list-group-head">학습 현황</h2>
-          <div class="list-group">
-            <div class="list-row">
-              <span class="list-row-lead"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-pen"></use></svg></span>
-              <span class="list-row-body"><span class="list-row-title">총 풀이</span></span>
-              <span class="list-row-value">0</span>
-            </div>
-            <div class="list-row">
-              <span class="list-row-lead"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-target"></use></svg></span>
-              <span class="list-row-body"><span class="list-row-title">정답률</span></span>
-              <span class="list-row-value">0%</span>
-            </div>
-            <div class="list-row">
-              <span class="list-row-lead"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-bookmark"></use></svg></span>
-              <span class="list-row-body"><span class="list-row-title">오답 노트</span></span>
-              <span class="list-row-value">0</span>
-            </div>
-            <button id="wrongStudyBtn" class="list-row list-row-nav" type="button" disabled>
-              <span class="list-row-lead"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-eye"></use></svg></span>
-              <span class="list-row-body"><span class="list-row-title">오답 보고 외우기</span></span>
-            </button>
-            <button id="reviewBtn" class="list-row list-row-nav" type="button" disabled>
-              <span class="list-row-lead"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-refresh"></use></svg></span>
-              <span class="list-row-body"><span class="list-row-title">오답 재시험</span></span>
-            </button>
+        <section aria-labelledby="dailyCollectionHeading"><div class="wm-section-title"><h2 id="dailyCollectionHeading">나의 단어장</h2><span class="text-secondary">0 / 2,000개 학습</span></div>
+          <div class="list-group"><button id="dailyRangeBtn" class="list-row list-row-nav" type="button"><span class="list-row-lead"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-book-open"></use></svg></span><span class="list-row-body"><span class="list-row-title">DAY별로 직접 학습하기</span><span class="list-row-sub">범위와 문제 수를 골라 시험 보기</span></span></button>
+          <button id="dailyStatsBtn" class="list-row list-row-nav" type="button"><span class="list-row-lead"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-chart"></use></svg></span><span class="list-row-body"><span class="list-row-title">학습 기록 · 오답 노트</span><span class="list-row-sub">검색, 오답 재시험, 기록 백업</span></span></button></div>
+        </section>
+        <p class="wm-hint">오늘 학습 수는 서로 다른 단어 기준이에요. 같은 단어를 다시 풀어도 목표 수는 중복으로 늘지 않아요.</p>
+        <dialog id="dailyGoalDialog" class="wm-dialog" aria-labelledby="dailyGoalTitle">
+        <form id="dailyGoalForm" class="wm-dialog-form">
+          <div class="wm-section-title"><h2 id="dailyGoalTitle">나의 하루 목표</h2><button id="closeGoalDialog" type="button" class="btn btn-ghost btn-sm" aria-label="목표 설정 닫기">닫기</button></div>
+          <p class="text-secondary">새 단어와 복습을 합쳐 하루에 공부할 단어 수예요.</p>
+          <div class="wm-goal-presets" role="group" aria-label="하루 목표 빠른 선택">
+            <button class="btn btn-secondary" type="button" data-goal="10" aria-pressed="false">10개</button><button class="btn btn-secondary" type="button" data-goal="20" aria-pressed="true">20개</button><button class="btn btn-secondary" type="button" data-goal="30" aria-pressed="false">30개</button><button class="btn btn-secondary" type="button" data-goal="50" aria-pressed="false">50개</button>
           </div>
-        </aside>
-      </div>
-    </div></section>
+          <div class="field"><label class="field-label" for="dailyGoalInput">하루 목표 (5–200개)</label><input id="dailyGoalInput" class="field-input" type="number" inputmode="numeric" min="5" max="200" step="1" required value="20"></div>
+          <fieldset class="wm-day-fields"><legend>새 단어 학습 범위</legend>
+            <div class="field"><label class="field-label" for="dailyStartDay">시작 DAY</label><input id="dailyStartDay" class="field-input" type="number" inputmode="numeric" min="1" max="50" step="1" required value="1"></div>
+            <div class="field"><label class="field-label" for="dailyEndDay">끝 DAY</label><input id="dailyEndDay" class="field-input" type="number" inputmode="numeric" min="1" max="50" step="1" required value="50"></div>
+          </fieldset>
+          <p class="wm-hint">복습은 범위와 관계없이 필요한 단어를 챙겨요. 하루 기록은 한국시간 자정에 바뀌어요.</p>
+          <button class="btn btn-primary wm-wide-button" type="submit">목표 저장하기</button>
+        </form>
+      </dialog></div></section>
 </div>
 </body>
 </html>

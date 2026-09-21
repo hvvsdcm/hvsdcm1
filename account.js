@@ -78,6 +78,7 @@
   }
 
   let syncTimer = 0;
+  let progressQueue = Promise.resolve();
 
   async function pushProgress(rawData) {
     try {
@@ -102,7 +103,9 @@
 
   function scheduleProgressSync(rawData) {
     clearTimeout(syncTimer);
-    syncTimer = setTimeout(() => pushProgress(rawData), SYNC_DELAY_MS);
+    syncTimer = setTimeout(() => {
+      progressQueue = progressQueue.then(() => pushProgress(rawData));
+    }, SYNC_DELAY_MS);
   }
 
   // 학습 앱이 저장을 마친 시점에만 명시적으로 호출한다. 브라우저 전체의
@@ -116,6 +119,24 @@
         api(`/api/answers/${app}`),
       ]);
       let data = remote.data;
+      if (app === 'wordmaster') {
+        const ownerKey = storageKey + '.owner';
+        const currentOwner = String(localStorage.getItem('hvsdcm.user') || '').trim().toLowerCase();
+        const previousOwner = localStorage.getItem(ownerKey);
+        if (previousOwner && previousOwner !== currentOwner) localStorage.removeItem(storageKey);
+        const localRaw = localStorage.getItem(storageKey);
+        let local = null;
+        try { local = localRaw ? JSON.parse(localRaw) : null; } catch { /* Malformed local data cannot replace server progress. */ }
+        localStorage.setItem(ownerKey, currentOwner);
+        // A reload before the debounce fires must not overwrite newer local answers.
+        // Only compare timestamps for a cache already attributed to this same account.
+        if (data && local && previousOwner === currentOwner
+          && Number.isFinite(local.updatedAt) && local.updatedAt <= Date.now() + 300_000
+          && local.updatedAt > (Number(data.updatedAt) || 0)) {
+          data = local;
+          await api('/api/progress/wordmaster', { method: 'PUT', body: JSON.stringify({ data }) });
+        }
+      }
 
       if (!data) {
         const local = localStorage.getItem(storageKey);
@@ -140,7 +161,7 @@
         if (localStorage.getItem(storageKey) !== next) {
           localStorage.setItem(storageKey, next);
           const loadMarker = `hvsdcm.loaded.${app}`;
-          if (!sessionStorage.getItem(loadMarker)) {
+          if (app !== 'wordmaster' && !sessionStorage.getItem(loadMarker)) {
             sessionStorage.setItem(loadMarker, '1');
             location.reload();
             return;
@@ -167,6 +188,5 @@
     }
   }
 
-  if (syncsProgress) hydrateFromAccount();
-  else validateGateOnlySession();
+  window.HvsAccount.ready = syncsProgress ? hydrateFromAccount() : validateGateOnlySession();
 })();

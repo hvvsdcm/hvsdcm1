@@ -12,6 +12,7 @@ import {
   readJson,
   sha256,
 } from './lib.js';
+import { resetUserPassword } from './password-reset.js';
 import {
   decideCompetitionApproval,
   getCompetitions,
@@ -286,7 +287,8 @@ async function login(request, env) {
   }
 
   await clearLoginFailures(env, attempt);
-  const rawToken = await issueSession(env, user.id, 'user', request);
+  const rawToken = await issueSession(env, user.id, 'user', request, user.password_hash);
+  if (!rawToken) return json({ error: '비밀번호가 변경되었습니다. 다시 로그인하세요.' }, 401);
   await env.DB.prepare('UPDATE users SET last_login_at = ? WHERE id = ?')
     .bind(now(), user.id)
     .run();
@@ -1741,7 +1743,9 @@ async function progress(request, env, app) {
   if (request.method === 'PUT') {
     const input = await readJson(request);
     const rawData = JSON.stringify(input.data ?? {});
-    if (rawData.length > MAX_PROGRESS_BYTES) {
+    // WordMaster additionally carries 2,000 schedules, recent daily summaries and a resume queue.
+    const progressLimit = app === 'wordmaster' ? 1_200_000 : MAX_PROGRESS_BYTES;
+    if (new TextEncoder().encode(rawData).byteLength > progressLimit) {
       return json({ error: '기록이 너무 큽니다.' }, 413);
     }
 
@@ -1981,6 +1985,9 @@ async function adminRoute(request, env, path) {
 
   if (request.method === 'GET' && path === '/api/admin/users') return listUsers(env);
   if (request.method === 'POST' && path === '/api/admin/users') return createUser(request, env);
+
+  const resetMatch = path.match(/^\/api\/admin\/users\/(\d+)\/reset-password$/);
+  if (resetMatch && request.method === 'POST') return resetUserPassword(request, env, Number(resetMatch[1]), session);
 
   const userMatch = path.match(/^\/api\/admin\/users\/(\d+)$/);
   if (userMatch && request.method === 'DELETE') {

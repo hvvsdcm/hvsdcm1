@@ -91,3 +91,7 @@ Apply D1 migrations before deploying Worker code. Migration `0004_session_ip_add
 - 2026-09-04: Codex/Claude usage snapshots and harness task/event UI, routes, scripts, tests, and snapshot were preserved under [`docs/archive/2026-09-04-usage/`](docs/archive/2026-09-04-usage/README.md). D1 schema and rows were not deleted; Behavior Lab and the competition surface remain active.
 
 See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for request and synchronization flows, and [`CONTRIBUTING.md`](CONTRIBUTING.md) before modifying data or D1 migrations.
+
+## Daily learning and account recovery
+
+WordMaster now opens on a daily goal, one-tap study and due-review dashboard. Existing DAY-based tests, wrong-answer search and saved progress remain available. Administrators can reset a user password from the user list without deleting learning history; existing sessions for that user expire. See [the learning and reset design](docs/WORDMASTER-LEARNING.md) for scheduling, migration and security details.

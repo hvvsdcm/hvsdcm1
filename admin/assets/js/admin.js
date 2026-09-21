@@ -30,6 +30,7 @@
     viewTitle: document.getElementById('viewTitle'),
   };
   let sessionRows = [];
+  const passwordDialog = window.HvsPasswordDialog.create(request, loadDashboard);
   const appLabels = {
     wordmaster: '영단어',
     smstudy: '사회문화',
@@ -174,6 +175,7 @@
         <td>
           <div class="ad-row-actions">
             <button type="button" class="btn btn-secondary btn-sm view-sessions" data-id="${Number(user.id)}">접속</button>
+            <button type="button" class="btn btn-secondary btn-sm reset-user-password" data-id="${Number(user.id)}" data-name="${escapeHtml(user.username)}">비밀번호 초기화</button>
             <button
               type="button"
               class="btn btn-danger btn-sm delete-user"
@@ -318,6 +320,9 @@
       setView('sessions');
       return;
     }
+
+    const resetButton = event.target.closest('.reset-user-password');
+    if (resetButton) { passwordDialog.open(resetButton.dataset.id, resetButton.dataset.name); return; }
 
     const button = event.target.closest('.delete-user');
     if (!button) return;

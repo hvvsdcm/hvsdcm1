@@ -9,17 +9,18 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="hvsdcm">
   <meta property="og:title" content="WordMaster — hvsdcm">
-  <meta property="og:description" content="DAY 선택 → 뜻 시험 → 오답 회독">
+  <meta property="og:description" content="하루 목표 → 바로 학습 → 맞춤 복습">
   <meta property="og:url" content="https://hvsdcm1.xyz/WordMaster/">
   <meta property="og:image" content="https://hvsdcm1.xyz/assets/og.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="WordMaster — hvsdcm">
-  <meta name="twitter:description" content="DAY 선택 → 뜻 시험 → 오답 회독">
+  <meta name="twitter:description" content="하루 목표 → 바로 학습 → 맞춤 복습">
   <meta name="twitter:image" content="https://hvsdcm1.xyz/assets/og.png">
   <title>WordMaster 2000</title>
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
   <link rel="stylesheet" href="/assets/css/system.css?v=20260904-icons-v2">
   <link rel="stylesheet" href="assets/css/style.css?v=20260904-mobile-v1">
+  <link rel="stylesheet" href="assets/css/daily.css?v=20260921-daily-v1">
 </head>
 <body class="workspace-app wordmaster-page">
   <a class="skip-link" href="#app">본문으로 건너뛰기</a>
@@ -45,7 +46,9 @@
         </div>
         <nav class="sidebar-group" aria-label="화면 이동">
           <span class="sidebar-label">화면</span>
-          <button id="homeLogo" class="sidebar-item is-active" type="button" data-nav="home" aria-current="page"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-settings"></use></svg>시험 설정</button>
+          <button id="homeLogo" class="sidebar-item is-active" type="button" data-nav="home" aria-current="page"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-target"></use></svg>오늘의 학습</button>
+          <button id="openReviewBtn" class="sidebar-item" type="button" data-nav="review"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-refresh"></use></svg>복습하기</button>
+          <button id="openSettingsBtn" class="sidebar-item" type="button" data-nav="settings"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-settings"></use></svg>DAY별 학습</button>
           <button id="openStatsBtn" class="sidebar-item" type="button" data-nav="stats"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-chart"></use></svg>학습 기록</button>
         </nav>
 
@@ -74,9 +77,11 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="/account.js?v=20260904-auth-gate-v1" data-app="wordmaster" data-key="wordmaster2000.quiz.v1"></script>
+  <script src="/account.js?v=20260921-daily-v1" data-app="wordmaster" data-key="wordmaster2000.quiz.v1"></script>
   <script src="assets/js/words.js?v=20260904-icons-v2"></script>
   <script src="/assets/js/study-utils.js"></script>
-  <script src="assets/js/app.js?v=20260904-icons-v2"></script>
+  <script src="assets/js/scheduler.js?v=20260921-daily-v1"></script>
+  <script src="assets/js/daily-ui.js?v=20260921-daily-v1"></script>
+  <script src="assets/js/app.js?v=20260921-daily-v1"></script>
 </body>
 </html>

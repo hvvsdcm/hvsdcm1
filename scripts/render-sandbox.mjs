@@ -250,6 +250,14 @@ export function renderWordMasterHome() {
   const store = new Map();
   const context = {};
   context.window = context;
+  // Freeze only the snapshot clock so daily calendar labels never drift between runs.
+  const snapshotAt = Date.parse('2026-09-21T03:00:00Z');
+  context.Date = class extends Date {
+    constructor(...args) { super(...(args.length ? args : [snapshotAt])); }
+    static now() { return snapshotAt; }
+  };
+  context.setInterval = () => 0;
+  context.addEventListener = () => {};
   context.document = stubDocument(store);
   context.navigator = { userAgent: 'gate' };
   context.location = { href: 'about:blank', hash: '', search: '' };
@@ -267,7 +275,7 @@ export function renderWordMasterHome() {
   context.alert = () => {};
   context.console = { log() {}, warn() {}, error() {} };
   vm.createContext(context);
-  for (const file of [UTILS_SOURCE, '_learning/wordmaster/words.js', WORDMASTER_APP_SOURCE]) {
+  for (const file of [UTILS_SOURCE, '_learning/wordmaster/words.js', 'WordMaster/assets/js/scheduler.js', 'WordMaster/assets/js/daily-ui.js', WORDMASTER_APP_SOURCE]) {
     vm.runInContext(readSource(file), context, { filename: file });
   }
   const markup = store.get('app')?.innerHTML || '';
