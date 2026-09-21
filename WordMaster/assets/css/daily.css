@@ -1,0 +1,274 @@
+/* Daily learning surfaces share the site's color and type tokens. */
+.wm-today-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(240px, 0.85fr);
+  gap: var(--space-4);
+}
+.wm-goal-card, .wm-review-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-l);
+  min-width: 0;
+}
+.wm-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+.wm-section-title h2, .wm-review-card h2, .wm-session-goal h2 {
+  font-size: var(--fs-title-3);
+  font-weight: 650;
+}
+.wm-section-title > .text-secondary, .wm-streak {
+  font-size: var(--fs-micro);
+}
+.wm-streak {
+  display: inline-flex;
+  gap: var(--space-1);
+  align-items: center;
+  color: var(--text-2);
+}
+.wm-goal-number {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+  font-variant-numeric: tabular-nums;
+}
+.wm-goal-number strong {
+  font-size: clamp(2.8rem, 4vw, 4rem);
+  font-weight: 750;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+}
+.wm-goal-number span {
+  font-size: var(--fs-title-3);
+  color: var(--text-2);
+}
+.wm-goal-message, .wm-plan-summary, .wm-today-breakdown, .wm-review-card > p {
+  font-size: var(--fs-caption);
+  line-height: 1.6;
+}
+.wm-daily-progress {
+  display: block;
+  appearance: none;
+  border: 0;
+  width: 100%;
+  height: 10px;
+  background: var(--surface-3);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  color: var(--accent);
+  accent-color: var(--accent);
+}
+.wm-daily-progress::-webkit-progress-bar {
+  background: var(--surface-3);
+  border-radius: var(--radius-full);
+}
+.wm-daily-progress::-webkit-progress-value {
+  background: var(--accent);
+  border-radius: var(--radius-full);
+}
+.wm-daily-progress::-moz-progress-bar {
+  background: var(--accent);
+  border-radius: var(--radius-full);
+}
+.wm-today-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2);
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+.wm-wide-button {
+  width: 100%;
+  min-height: 48px;
+}
+.wm-start-button {
+  margin-top: var(--space-3);
+}
+.wm-plan-summary {
+  text-align: center;
+  color: var(--text-2);
+}
+.wm-card-icon {
+  display: flex;
+  align-items: center;
+  color: var(--text-2);
+}
+.wm-review-count {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-2);
+}
+.wm-review-count strong {
+  font-size: var(--fs-title-1);
+  color: var(--text);
+}
+.wm-review-card .wm-wide-button {
+  margin-top: auto;
+}
+.wm-week-section {
+  padding: var(--space-2) 0;
+}
+.wm-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+.wm-week-day {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  color: var(--text-2);
+  font-size: var(--fs-micro);
+  border-radius: var(--radius-m);
+}
+.wm-week-day.is-today {
+  background: var(--surface);
+  color: var(--text);
+}
+.wm-week-dot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+  font-variant-numeric: tabular-nums;
+}
+.wm-week-day.is-studied .wm-week-dot {
+  border: 1px solid var(--line-strong);
+}
+.wm-week-day.is-complete .wm-week-dot {
+  background: var(--accent);
+  color: var(--bg);
+}
+.wm-week-day small {
+  font-size: var(--fs-micro);
+  color: var(--text-3);
+}
+.wm-dialog {
+  width: min(440px, calc(100% - 32px));
+  max-height: 85dvh;
+  margin: auto;
+  padding: var(--space-5);
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-xl);
+  overflow-y: auto;
+}
+.wm-dialog::backdrop {
+  background: rgba(0,0,0,.72);
+}
+.wm-dialog-form {
+  display: grid;
+  gap: var(--space-4);
+}
+.wm-dialog-form .wm-section-title {
+  margin-bottom: 0;
+}
+.wm-goal-presets {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+.wm-goal-presets button, .wm-recall-grades button {
+  min-height: 44px;
+}
+.wm-goal-presets [aria-pressed="true"], .wm-recall-grades [aria-pressed="true"] {
+  color: var(--bg);
+  background: var(--accent);
+}
+.wm-day-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+.wm-day-fields legend {
+  margin-bottom: var(--space-2);
+  font-size: var(--fs-caption);
+  color: var(--text-2);
+}
+.wm-review-overview, .wm-session-goal {
+  padding: var(--space-5);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: var(--radius-l);
+  display: grid;
+  gap: var(--space-2);
+}
+.wm-review-overview h2 {
+  font-size: var(--fs-title-3);
+}
+.wm-review-overview p, .wm-session-goal p {
+  color: var(--text-2);
+  font-size: var(--fs-caption);
+}
+.wm-how-review {
+  font-size: var(--fs-caption);
+  color: var(--text-2);
+  padding: var(--space-3) 0;
+}
+.wm-how-review summary {
+  min-height: 44px;
+  color: var(--text);
+  cursor: pointer;
+}
+.wm-how-review p + p {
+  margin-top: var(--space-2);
+}
+.wm-due-now {
+  color: var(--text);
+  font-weight: 650;
+}
+.wm-more-button {
+  margin-top: var(--space-3);
+}
+.wm-recall-info {
+  display: grid;
+  width: 100%;
+  gap: var(--space-2);
+  font-size: var(--fs-caption);
+}
+.wm-recall-grades {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+@media (max-width: 900px) {
+  .wm-today-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 480px) {
+  .wm-goal-card, .wm-review-card, .wm-review-overview, .wm-session-goal {
+    padding: var(--space-4);
+  }
+  .wm-week {
+    gap: 2px;
+  }
+  .wm-week-dot {
+    width: 30px;
+    height: 30px;
+  }
+  .wm-dialog {
+    padding: var(--space-4);
+  }
+  .wm-goal-presets {
+    gap: var(--space-1);
+  }
+}

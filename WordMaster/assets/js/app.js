@@ -13,8 +13,9 @@
   const WORD_BY_ID = new Map(WORDS.map((item) => [item.id, item]));
   const STORAGE_KEY = 'wordmaster2000.quiz.v1';
   const studyUtils = window.HvsStudyUtils;
+  const scheduler = window.HvsWordmasterScheduler;
 
-  if (!studyUtils) {
+  if (!studyUtils || !scheduler || !window.HvsWordmasterDailyUi) {
     app.innerHTML = '<div class="card"><h2>화면 로드 오류</h2><p>공통 학습 도구를 불러오지 못했습니다.</p></div>';
     return;
   }
@@ -80,11 +81,18 @@
   };
 
   let db = loadDb();
+  db.learning = scheduler.normalize(db.learning, WORDS, db.stats);
   let toastTimer = null;
+  const dailyUi = window.HvsWordmasterDailyUi.create({
+    app, words: WORDS, scheduler, getDb: () => db, save: saveDb,
+    start: startDailyQuiz, resume: resumeSavedSession, settings: renderSettings,
+    stats: renderStatsPage, toast: showToast,
+  });
 
   function blankDb() {
     return {
       version: 1,
+      learning: scheduler.normalize(null, WORDS),
       stats: {},
       wrongBank: {},
       customAliases: {},
@@ -111,6 +119,8 @@
   }
 
   function saveDb() {
+    if (state.view === 'quiz' && state.session) db.learning.activeSession = scheduler.serializeSession(state.session);
+    if (state.view === 'result') db.learning.activeSession = null;
     db.updatedAt = Date.now();
     const serialized = JSON.stringify(db);
     localStorage.setItem(STORAGE_KEY, serialized);
@@ -132,6 +142,8 @@
   }
 
   function recordAttempt(item, input, isCorrect, mode) {
+    const at = state.session?.lastResult?.at || Date.now();
+    const previousCard = db.learning.cards[item.id] || null;
     const current = db.stats[item.id] || {
       attempts: 0,
       correct: 0,
@@ -142,21 +154,24 @@
     };
     current.attempts += 1;
     current.lastAnswer = input;
-    current.lastAt = Date.now();
+    current.lastAt = at;
     if (isCorrect) {
       current.correct += 1;
       current.streak = Math.max(0, current.streak) + 1;
-      if (mode === 'review') delete db.wrongBank[item.id];
+      if (mode === 'review' || (['daily', 'scheduled'].includes(mode) && at >= (previousCard?.dueAt || 0))) delete db.wrongBank[item.id];
     } else {
       current.wrong += 1;
       current.streak = 0;
       const wrong = db.wrongBank[item.id] || { count: 0, lastWrongAt: 0, lastAnswer: '' };
       wrong.count += 1;
-      wrong.lastWrongAt = Date.now();
+      wrong.lastWrongAt = at;
       wrong.lastAnswer = input;
       db.wrongBank[item.id] = wrong;
     }
     db.stats[item.id] = current;
+    db.learning.cards[item.id] = scheduler.review(previousCard, isCorrect ? 'good' : 'again', at);
+    const studyDay = scheduler.recordDaily(db.learning, item.id, isCorrect, !previousCard, at);
+    if (state.session?.lastResult) state.session.lastResult.studyDay = studyDay;
     saveDb();
   }
 
@@ -183,7 +198,7 @@
     if (stats) {
       stats.wrong = Math.max(0, stats.wrong - 1);
       stats.correct += 1;
-      stats.streak = Math.max(1, stats.streak || 0);
+      stats.streak = Math.max(0, session.lastResult.streakBefore || 0) + 1;
     }
     if (session.mode === 'review') delete db.wrongBank[item.id];
     else {
@@ -193,8 +208,15 @@
         if (bank.count === 0) delete db.wrongBank[item.id];
       }
     }
-    saveDb();
-
+    db.learning.cards[item.id] = scheduler.review(session.lastResult.cardBefore, 'good', session.lastResult.at);
+    const day = db.learning.days[session.lastResult.studyDay];
+    if (day) day.correct = Math.min(day.attempts, day.correct + 1);
+    const retryIndex = session.lastResult.retryIndex;
+    if (Number.isInteger(retryIndex) && retryIndex > session.index && session.questions[retryIndex]?.id === item.id) {
+      session.questions.splice(retryIndex, 1);
+      delete session.retries[item.id];
+    }
+    session.lastResult.grade = 'good';
     session.correct += 1;
     session.wrong = Math.max(0, session.wrong - 1);
     session.lastResult.correct = true;
@@ -204,6 +226,7 @@
       row.correct = true;
       row.overridden = true;
     }
+    saveDb();
     window.HvsAccount?.api('/api/answers/accept', {
       method: 'POST',
       body: JSON.stringify({ app: 'wordmaster', questionId: item.id, questionLabel: item.word, baseAnswer: item.meaning, answer: input }),
@@ -307,6 +330,8 @@
   }
 
   function sessionLabel(session) {
+    if (session.mode === 'daily') return '오늘의 학습';
+    if (session.mode === 'scheduled') return '맞춤 복습';
     if (session.mode === 'review') return '오답 재시험';
     return session.startDay === session.endDay
       ? `DAY ${String(session.startDay).padStart(2, '0')}`
@@ -346,7 +371,36 @@
     startSession(questions, { mode: 'review', startDay: null, endDay: null });
   }
 
+  function startDailyQuiz(mode = 'daily') {
+    const plan = scheduler.plan(WORDS, db.learning, mode);
+    if (!plan.questions.length) {
+      showToast(mode === 'scheduled' ? '지금 복습할 단어가 없어요.' : '학습 범위를 넓히거나 다음 복습을 확인해주세요.');
+      return mode === 'scheduled' ? renderReviewPage() : renderHome();
+    }
+    startSession(plan.questions, { mode, startDay: db.learning.settings.startDay, endDay: db.learning.settings.endDay });
+  }
+
+  function resumeSavedSession() {
+    const restored = scheduler.restoreSession(db.learning.activeSession, WORDS);
+    if (!restored) {
+      db.learning.activeSession = null;
+      saveDb(); renderHome();
+      return showToast('이어서 풀기 목록을 불러오지 못했어요. 학습 기록은 유지돼요.');
+    }
+    state.session = restored; state.view = 'quiz'; renderQuiz();
+  }
+
+  function rateCurrent(grade) {
+    const session = state.session;
+    if (!session?.answered || !session.lastResult?.correct || !['hard', 'good', 'easy'].includes(grade)) return;
+    const item = session.questions[session.index];
+    session.lastResult.grade = grade;
+    db.learning.cards[item.id] = scheduler.review(session.lastResult.cardBefore, grade, session.lastResult.at);
+    saveDb(); renderQuiz();
+  }
+
   function startSession(questions, meta) {
+    if (db.learning.activeSession && !state.session && !window.confirm('이어서 풀 수 있는 학습이 있어요. 기존 학습 기록은 남기고 새로 시작할까요?')) return;
     if (!questions.length) {
       showToast('선택한 범위에 문제가 없습니다.');
       return;
@@ -354,6 +408,8 @@
     state.session = {
       ...meta,
       questions,
+      originalCount: questions.length,
+      retries: {},
       index: 0,
       correct: 0,
       wrong: 0,
@@ -386,10 +442,20 @@
     const correct = checkAnswer(item, input);
 
     session.answered = true;
-    session.lastResult = { input, correct, overridden: false };
+    session.lastResult = {
+      input, correct, overridden: false, at: Date.now(), grade: correct ? 'good' : 'again',
+      cardBefore: db.learning.cards[item.id] ? { ...db.learning.cards[item.id] } : null,
+      streakBefore: db.stats[item.id]?.streak || 0,
+    };
     if (correct) session.correct += 1;
     else session.wrong += 1;
     session.results.push({ id: item.id, input, correct, overridden: false });
+    if (!correct && ['daily', 'scheduled'].includes(session.mode) && !session.retries[item.id]) {
+      session.retries[item.id] = true;
+      const retryIndex = Math.min(session.questions.length, session.index + 4);
+      session.questions.splice(retryIndex, 0, item);
+      session.lastResult.retryIndex = retryIndex;
+    }
     recordAttempt(item, input, correct, session.mode);
     renderQuiz();
   }
@@ -399,17 +465,19 @@
     if (!session || !session.answered) return;
     if (session.index >= session.questions.length - 1) {
       state.view = 'result';
+      saveDb();
       renderResult();
       return;
     }
     session.index += 1;
     session.answered = false;
     session.lastResult = null;
+    saveDb();
     renderQuiz();
   }
 
   function setNav(view) {
-    const active = view === 'stats' ? 'stats' : 'home';
+    const active = ['stats', 'settings', 'review'].includes(view) ? view : state.session?.mode === 'scheduled' ? 'review' : 'home';
     document.querySelectorAll('.sidebar-item[data-nav]').forEach((item) => {
       const on = item.dataset.nav === active;
       item.classList.toggle('is-active', on);
@@ -419,9 +487,17 @@
   }
 
   function renderHome() {
-    state.view = 'home';
+    state.view = 'home'; state.session = null; setNav('home'); dailyUi.home();
+  }
+
+  function renderReviewPage() {
+    state.view = 'review'; state.session = null; setNav('review'); dailyUi.review();
+  }
+
+  function renderSettings() {
+    state.view = 'settings';
     state.session = null;
-    setNav('home');
+    setNav('settings');
     const s = summaryStats();
     // 첫 화면 = 제목 한 줄(대표 행동 "시험 시작" 하나) → "시험 설정" 그룹 → "학습 현황" 그룹.
     // hero·설명문·배지를 두지 않는다 — 설정 행 자체가 무엇을 고르는지 말한다 (DESIGN.md §1·§6.1).
@@ -535,7 +611,7 @@
     const result = session.lastResult;
     const current = session.index + 1;
     const total = session.questions.length;
-    const progress = Math.round((current / total) * 100);
+    const progress = Math.round(((session.index + (answered ? 1 : 0)) / total) * 100);
 
     app.innerHTML = `
       <header class="view-head">
@@ -543,7 +619,7 @@
           ${iconLead('app', 'lg')}
           <div>
             <span class="kicker">${escapeHtml(sessionLabel(session))}</span>
-            <h1>뜻 시험</h1>
+            <h1>${['daily', 'scheduled'].includes(session.mode) ? '단어 학습' : '뜻 시험'}</h1>
           </div>
         </div>
         <span class="badge ${session.wrong ? 'badge-red' : 'badge-green'}">정답 ${session.correct} · 오답 ${session.wrong}</span>
@@ -567,6 +643,7 @@
             <button id="submitBtn" class="btn btn-primary" type="button">${answered ? (current === total ? '결과 보기' : '다음') : '정답 확인'}</button>
           </div>
           <p class="wm-hint">Enter로 정답 확인 · 확인 후 Enter로 다음 문제</p>
+          ${!answered ? '<button id="dontKnowBtn" class="btn btn-ghost btn-sm" type="button">모르겠어요</button>' : ''}
         </div>
 
         ${answered ? renderFeedback(item, result) : ''}
@@ -574,10 +651,12 @@
     `;
 
     document.getElementById('submitBtn').addEventListener('click', answered ? nextQuestion : submitAnswer);
+    document.getElementById('dontKnowBtn')?.addEventListener('click', () => { document.getElementById('answerInput').value = ''; submitAnswer(); });
+    document.querySelectorAll('[data-recall-grade]').forEach((button) => button.addEventListener('click', () => rateCurrent(button.dataset.recallGrade)));
     const input = document.getElementById('answerInput');
     if (!answered) {
       input.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' && !event.isComposing && event.keyCode !== 229) {
           event.preventDefault();
           event.stopPropagation();
           submitAnswer();
@@ -594,6 +673,8 @@
   // 두르지 않는다 (DESIGN.md §6). 상태는 행 선두 아이콘과 판정 라벨 색이 낸다.
   function renderFeedback(item, result) {
     const isCorrect = result.correct;
+    const scheduled = db.learning.cards[item.id];
+    const earlyPractice = result.cardBefore?.lastReviewAt > 0 && result.at < result.cardBefore.dueAt;
     return `
       <div class="wm-feedback ${isCorrect ? 'is-correct' : 'is-wrong'}" role="status">
         <div class="list-group is-inset">
@@ -611,6 +692,11 @@
             <span class="list-row-value wm-gloss">${escapeHtml(result.input || '(빈 답)')}</span>
           </div>
         </div>
+        <div class="wm-recall-info"><p>다음 복습: <strong>${scheduler.dueLabel(scheduled?.dueAt)}</strong></p>
+          ${isCorrect && !earlyPractice ? `<div class="wm-recall-grades" role="group" aria-label="기억 난이도">${[['hard', '어려움'], ['good', '보통'], ['easy', '쉬움']].map(([grade, label]) => `<button class="btn btn-secondary btn-sm" type="button" data-recall-grade="${grade}" aria-pressed="${(result.grade || 'good') === grade}">${label}</button>`).join('')}</div>` : ''}
+          ${earlyPractice && isCorrect ? '<p class="wm-hint">방금 본 단어의 재풀이는 복습 간격을 늘리지 않아요.</p>' : ''}
+          ${!isCorrect && Number.isInteger(result.retryIndex) ? '<p class="wm-hint">이번 학습 안에서 한 번 더 확인해요.</p>' : ''}
+        </div>
         ${!isCorrect && result.input
           ? '<button id="acceptMineBtn" class="btn btn-secondary btn-sm" type="button">내 답도 정답으로 인정</button>'
           : ''}
@@ -626,6 +712,7 @@
     const total = session.questions.length;
     const accuracy = total ? Math.round((session.correct / total) * 100) : 0;
     const wrongRows = session.results.filter((row) => !row.correct);
+    const daily = scheduler.summary(WORDS, db.learning);
 
     app.innerHTML = `
       <header class="view-head">
@@ -633,11 +720,12 @@
           ${iconLead('app', 'lg')}
           <div>
             <span class="kicker">${escapeHtml(sessionLabel(session))} 완료</span>
-            <h1>시험 결과</h1>
+            <h1>${['daily', 'scheduled'].includes(session.mode) ? '학습 완료' : '시험 결과'}</h1>
           </div>
         </div>
         <div class="wm-score">${accuracy}%</div>
       </header>
+      <section class="wm-session-goal"><h2>${daily.today.count >= db.learning.settings.goal ? '오늘 목표를 달성했어요!' : '오늘의 기억이 쌓였어요.'}</h2><p>하루 목표 ${daily.today.count} / ${db.learning.settings.goal}개 · ${daily.streak}일 연속 학습</p><p class="wm-hint">학습한 단어는 복습 일정에 맞춰 다시 만나요.</p></section>
 
       <div class="list-group">
         <div class="list-row">
@@ -659,7 +747,7 @@
 
       <div class="wm-actions-row">
         <button id="retryWrongBtn" class="btn btn-primary" type="button" ${wrongRows.length ? '' : 'disabled'}>이번 오답만 재시험</button>
-        <button id="resultHomeBtn" class="btn btn-secondary" type="button">시험 설정으로</button>
+        <button id="resultHomeBtn" class="btn btn-secondary" type="button">오늘의 학습으로</button>
       </div>
 
       ${wrongRows.length ? `
@@ -686,7 +774,7 @@
     `;
 
     document.getElementById('resultHomeBtn').addEventListener('click', renderHome);
-    document.getElementById('retryWrongBtn').addEventListener('click', () => startReviewQuiz(wrongRows.map((x) => x.id)));
+    document.getElementById('retryWrongBtn').addEventListener('click', () => startReviewQuiz([...new Set(wrongRows.map((x) => x.id))]));
   }
 
   function renderStatsPage() {
@@ -709,7 +797,7 @@
             <h1>학습 기록</h1>
           </div>
         </div>
-        <button id="statsBackBtn" class="btn btn-secondary btn-sm" type="button">시험 설정</button>
+        <button id="statsBackBtn" class="btn btn-secondary btn-sm" type="button">오늘의 학습</button>
       </header>
 
       <div class="wm-layout">
@@ -827,6 +915,7 @@
         wrongBank: parsed.wrongBank || {},
         customAliases: parsed.customAliases || {},
       };
+      db.learning = scheduler.normalize(db.learning, WORDS, db.stats);
       saveDb();
       renderStatsPage();
       showToast('학습 기록을 복원했습니다.');
@@ -861,6 +950,16 @@
   }
 
   document.getElementById('homeLogo').addEventListener('click', goHomeWithConfirm);
+  document.getElementById('openReviewBtn').addEventListener('click', renderReviewPage);
+  document.getElementById('openSettingsBtn').addEventListener('click', renderSettings);
+  window.addEventListener('wordmaster:review', renderReviewPage);
+  function refreshDashboard() {
+    if (document.hidden || document.querySelector('dialog[open]')) return;
+    if (state.view === 'home') dailyUi.home();
+    else if (state.view === 'review') dailyUi.review();
+  }
+  document.addEventListener('visibilitychange', refreshDashboard);
+  setInterval(refreshDashboard, 30_000);
   document.getElementById('openStatsBtn').addEventListener('click', () => {
     if (state.view === 'quiz' && !window.confirm('진행 중인 시험을 종료하고 기록을 볼까요?')) return;
     renderStatsPage();
@@ -882,7 +981,8 @@
   }
   }
 
-  const ready = window.WORDMASTER_CONTENT_READY;
+  const dependencies = [window.WORDMASTER_CONTENT_READY, window.HvsAccount?.ready].filter(Boolean);
+  const ready = dependencies.length ? Promise.all(dependencies) : null;
   if (ready) {
     ready.then(start).catch((error) => {
       if (error?.message !== 'unauthorized') {

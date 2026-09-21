@@ -1744,7 +1744,9 @@ async function progress(request, env, app) {
   if (request.method === 'PUT') {
     const input = await readJson(request);
     const rawData = JSON.stringify(input.data ?? {});
-    if (rawData.length > MAX_PROGRESS_BYTES) {
+    // WordMaster additionally carries 2,000 schedules, daily summaries and a resume queue.
+    const progressLimit = app === 'wordmaster' ? 1_200_000 : MAX_PROGRESS_BYTES;
+    if (new TextEncoder().encode(rawData).byteLength > progressLimit) {
       return json({ error: '기록이 너무 큽니다.' }, 413);
     }
 

@@ -1835,7 +1835,7 @@ function validateGlobalsAndOrder() {
   // 표면별 스크립트 로드 순서 (§3.1)
   const expectedOrders = {
     'index.html': ['/assets/js/site-icons.js?v=20260904-icons-v1', '/assets/js/home.js?v=20260904-icons-v2'],
-    'WordMaster/index.html': ['/account.js?v=20260904-auth-gate-v1', 'assets/js/words.js?v=20260904-icons-v2', '/assets/js/study-utils.js', 'assets/js/app.js?v=20260904-icons-v2'],
+    'WordMaster/index.html': ['/account.js?v=20260921-daily-v1', 'assets/js/words.js?v=20260904-icons-v2', '/assets/js/study-utils.js', 'assets/js/scheduler.js?v=20260921-daily-v1', 'assets/js/daily-ui.js?v=20260921-daily-v1', 'assets/js/app.js?v=20260921-daily-v1'],
     'smstudy/index.html': ['/account.js?v=20260904-auth-gate-v1', 'assets/js/data.js', 'assets/js/notebook-data.js', 'assets/js/explanation-data.js', '/assets/js/study-utils.js', 'assets/js/diagram.js?v=20260904-icons-v2', 'assets/js/app.js?v=20260908-study-refresh'],
     'plstudy/index.html': ['/account.js?v=20260904-auth-gate-v1', 'assets/js/data.js', 'assets/js/app.js?v=20260908-study-refresh'],
     'admin/index.html': ['/admin/assets/js/admin.js?v=20260921-password-reset-v1'],
@@ -1862,7 +1862,7 @@ function validateGlobalsAndOrder() {
     [...readFileSync(path.join(ROOT, file), 'utf8').matchAll(/<link\b[^>]*\brel=["']stylesheet["'][^>]*\bhref=["']([^"']+)["']/giu)].map(([, href]) => href);
   const expectedStylesheets = {
     'index.html': ['/assets/css/system.css?v=20260904-icons-v2', '/assets/css/home.css?v=20260904-icons-v1'],
-    'WordMaster/index.html': ['/assets/css/system.css?v=20260904-icons-v2', 'assets/css/style.css?v=20260904-mobile-v1'],
+    'WordMaster/index.html': ['/assets/css/system.css?v=20260904-icons-v2', 'assets/css/style.css?v=20260904-mobile-v1', 'assets/css/daily.css?v=20260921-daily-v1'],
     'smstudy/index.html': ['/assets/css/system.css?v=20260904-icons-v2', 'assets/css/style.css?v=20260908-study-refresh'],
     'plstudy/index.html': ['/assets/css/system.css?v=20260904-icons-v2', 'assets/css/style.css?v=20260908-study-refresh'],
     'admin/index.html': ['/assets/css/system.css?v=20260904-icons-v2', '/admin/assets/css/admin.css?v=20260921-password-reset-v1'],
