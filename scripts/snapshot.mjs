@@ -88,8 +88,8 @@ const GICHUL_STATE = {
 // 화면마다 얹히는 CSS가 다르다. 여기를 한 벌로 두면 WordMaster 스냅샷이 smstudy의
 // 스타일로 조판돼 실제와 다른 화면을 보여 준다(실측으로 확인: .wm-layout 규칙이 없어
 // 320px에서 366px로 넘쳤다).
-const SMSTUDY_CSS = ['assets/css/system.css', 'smstudy/assets/css/style.css'];
-const WORDMASTER_CSS = ['assets/css/system.css', 'WordMaster/assets/css/style.css', 'WordMaster/assets/css/daily.css'];
+const SMSTUDY_CSS = ['assets/css/system.css', 'smstudy/assets/css/style.css', 'assets/css/study-toss.css', 'smstudy/assets/css/toss.css'];
+const WORDMASTER_CSS = ['assets/css/system.css', 'WordMaster/assets/css/style.css', 'WordMaster/assets/css/daily.css', 'assets/css/study-toss.css', 'WordMaster/assets/css/toss.css'];
 
 const SNAPSHOT_CSS = `/* ---- 스냅샷 전용 (원본 CSS 아님) ---- */
 body { background: var(--bg); color: var(--text); margin: 0; padding: 32px 24px 64px; }

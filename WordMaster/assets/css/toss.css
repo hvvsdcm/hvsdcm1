@@ -1,0 +1,122 @@
+/* WordMaster presentation layer for the shared Toss-inspired study shell. */
+.wordmaster-page .wm-today-layout {
+  gap: 18px;
+}
+.wordmaster-page .wm-goal-card {
+  padding: clamp(24px, 4vw, 36px);
+  background: var(--surface);
+}
+.wordmaster-page .wm-review-card {
+  padding: clamp(22px, 3vw, 30px);
+}
+.wordmaster-page .wm-goal-number strong {
+  font-size: clamp(3.5rem, 8vw, 5.8rem);
+  font-weight: 780;
+  letter-spacing: -.065em;
+}
+.wordmaster-page .wm-goal-number span {
+  color: var(--text-3);
+}
+.wordmaster-page .wm-goal-message {
+  color: var(--text-2);
+  font-size: 1rem;
+}
+.wordmaster-page .wm-daily-progress {
+  height: 12px;
+  background: var(--surface-3);
+}
+.wordmaster-page .wm-daily-progress::-webkit-progress-value {
+  background: #3182f6;
+}
+.wordmaster-page .wm-daily-progress::-moz-progress-bar {
+  background: #3182f6;
+}
+.wordmaster-page .wm-today-breakdown {
+  color: var(--text-3);
+}
+.wordmaster-page .wm-start-button {
+  min-height: 56px;
+  margin-top: 8px;
+  border-radius: 16px;
+  font-size: 1rem;
+}
+.wordmaster-page .wm-review-count strong {
+  color: #3182f6;
+}
+.wordmaster-page .wm-week-section {
+  margin-top: 8px;
+  padding: 24px;
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: var(--study-shadow-soft);
+}
+.wordmaster-page .wm-week-day.is-today {
+  background: rgba(49,130,246,.14);
+}
+.wordmaster-page .wm-week-day.is-complete .wm-week-dot {
+  background: #3182f6;
+  color: #fff;
+}
+.wordmaster-page .wm-dialog {
+  border-radius: 26px;
+  background: var(--surface);
+}
+.wordmaster-page .wm-goal-presets [aria-pressed="true"], .wordmaster-page .wm-recall-grades [aria-pressed="true"] {
+  background: #3182f6;
+  color: #fff;
+}
+.wordmaster-page .wm-question {
+  padding: clamp(24px, 5vw, 44px);
+  border: 0;
+  border-radius: 26px;
+  background: var(--surface);
+  box-shadow: var(--study-shadow-soft);
+}
+.wordmaster-page .wm-word {
+  font-size: clamp(2.4rem, 8vw, 4.7rem);
+  letter-spacing: -.04em;
+}
+.wordmaster-page .wm-answer-row {
+  gap: 10px;
+}
+.wordmaster-page .wm-answer-row .field-input {
+  min-height: 56px;
+  font-size: 1.05rem;
+}
+.wordmaster-page .wm-progress .wm-fill {
+  background: #3182f6;
+}
+.wordmaster-page .wm-feedback {
+  border: 0;
+  border-radius: 22px;
+  background: var(--surface);
+  box-shadow: var(--study-shadow-soft);
+}
+.wordmaster-page .wm-score {
+  color: #3182f6;
+}
+@media (max-width: 900px) {
+  .wordmaster-page .wm-today-layout {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 620px) {
+  .wordmaster-page .wm-goal-card, .wordmaster-page .wm-review-card {
+    padding: 22px 20px;
+  }
+  .wordmaster-page .wm-week-section {
+    padding: 20px 14px;
+  }
+  .wordmaster-page .wm-goal-number strong {
+    font-size: 3.7rem;
+  }
+  .wordmaster-page .wm-question {
+    padding: 26px 20px;
+  }
+  .wordmaster-page .wm-answer-row {
+    grid-template-columns: 1fr;
+  }
+  .wordmaster-page .wm-answer-row .btn {
+    width: 100%;
+  }
+}
