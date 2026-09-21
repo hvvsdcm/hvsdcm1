@@ -20,13 +20,19 @@ There is no front-end bundle step. HTML loads checked-in CSS and JavaScript dire
 
 ## Local verification
 
-Requires Node.js 20 or newer. The normal test suite does not load the optional real-PDF extractor, so it can run before the root development dependency is installed.
+Requires Node.js 22 or newer (the authentication tests use built-in SQLite). The normal test suite does not load the optional real-PDF extractor, so it can run before the root development dependency is installed.
 
 ```bash
 npm test
 ```
 
 The command checks every JavaScript file, local HTML asset references, the WordMaster 50 × 40 data shape, all 17 social-studies subunits and 98 questions, all 18 Politics and Law subunits and 90 questions, shared study sorting behavior, then runs Worker utility and routing tests.
+
+## Administrator password reset
+
+At `/admin/`, open **사용자** and choose **비밀번호 초기화** beside an account. Enter and confirm a new 6–128 character password. Only an authenticated administrator can submit this operation; knowing a username is not sufficient. The target's existing sessions, including any linked privileged sessions, expire while learning progress and session history remain intact. The site-wide administrator password is not changed.
+
+The dialog never persists password fields in browser storage and clears them on completion or cancellation. A reset stores a new salted PBKDF2 hash and a secret-free audit event, not the plaintext password. Credential replacement and session expiry use one D1 transaction; an in-flight login cannot issue a session against the old password snapshot. Run `node scripts/admin-password-reset.e2e.mjs` for desktop/mobile UI regression coverage.
 
 ## Protected learning content
 

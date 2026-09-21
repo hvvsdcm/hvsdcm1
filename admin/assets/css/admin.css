@@ -186,6 +186,49 @@
 .admin-page .table th {
   background: var(--surface-2);
 }
+/* The native modal owns keyboard focus; its contents never widen the mobile viewport. */
+.ad-password-dialog {
+  width: min(28rem, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  overflow-y: auto;
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: var(--shadow-3);
+}
+.ad-password-dialog::backdrop {
+  background: rgba(0, 0, 0, .7);
+}
+.ad-password-form {
+  display: grid;
+  gap: var(--space-4);
+}
+.ad-password-form > * {
+  min-width: 0;
+}
+.ad-password-form .field-hint {
+  overflow-wrap: anywhere;
+}
+.ad-password-visibility {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-micro);
+  color: var(--text-2);
+}
+.ad-password-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.ad-user-status {
+  color: var(--text-2);
+  font-size: var(--fs-micro);
+}
+.ad-user-status:empty {
+  display: none;
+}
 /* ---- 반응형 ---- */
 @media (max-width: 860px) {
   .ad-panel {
@@ -199,38 +242,4 @@
   .admin-page #stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-}
-/* Administrator-only password reset dialog. */
-.ad-password-dialog {
-  margin: auto;
-  width: min(460px, calc(100% - 32px));
-  max-height: 85dvh;
-  overflow-y: auto;
-  padding: var(--space-5);
-  background: var(--surface-2);
-  color: var(--text);
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-l);
-}
-.ad-password-dialog::backdrop {
-  background: rgba(0,0,0,.72);
-}
-.ad-password-form {
-  display: grid;
-  gap: var(--space-4);
-}
-.ad-password-form h2 {
-  font-size: var(--fs-title-3);
-}
-.ad-password-form p {
-  font-size: var(--fs-caption);
-}
-.ad-password-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: var(--space-2);
-}
-.ad-password-actions button {
-  min-height: 44px;
 }

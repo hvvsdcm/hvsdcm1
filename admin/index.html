@@ -9,9 +9,8 @@
   <title>hvsdcm admin</title>
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
   <link rel="stylesheet" href="/assets/css/system.css?v=20260904-icons-v2">
-  <link rel="stylesheet" href="/admin/assets/css/admin.css?v=20260921-reset-v1">
-  <script src="/admin/assets/js/password-dialog.js?v=20260921-reset-v1" defer></script>
-  <script src="/admin/assets/js/admin.js?v=20260921-reset-v1" defer></script>
+  <link rel="stylesheet" href="/admin/assets/css/admin.css?v=20260921-password-reset-v1">
+  <script src="/admin/assets/js/admin.js?v=20260921-password-reset-v1" defer></script>
 </head>
 <body class="workspace-app admin-page">
   <a class="skip-link" href="#adminMain">본문으로 건너뛰기</a>
@@ -121,7 +120,7 @@
               <button class="btn btn-primary btn-sm" type="submit">사용자 추가</button>
             </form>
             <p id="userError" class="field-error" role="alert"></p>
-            <p id="userResetStatus" role="status" aria-live="polite"></p>
+            <p id="userStatus" class="ad-user-status" role="status" aria-live="polite"></p>
 
             <div class="table-wrap">
               <table class="table">
@@ -180,16 +179,25 @@
       </main>
     </div>
   </div>
-  <dialog id="userPasswordDialog" class="ad-password-dialog" aria-labelledby="userPasswordTitle">
-    <form id="userPasswordForm" class="ad-password-form">
-      <h2 id="userPasswordTitle">사용자 비밀번호 초기화</h2>
-      <p><strong id="resetUsername"></strong> 계정의 새 비밀번호를 설정합니다.</p>
-      <p class="text-secondary">학습 기록은 유지됩니다. 이 사용자의 기존 로그인은 모두 만료되며, 새 비밀번호로 다시 로그인해야 합니다.</p>
-      <div class="field"><label class="field-label" for="resetNewPassword">새 비밀번호</label><input id="resetNewPassword" class="field-input" type="password" autocomplete="new-password" minlength="8" maxlength="128" required aria-describedby="resetPasswordHelp"></div>
-      <div class="field"><label class="field-label" for="resetConfirmPassword">새 비밀번호 확인</label><input id="resetConfirmPassword" class="field-input" type="password" autocomplete="new-password" minlength="8" maxlength="128" required></div>
-      <p id="resetPasswordHelp" class="ad-note">8자 이상 128자 이하. 새 비밀번호는 사용자에게 별도로 전달해주세요.</p>
-      <p id="resetPasswordError" class="field-error" role="alert"></p>
-      <div class="ad-password-actions"><button id="cancelPasswordReset" class="btn btn-secondary" type="button">취소</button><button id="submitPasswordReset" class="btn btn-primary" type="submit">비밀번호 초기화</button></div>
+  <dialog id="passwordResetDialog" class="ad-password-dialog card" aria-labelledby="passwordResetTitle" aria-describedby="passwordResetDescription">
+    <form id="passwordResetForm" class="ad-password-form">
+      <h2 id="passwordResetTitle" class="title-2">비밀번호 초기화</h2>
+      <p id="passwordResetDescription" class="field-hint"><strong id="passwordResetUsername"></strong> 계정의 새 비밀번호를 설정합니다. 기존 로그인은 모든 기기에서 만료되며, 학습 기록은 유지됩니다.</p>
+      <div class="field">
+        <label class="field-label" for="resetPassword">새 비밀번호</label>
+        <input id="resetPassword" class="field-input" type="password" autocomplete="new-password" minlength="6" maxlength="128" aria-describedby="resetPasswordHint" required>
+        <p id="resetPasswordHint" class="field-hint">6~128자. 다른 곳에서 사용하지 않는 긴 비밀번호를 권장합니다.</p>
+      </div>
+      <div class="field">
+        <label class="field-label" for="resetPasswordConfirm">새 비밀번호 확인</label>
+        <input id="resetPasswordConfirm" class="field-input" type="password" autocomplete="new-password" minlength="6" maxlength="128" required>
+      </div>
+      <label class="ad-password-visibility"><input id="resetPasswordShow" type="checkbox">비밀번호 표시</label>
+      <p id="passwordResetError" class="field-error" role="alert"></p>
+      <div class="ad-password-actions">
+        <button id="passwordResetCancel" class="btn btn-secondary" type="button">취소</button>
+        <button id="passwordResetSubmit" class="btn btn-primary" type="submit">초기화하기</button>
+      </div>
     </form>
   </dialog>
 </body>

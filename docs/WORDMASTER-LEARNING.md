@@ -34,11 +34,11 @@ All day boundaries use Asia/Seoul's UTC+9 offset. Storage retains at most 366 da
 
 ## Administrator password reset
 
-The administrator's user list includes **비밀번호 초기화**. A dialog requires the new password twice, with a length of 8–128 characters. It does not reveal the previous password or persist plaintext in browser storage. Cancelling makes no change.
+The administrator's user list includes **비밀번호 초기화**. A dialog requires the new password twice, with the existing site policy of 6–128 characters. It does not reveal the previous password or persist plaintext in browser storage. Cancelling makes no change.
 
-`POST /api/admin/users/:id/reset-password` requires an authenticated admin session. The body contains `password` and `confirmPassword`, is limited to 4,096 bytes, and receives `Cache-Control: no-store`. Unknown users return 404 only behind the admin gate.
+`POST /api/admin/users/:id/password` requires an authenticated admin session. The API accepts `password`; the administrator dialog requires matching confirmation before sending it. Responses receive `Cache-Control: private, no-store`. Unknown users return 404 only behind the admin gate.
 
-A fresh random salt and the existing PBKDF2 password-hash format are used. Password replacement, expiry of that user's active sessions, and a credential-free audit event are a single D1 batch transaction. A compare-and-swap condition rejects concurrent replacements. Other users' sessions, administrator sessions, progress, aliases and history are left intact. The reset does not create a new login session.
+A fresh random salt and the existing PBKDF2 password-hash format are used. Password replacement, expiry of that user's active sessions, and a credential-free audit event are a single D1 batch transaction. Successive administrator resets are transactional; only the last completed password remains current. Other users' sessions, administrator sessions, progress, aliases and history are left intact. The reset does not create a new login session.
 
 User-session creation checks that the password hash verified during login is still current at insertion time, preventing a login racing the reset from issuing a session with an outdated password. A fresh login must use the new password. This is administrator-assisted reset, not an unauthenticated email recovery flow; the site has no verified email recovery channel.
 
@@ -62,3 +62,5 @@ Reviewed on 2026-09-21. The specific scheduling choices above are this project's
 ### Sync durability and payload limits
 
 Progress writes are serialized to avoid out-of-order completion. For WordMaster, an ownership marker accompanies the existing cache key; a cache known to belong to a different account is not reused. After hydration, a newer timestamped local record belonging to the same account is retained and uploaded, including when the previous page was reloaded before the debounce fired. The server bounds WordMaster progress to 1,200,000 UTF-8 bytes to accommodate the additional schedules and daily history; other apps retain an 800,000-byte bound. Multi-device simultaneous edits still use whole-document synchronization rather than a conflict-free per-answer merge.
+
+The administrator reset UI/API from PR #16 is preserved during integration. Additional SQLite and browser tests exercise that existing contract rather than introducing a duplicate reset endpoint.

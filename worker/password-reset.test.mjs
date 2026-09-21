@@ -4,7 +4,6 @@ import { DatabaseSync } from 'node:sqlite';
 import { readFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import worker from './src/index.js';
-import { resetUserPassword } from './src/password-reset.js';
 import { issueSession, passwordHash, sha256 } from './src/lib.js';
 
 async function fixture() {
@@ -48,7 +47,7 @@ async function fixture() {
   }), env);
   return { sql, DB, env, send, tokens, oldPassword, oldHash };
 }
-const url = '/api/admin/users/1/reset-password';
+const url = '/api/admin/users/1/password';
 const body = () => { const password = `new-${randomUUID()}`; return { password, confirmPassword: password }; };
 
 test('admin reset rotates salted hash, expires only target sessions, keeps progress and records an audit event', async () => {
@@ -57,7 +56,7 @@ test('admin reset rotates salted hash, expires only target sessions, keeps progr
     const input = body();
     const response = await f.send(url, input);
     assert.equal(response.status, 200);
-    assert.equal(response.headers.get('cache-control'), 'no-store');
+    assert.equal(response.headers.get('cache-control'), 'private, no-store');
     const output = await response.text();
     assert.equal(output, '{"ok":true}');
     assert.ok(!output.includes(input.password));
@@ -90,24 +89,25 @@ test('ordinary users and anonymous callers cannot reset any password', async () 
 test('validation rejects mismatches, weak or unbounded input without changes', async () => {
   const f = await fixture();
   try {
-    for (const input of [{ password: 'short', confirmPassword: 'short' }, { password: '12345678', confirmPassword: '87654321' }, { password: ' '.repeat(10), confirmPassword: ' '.repeat(10) }, { password: 12345678, confirmPassword: 12345678 }, { password: 'a'.repeat(129), confirmPassword: 'a'.repeat(129) }, [], 'not json']) {
+    for (const input of [{ password: 'short', confirmPassword: 'short' }, { password: ' '.repeat(10), confirmPassword: ' '.repeat(10) }, { password: 12345678, confirmPassword: 12345678 }, { password: 'a'.repeat(129), confirmPassword: 'a'.repeat(129) }, [], 'not json']) {
       assert.equal((await f.send(url, input)).status, 400);
     }
-    assert.equal((await f.send(url, 'x'.repeat(4097))).status, 413);
-    assert.equal((await f.send('/api/admin/users/999/reset-password', body())).status, 404);
-    assert.equal((await f.send('/api/admin/users/9007199254740992/reset-password', body())).status, 400);
+    assert.equal((await f.send(url, { password: 'x'.repeat(4097) })).status, 400);
+    assert.equal((await f.send('/api/admin/users/999/password', body())).status, 404);
+    assert.equal((await f.send('/api/admin/users/9007199254740992/password', body())).status, 400);
     assert.equal(f.sql.prepare('SELECT password_hash FROM users WHERE id=1').get().password_hash, f.oldHash);
   } finally { f.sql.close(); }
 });
 
-test('concurrent password replacement is compare-and-swap guarded', async () => {
+test('successive admin resets are transactional and only the final password remains valid', async () => {
   const f = await fixture();
   try {
-    f.DB.beforeBatch = () => f.sql.prepare('UPDATE users SET password_hash=? WHERE id=1').run('competing-update');
-    assert.equal((await f.send(url, body())).status, 409);
-    assert.equal(f.sql.prepare('SELECT password_hash FROM users WHERE id=1').get().password_hash, 'competing-update');
-    assert.equal(f.sql.prepare("SELECT COUNT(*) n FROM activity WHERE event='password_reset_by_admin'").get().n, 0);
-    assert.equal((await f.send('/api/me', null, f.tokens.user, 'GET')).status, 200);
+    const first = body(); const second = body();
+    assert.equal((await f.send(url, first)).status, 200);
+    assert.equal((await f.send(url, second)).status, 200);
+    assert.equal(f.sql.prepare("SELECT COUNT(*) n FROM activity WHERE event='password_reset_by_admin'").get().n, 2);
+    assert.equal((await f.send('/api/login', { username: 'fixture-user', password: first.password }, '')).status, 401);
+    assert.equal((await f.send('/api/login', { username: 'fixture-user', password: second.password }, '')).status, 200);
   } finally { f.sql.close(); }
 });
 
@@ -131,11 +131,13 @@ test('a login racing a reset cannot issue a session from a stale password hash',
   } finally { f.sql.close(); }
 });
 
-test('reset handler also rejects non-admin direct invocation', async () => {
+test('password reset rejects unsupported methods without changing credentials', async () => {
   const f = await fixture();
   try {
-    const response = await resetUserPassword(new Request('https://example.test', { method: 'POST', body: JSON.stringify(body()) }), f.env, 1, { role: 'user' });
-    assert.equal(response.status, 401);
+    const response = await f.send(url, null, f.tokens.admin, 'GET');
+    assert.equal(response.status, 405);
+    assert.equal(response.headers.get('allow'), 'POST');
+    assert.equal(f.sql.prepare('SELECT password_hash FROM users WHERE id=1').get().password_hash, f.oldHash);
   } finally { f.sql.close(); }
 });
 

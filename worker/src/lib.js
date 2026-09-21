@@ -143,20 +143,31 @@ export async function issueSession(env, userId, role, request, expectedPasswordH
   const ipHash = await sha256(ipAddress);
   const userAgent = (request.headers.get('user-agent') || '').slice(0, 240);
 
-  // Bind session issuance to the exact password checked before an asynchronous reset.
-  const guard = expectedPasswordHash === null ? '' : ' WHERE EXISTS (SELECT 1 FROM users WHERE id = ? AND password_hash = ? AND disabled = 0)';
   const values = [
-    await sha256(rawToken), userId || null, role, issuedAt, issuedAt + SESSION_DURATION_MS,
-    issuedAt, ipHash, ipAddress, userAgent,
+    await sha256(rawToken),
+    userId || null,
+    role,
+    issuedAt,
+    issuedAt + SESSION_DURATION_MS,
+    issuedAt,
+    ipHash,
+    ipAddress,
+    userAgent,
   ];
+  // Bind the session insert to the password snapshot that was verified. A login already in
+  // flight when an administrator resets the password must not recreate a usable session.
+  const passwordGuard = expectedPasswordHash === null ? '' : `
+    WHERE EXISTS (SELECT 1 FROM users WHERE id = ? AND password_hash = ? AND disabled = 0)
+  `;
   if (expectedPasswordHash !== null) values.push(userId, expectedPasswordHash);
-  const inserted = await env.DB.prepare(`
+  const result = await env.DB.prepare(`
     INSERT INTO sessions(
       token_hash, user_id, role, created_at, expires_at, last_seen_at,
       ip_hash, ip_address, user_agent
-    ) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?${guard}
+    ) SELECT ?, ?, ?, ?, ?, ?, ?, ?, ?
+    ${passwordGuard}
   `).bind(...values).run();
+  if (expectedPasswordHash !== null && result.meta?.changes !== 1) return null;
 
-  if (expectedPasswordHash !== null && inserted.meta?.changes === 0) return null;
   return rawToken;
 }

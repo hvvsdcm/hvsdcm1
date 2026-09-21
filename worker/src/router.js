@@ -12,7 +12,6 @@ import {
   readJson,
   sha256,
 } from './lib.js';
-import { resetUserPassword } from './password-reset.js';
 import {
   decideCompetitionApproval,
   getCompetitions,
@@ -286,9 +285,11 @@ async function login(request, env) {
     return json({ error: '아이디 또는 비밀번호가 올바르지 않습니다.' }, 401);
   }
 
-  await clearLoginFailures(env, attempt);
   const rawToken = await issueSession(env, user.id, 'user', request, user.password_hash);
-  if (!rawToken) return json({ error: '비밀번호가 변경되었습니다. 다시 로그인하세요.' }, 401);
+  if (!rawToken) {
+    return json({ error: '아이디 또는 비밀번호가 올바르지 않습니다.' }, 401);
+  }
+  await clearLoginFailures(env, attempt);
   await env.DB.prepare('UPDATE users SET last_login_at = ? WHERE id = ?')
     .bind(now(), user.id)
     .run();
@@ -1743,7 +1744,7 @@ async function progress(request, env, app) {
   if (request.method === 'PUT') {
     const input = await readJson(request);
     const rawData = JSON.stringify(input.data ?? {});
-    // WordMaster additionally carries 2,000 schedules, recent daily summaries and a resume queue.
+    // WordMaster additionally carries 2,000 schedules, daily summaries and a resume queue.
     const progressLimit = app === 'wordmaster' ? 1_200_000 : MAX_PROGRESS_BYTES;
     if (new TextEncoder().encode(rawData).byteLength > progressLimit) {
       return json({ error: '기록이 너무 큽니다.' }, 413);
@@ -1926,6 +1927,43 @@ async function createUser(request, env) {
   }
 }
 
+async function resetUserPassword(request, env, rawUserId) {
+  const userId = Number(rawUserId);
+  if (!/^[1-9]\d*$/.test(rawUserId) || !Number.isSafeInteger(userId)) {
+    return json({ error: '올바른 사용자를 선택하세요.' }, 400);
+  }
+  const input = await readJson(request);
+  const password = input?.password;
+  if (!input || Array.isArray(input) || typeof password !== 'string'
+    || password.length < 6 || password.length > 128 || !password.trim()) {
+    return json({ error: '새 비밀번호는 공백만으로 구성하지 않은 6~128자여야 합니다.' }, 400);
+  }
+
+  const salt = createToken();
+  const hash = await passwordHash(password, salt);
+  const resetAt = now();
+  // D1 batch is a transaction: credentials, session revocation and the secret-free audit
+  // event either all commit or all roll back. Session and learning history stay intact.
+  try {
+    const [updated] = await env.DB.batch([
+      env.DB.prepare('UPDATE users SET password_hash = ?, password_salt = ? WHERE id = ?')
+        .bind(hash, salt, userId),
+      env.DB.prepare('UPDATE sessions SET expires_at = ? WHERE user_id = ? AND expires_at > ?')
+        .bind(resetAt, userId, resetAt),
+      env.DB.prepare(`
+        INSERT INTO activity(user_id, event, app, created_at, detail)
+        SELECT id, 'password_reset_by_admin', NULL, ?, NULL FROM users WHERE id = ?
+      `).bind(resetAt, userId),
+    ]);
+    if (!updated.meta?.changes) return json({ error: '사용자를 찾을 수 없습니다.' }, 404);
+    return json({ ok: true });
+  } catch {
+    // Database exceptions can include bound parameters. Never log credential values.
+    console.error('admin_password_reset_failed');
+    return json({ error: '비밀번호 초기화에 실패했습니다. 다시 시도해 주세요.' }, 500);
+  }
+}
+
 async function deleteUser(env, userId) {
   await env.DB.prepare('DELETE FROM users WHERE id = ?').bind(userId).run();
   return json({ ok: true });
@@ -1986,8 +2024,13 @@ async function adminRoute(request, env, path) {
   if (request.method === 'GET' && path === '/api/admin/users') return listUsers(env);
   if (request.method === 'POST' && path === '/api/admin/users') return createUser(request, env);
 
-  const resetMatch = path.match(/^\/api\/admin\/users\/(\d+)\/reset-password$/);
-  if (resetMatch && request.method === 'POST') return resetUserPassword(request, env, Number(resetMatch[1]), session);
+  const passwordMatch = path.match(/^\/api\/admin\/users\/([^/]+)\/password$/);
+  if (passwordMatch) {
+    if (request.method !== 'POST') {
+      return json({ error: 'POST 요청이 필요합니다.' }, 405, { allow: 'POST' });
+    }
+    return resetUserPassword(request, env, passwordMatch[1]);
+  }
 
   const userMatch = path.match(/^\/api\/admin\/users\/(\d+)$/);
   if (userMatch && request.method === 'DELETE') {
