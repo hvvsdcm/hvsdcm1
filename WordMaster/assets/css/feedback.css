@@ -1,0 +1,109 @@
+/* Immediate grading feedback: make correctness unmistakable without asking for self-rating. */
+.wordmaster-page .wm-feedback {
+  width: 100%;
+  gap: 14px;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.wordmaster-page .wm-verdict-hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 94px;
+  padding: 18px 20px;
+  border-radius: 22px;
+  border: 1px solid transparent;
+}
+.wordmaster-page .wm-feedback.is-correct .wm-verdict-hero {
+  background: var(--green-soft);
+  border-color: color-mix(in srgb, var(--green) 28%, transparent);
+}
+.wordmaster-page .wm-feedback.is-wrong .wm-verdict-hero {
+  background: var(--red-soft);
+  border-color: color-mix(in srgb, var(--red) 30%, transparent);
+}
+.wordmaster-page .wm-verdict-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+.wordmaster-page .wm-verdict-icon .list-row-lead {
+  width: auto;
+  height: auto;
+}
+.wordmaster-page .wm-verdict-icon .ui-icon {
+  width: 26px;
+  height: 26px;
+}
+.wordmaster-page .wm-feedback.is-correct .wm-verdict-icon {
+  color: var(--green);
+  background: color-mix(in srgb, var(--green) 14%, transparent);
+}
+.wordmaster-page .wm-feedback.is-wrong .wm-verdict-icon {
+  color: var(--red);
+  background: color-mix(in srgb, var(--red) 14%, transparent);
+}
+.wordmaster-page .wm-verdict-copy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+.wordmaster-page .wm-verdict {
+  font-size: clamp(1.35rem, 3vw, 1.7rem);
+  font-weight: 780;
+  line-height: 1.2;
+  letter-spacing: -.025em;
+}
+.wordmaster-page .wm-verdict-copy > span {
+  color: var(--text-2);
+  font-size: .92rem;
+}
+.wordmaster-page .wm-feedback > .list-group {
+  box-shadow: none;
+  background: var(--surface-2);
+}
+.wordmaster-page .wm-recall-info {
+  padding-inline: 4px;
+}
+.wordmaster-page .wm-auto-review {
+  display: inline-flex;
+  margin-left: 6px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  color: var(--text-3);
+  font-size: .72rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .wordmaster-page .wm-verdict-hero {
+    animation: wm-verdict-pop .28s cubic-bezier(.2,.8,.2,1) both;
+  }
+}
+@keyframes wm-verdict-pop {
+  from {
+    opacity: 0;
+    transform: scale(.975) translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (max-width: 620px) {
+  .wordmaster-page .wm-verdict-hero {
+    min-height: 88px;
+    padding: 16px;
+    border-radius: 18px;
+  }
+  .wordmaster-page .wm-verdict-icon {
+    width: 44px;
+    height: 44px;
+  }
+}

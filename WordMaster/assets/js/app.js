@@ -390,15 +390,6 @@
     state.session = restored; state.view = 'quiz'; renderQuiz();
   }
 
-  function rateCurrent(grade) {
-    const session = state.session;
-    if (!session?.answered || !session.lastResult?.correct || !['hard', 'good', 'easy'].includes(grade)) return;
-    const item = session.questions[session.index];
-    session.lastResult.grade = grade;
-    db.learning.cards[item.id] = scheduler.review(session.lastResult.cardBefore, grade, session.lastResult.at);
-    saveDb(); renderQuiz();
-  }
-
   function startSession(questions, meta) {
     if (db.learning.activeSession && !state.session && !window.confirm('이어서 풀 수 있는 학습이 있어요. 기존 학습 기록은 남기고 새로 시작할까요?')) return;
     if (!questions.length) {
@@ -652,7 +643,6 @@
 
     document.getElementById('submitBtn').addEventListener('click', answered ? nextQuestion : submitAnswer);
     document.getElementById('dontKnowBtn')?.addEventListener('click', () => { document.getElementById('answerInput').value = ''; submitAnswer(); });
-    document.querySelectorAll('[data-recall-grade]').forEach((button) => button.addEventListener('click', () => rateCurrent(button.dataset.recallGrade)));
     const input = document.getElementById('answerInput');
     if (!answered) {
       input.addEventListener('keydown', (event) => {
@@ -677,12 +667,12 @@
     const earlyPractice = result.cardBefore?.lastReviewAt > 0 && result.at < result.cardBefore.dueAt;
     return `
       <div class="wm-feedback ${isCorrect ? 'is-correct' : 'is-wrong'}" role="status">
+        <div class="wm-verdict-hero">
+          <span class="wm-verdict-icon">${isCorrect ? iconLead('correct') : iconLead('incorrect')}</span>
+          <span class="wm-verdict-copy"><strong class="wm-verdict">${isCorrect ? '정답이에요' : '틀렸어요'}</strong><span>${isCorrect ? '바로 기억했어요.' : '정답을 확인하고 다시 기억해요.'}</span></span>
+          ${result.overridden ? '<span class="badge">내 답을 정답으로 저장함</span>' : ''}
+        </div>
         <div class="list-group is-inset">
-          <div class="list-row">
-            ${isCorrect ? iconLead('correct') : iconLead('incorrect')}
-            <span class="list-row-body"><span class="list-row-title wm-verdict">${isCorrect ? '정답' : '오답'}</span></span>
-            ${result.overridden ? '<span class="list-row-value">내 답을 정답으로 저장함</span>' : ''}
-          </div>
           <div class="list-row">
             <span class="list-row-body"><span class="list-row-title">교재 정답</span></span>
             <span class="list-row-value wm-gloss">${escapeHtml(item.meaning)}</span>
@@ -692,8 +682,8 @@
             <span class="list-row-value wm-gloss">${escapeHtml(result.input || '(빈 답)')}</span>
           </div>
         </div>
-        <div class="wm-recall-info"><p>다음 복습: <strong>${scheduler.dueLabel(scheduled?.dueAt)}</strong></p>
-          ${isCorrect && !earlyPractice ? `<div class="wm-recall-grades" role="group" aria-label="기억 난이도">${[['hard', '어려움'], ['good', '보통'], ['easy', '쉬움']].map(([grade, label]) => `<button class="btn btn-secondary btn-sm" type="button" data-recall-grade="${grade}" aria-pressed="${(result.grade || 'good') === grade}">${label}</button>`).join('')}</div>` : ''}
+        <div class="wm-recall-info"><p>다음 복습: <strong>${scheduler.dueLabel(scheduled?.dueAt)}</strong> <span class="wm-auto-review">자동 조정</span></p>
+          ${isCorrect && !earlyPractice ? '<p class="wm-hint">정오 기록을 바탕으로 다음 복습 간격을 자동으로 정했어요.</p>' : ''}
           ${earlyPractice && isCorrect ? '<p class="wm-hint">방금 본 단어의 재풀이는 복습 간격을 늘리지 않아요.</p>' : ''}
           ${!isCorrect && Number.isInteger(result.retryIndex) ? '<p class="wm-hint">이번 학습 안에서 한 번 더 확인해요.</p>' : ''}
         </div>

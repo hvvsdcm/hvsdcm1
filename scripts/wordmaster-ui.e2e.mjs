@@ -118,7 +118,7 @@ try {
   await delayed.page.click('#dailyStartBtn');
   await delayed.page.fill('#answerInput', '별칭');
   await delayed.page.click('#submitBtn');
-  checked(await delayed.page.locator('.wm-verdict').textContent() === '정답', 'existing custom answer retained');
+  checked((await delayed.page.locator('.wm-verdict').textContent()).includes('정답'), 'existing custom answer retained');
   checked(delayed.errors.length === 0, 'hydration race causes no browser errors');
   await delayed.context.close();
 
