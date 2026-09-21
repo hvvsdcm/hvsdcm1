@@ -1992,6 +1992,49 @@ html.auth-pending body {
 .admin-page .table th {
   background: var(--surface-2);
 }
+/* The native modal owns keyboard focus; its contents never widen the mobile viewport. */
+.ad-password-dialog {
+  width: min(28rem, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  overflow-y: auto;
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: var(--shadow-3);
+}
+.ad-password-dialog::backdrop {
+  background: rgba(0, 0, 0, .7);
+}
+.ad-password-form {
+  display: grid;
+  gap: var(--space-4);
+}
+.ad-password-form > * {
+  min-width: 0;
+}
+.ad-password-form .field-hint {
+  overflow-wrap: anywhere;
+}
+.ad-password-visibility {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-micro);
+  color: var(--text-2);
+}
+.ad-password-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.ad-user-status {
+  color: var(--text-2);
+  font-size: var(--fs-micro);
+}
+.ad-user-status:empty {
+  display: none;
+}
 /* ---- 반응형 ---- */
 @media (max-width: 860px) {
   .ad-panel {
@@ -2126,6 +2169,7 @@ html.auth-pending body {
               <button class="btn btn-primary btn-sm" type="submit">사용자 추가</button>
             </form>
             <p id="userError" class="field-error" role="alert"></p>
+            <p id="userStatus" class="ad-user-status" role="status" aria-live="polite"></p>
 
             <div class="table-wrap">
               <table class="table">
@@ -2184,5 +2228,26 @@ html.auth-pending body {
       </main>
     </div>
   </div>
+  <dialog id="passwordResetDialog" class="ad-password-dialog card" aria-labelledby="passwordResetTitle" aria-describedby="passwordResetDescription">
+    <form id="passwordResetForm" class="ad-password-form">
+      <h2 id="passwordResetTitle" class="title-2">비밀번호 초기화</h2>
+      <p id="passwordResetDescription" class="field-hint"><strong id="passwordResetUsername"></strong> 계정의 새 비밀번호를 설정합니다. 기존 로그인은 모든 기기에서 만료되며, 학습 기록은 유지됩니다.</p>
+      <div class="field">
+        <label class="field-label" for="resetPassword">새 비밀번호</label>
+        <input id="resetPassword" class="field-input" type="password" autocomplete="new-password" minlength="6" maxlength="128" aria-describedby="resetPasswordHint" required>
+        <p id="resetPasswordHint" class="field-hint">6~128자. 다른 곳에서 사용하지 않는 긴 비밀번호를 권장합니다.</p>
+      </div>
+      <div class="field">
+        <label class="field-label" for="resetPasswordConfirm">새 비밀번호 확인</label>
+        <input id="resetPasswordConfirm" class="field-input" type="password" autocomplete="new-password" minlength="6" maxlength="128" required>
+      </div>
+      <label class="ad-password-visibility"><input id="resetPasswordShow" type="checkbox">비밀번호 표시</label>
+      <p id="passwordResetError" class="field-error" role="alert"></p>
+      <div class="ad-password-actions">
+        <button id="passwordResetCancel" class="btn btn-secondary" type="button">취소</button>
+        <button id="passwordResetSubmit" class="btn btn-primary" type="submit">초기화하기</button>
+      </div>
+    </form>
+  </dialog>
 </body>
 </html>

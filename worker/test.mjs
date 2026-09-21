@@ -125,8 +125,10 @@ function createLoginTestDb(user = null) {
           if (query.startsWith('INSERT INTO sessions')) {
             return {
               async run() {
-                sessions.push(values);
-                return { success: true };
+                const allowed = values.length === 9 || (user && !user.disabled
+                  && values[9] === user.id && values[10] === user.password_hash);
+                if (allowed) sessions.push(values);
+                return { success: true, meta: { changes: allowed ? 1 : 0 } };
               },
             };
           }
@@ -2738,4 +2740,260 @@ test('competition accepted-report batch rolls back every normalized table on a c
   ]) {
     assert.equal(Number(database.prepare(`SELECT COUNT(*) AS count FROM ${table}`).get().count), 0);
   }
+});
+
+// Password-reset regression fixtures are isolated in-memory accounts, never live credentials.
+async function passwordResetContext(t) {
+  const { DatabaseSync } = await import('node:sqlite');
+  const database = new DatabaseSync(':memory:');
+  t.after(() => database.close());
+  for (const migration of ['0001_init.sql', '0004_session_ip_address.sql', '0008_login_attempt_limits.sql']) {
+    database.exec(readFileSync(new URL(`./migrations/${migration}`, import.meta.url), 'utf8'));
+  }
+  const createdAt = Date.now() - 60_000;
+  const oldPassword = 'Old-password-for-reset-tests!';
+  const salt = 'isolated-reset-fixture-salt';
+  const hash = await passwordHash(oldPassword, salt);
+  const insertUser = database.prepare(`
+    INSERT INTO users(id, username, password_hash, password_salt, created_at, disabled)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `);
+  insertUser.run(1, 'reset-target', hash, salt, createdAt, 0);
+  insertUser.run(2, 'other-user', hash, salt, createdAt, 0);
+  insertUser.run(3, 'disabled-user', hash, salt, createdAt, 1);
+  const insertSession = database.prepare(`
+    INSERT INTO sessions(token_hash, user_id, role, created_at, expires_at, last_seen_at, user_agent)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `);
+  for (const [token, userId, role, expiry] of [
+    ['reset-admin-token', null, 'admin', Date.now() + DAY_MS],
+    ['reset-expired-admin-token', null, 'admin', Date.now() - 1_000],
+    ['reset-user-token', 1, 'user', Date.now() + DAY_MS],
+    ['reset-second-device', 1, 'user', Date.now() + DAY_MS],
+    ['reset-linked-admin', 1, 'admin', Date.now() + DAY_MS],
+    ['reset-expired-user', 1, 'user', Date.now() - 1_000],
+    ['reset-other-token', 2, 'user', Date.now() + DAY_MS],
+    ['reset-disabled-admin', 3, 'admin', Date.now() + DAY_MS],
+  ]) {
+    insertSession.run(await sha256(token), userId, role, createdAt, expiry, createdAt, 'Fixture browser');
+  }
+  database.prepare('INSERT INTO progress(user_id, app, data, updated_at) VALUES (?, ?, ?, ?)')
+    .run(1, 'wordmaster', '{"done":[1,2,3]}', createdAt);
+  database.prepare(`
+    INSERT INTO shared_answers(app, question_id, normalized_answer, display_answer, created_by, created_at)
+    VALUES ('wordmaster', 'fixture-word', 'fixture', 'fixture', 1, ?)
+  `).run(createdAt);
+  return {
+    database,
+    oldPassword,
+    env: { ALLOWED_ORIGIN: 'https://example.test', DB: sqliteD1(database) },
+  };
+}
+
+function resetRequest(body = { password: 'Replacement-password-for-tests!' }, token = 'reset-admin-token', id = '1', method = 'POST') {
+  return new Request(`https://api.test/api/admin/users/${id}/password`, {
+    method,
+    headers: {
+      'content-type': 'application/json',
+      ...(token ? { authorization: `Bearer ${token}` } : {}),
+    },
+    ...(method === 'GET' ? {} : { body: JSON.stringify(body) }),
+  });
+}
+
+function assertResetNoStore(response) {
+  assert.equal(response.headers.get('cache-control'), 'private, no-store');
+  assert.equal(response.headers.get('access-control-allow-origin'), 'https://example.test');
+}
+
+test('password reset requires an active administrator before looking up a target', async (t) => {
+  const { database, env } = await passwordResetContext(t);
+  const before = database.prepare('SELECT * FROM users').all();
+  for (const token of ['', 'unknown-token', 'reset-user-token', 'reset-other-token', 'reset-expired-admin-token', 'reset-disabled-admin']) {
+    for (const id of ['1', '999999']) {
+      const response = await worker.fetch(resetRequest(undefined, token, id), env);
+      assert.equal(response.status, 401, `${token || 'anonymous'} ${id}`);
+      assertResetNoStore(response);
+      assert.deepEqual(await response.json(), { error: '관리자 로그인이 필요합니다.' });
+    }
+  }
+  assert.deepEqual(database.prepare('SELECT * FROM users').all(), before);
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM activity WHERE event = 'password_reset_by_admin'").get().count, 0);
+});
+
+test('password reset rejects invalid ids, malformed payloads and wrong methods without changing a password', async (t) => {
+  const { database, env } = await passwordResetContext(t);
+  const before = database.prepare('SELECT * FROM users').all();
+  for (const id of ['0', '-1', '1.5', '01', 'abc', '9007199254740992']) {
+    const response = await worker.fetch(resetRequest(undefined, 'reset-admin-token', id), env);
+    assert.equal(response.status, 400, id);
+    assertResetNoStore(response);
+  }
+  for (const body of [null, [], {}, { password: null }, { password: 123456 }, { password: ['123456'] },
+    { password: 'short' }, { password: '      ' }, { password: 'a'.repeat(129) }]) {
+    const response = await worker.fetch(resetRequest(body), env);
+    assert.equal(response.status, 400);
+    assertResetNoStore(response);
+  }
+  const malformed = new Request('https://api.test/api/admin/users/1/password', {
+    method: 'POST', headers: { authorization: 'Bearer reset-admin-token', 'content-type': 'application/json' }, body: '{',
+  });
+  assert.equal((await worker.fetch(malformed, env)).status, 400);
+  for (const method of ['GET', 'PUT', 'DELETE']) {
+    const response = await worker.fetch(resetRequest(undefined, 'reset-admin-token', '1', method), env);
+    assert.equal(response.status, 405);
+    assert.equal(response.headers.get('allow'), 'POST');
+    assertResetNoStore(response);
+  }
+  assert.deepEqual(database.prepare('SELECT * FROM users').all(), before);
+  assert.equal(database.prepare('SELECT COUNT(*) AS count FROM activity').get().count, 0);
+});
+
+test('password reset returns a non-cached 404 for a missing account without affecting other accounts', async (t) => {
+  const { database, env } = await passwordResetContext(t);
+  const before = database.prepare('SELECT * FROM users').all();
+  const response = await worker.fetch(resetRequest(undefined, 'reset-admin-token', '999999'), env);
+  assert.equal(response.status, 404);
+  assertResetNoStore(response);
+  assert.deepEqual(database.prepare('SELECT * FROM users').all(), before);
+  assert.equal(database.prepare('SELECT COUNT(*) AS count FROM activity').get().count, 0);
+});
+
+test('password reset changes only the target hash, expires every target device and preserves learning and history', async (t) => {
+  const { database, env, oldPassword } = await passwordResetContext(t);
+  const before = database.prepare('SELECT * FROM users WHERE id = 1').get();
+  const other = database.prepare('SELECT * FROM users WHERE id = 2').get();
+  const progress = database.prepare('SELECT * FROM progress').all();
+  const answers = database.prepare('SELECT * FROM shared_answers').all();
+  const history = database.prepare('SELECT * FROM sessions WHERE user_id = 1 ORDER BY token_hash').all();
+  const password = '  공백을 보존하는 새 비밀번호!  ';
+  const response = await worker.fetch(resetRequest({ password }), env);
+  assert.equal(response.status, 200);
+  assertResetNoStore(response);
+  assert.deepEqual(await response.json(), { ok: true });
+  const after = database.prepare('SELECT * FROM users WHERE id = 1').get();
+  assert.notEqual(after.password_salt, before.password_salt);
+  assert.notEqual(after.password_hash, before.password_hash);
+  assert.equal(after.password_hash, await passwordHash(password, after.password_salt));
+  assert.equal(after.created_at, before.created_at);
+  assert.equal(after.last_login_at, before.last_login_at);
+  assert.equal(after.disabled, before.disabled);
+  assert.deepEqual(database.prepare('SELECT * FROM users WHERE id = 2').get(), other);
+  assert.deepEqual(database.prepare('SELECT * FROM progress').all(), progress);
+  assert.deepEqual(database.prepare('SELECT * FROM shared_answers').all(), answers);
+  const afterHistory = database.prepare('SELECT * FROM sessions WHERE user_id = 1 ORDER BY token_hash').all();
+  assert.equal(afterHistory.length, history.length);
+  for (let index = 0; index < history.length; index += 1) {
+    assert.ok(afterHistory[index].expires_at <= Date.now());
+    assert.deepEqual({ ...afterHistory[index], expires_at: history[index].expires_at }, { ...history[index] });
+    assert.ok(afterHistory[index].expires_at <= history[index].expires_at, 'never revive or extend a session');
+  }
+  const audit = database.prepare("SELECT user_id, event, app, detail FROM activity WHERE event = 'password_reset_by_admin'").get();
+  assert.deepEqual({ ...audit }, { user_id: 1, event: 'password_reset_by_admin', app: null, detail: null });
+  for (const token of ['reset-user-token', 'reset-second-device', 'reset-linked-admin']) {
+    const me = await worker.fetch(new Request('https://api.test/api/me', { headers: { authorization: `Bearer ${token}` } }), env);
+    assert.equal(me.status, 401);
+  }
+  for (const token of ['reset-admin-token', 'reset-other-token']) {
+    const me = await worker.fetch(new Request('https://api.test/api/me', { headers: { authorization: `Bearer ${token}` } }), env);
+    assert.equal(me.status, 200, 'unrelated sessions stay active');
+  }
+  assert.equal((await worker.fetch(loginRequest('/api/login', { username: 'reset-target', password: oldPassword }), env)).status, 401);
+  const freshLogin = await worker.fetch(loginRequest('/api/login', { username: 'reset-target', password }), env);
+  assert.equal(freshLogin.status, 200);
+  const { token } = await freshLogin.json();
+  assert.ok(token);
+  const freshMe = await worker.fetch(new Request('https://api.test/api/me', { headers: { authorization: `Bearer ${token}` } }), env);
+  assert.equal(freshMe.status, 200);
+});
+
+test('password reset accepts both policy boundaries and rotates salt even for a repeated password', async (t) => {
+  const { database, env } = await passwordResetContext(t);
+  let lastSalt = database.prepare('SELECT password_salt FROM users WHERE id = 1').get().password_salt;
+  for (const password of ['abcdef', 'a'.repeat(128), 'a'.repeat(128)]) {
+    assert.equal((await worker.fetch(resetRequest({ password }), env)).status, 200);
+    const current = database.prepare('SELECT password_hash, password_salt FROM users WHERE id = 1').get();
+    assert.notEqual(current.password_salt, lastSalt);
+    assert.equal(current.password_hash, await passwordHash(password, current.password_salt));
+    lastSalt = current.password_salt;
+  }
+});
+
+test('password reset never re-enables a disabled user', async (t) => {
+  const { database, env } = await passwordResetContext(t);
+  assert.equal((await worker.fetch(resetRequest(undefined, 'reset-admin-token', '3'), env)).status, 200);
+  assert.equal(database.prepare('SELECT disabled FROM users WHERE id = 3').get().disabled, 1);
+  const login = await worker.fetch(loginRequest('/api/login', {
+    username: 'disabled-user', password: 'Replacement-password-for-tests!',
+  }), env);
+  assert.equal(login.status, 401);
+});
+
+test('password reset rolls back credentials, revocations and audit when any batch statement fails', async (t) => {
+  for (const failAt of ['sessions', 'activity']) {
+    await t.test(failAt, async (subtest) => {
+      const { database, env } = await passwordResetContext(subtest);
+      const users = database.prepare('SELECT * FROM users').all();
+      const sessions = database.prepare('SELECT * FROM sessions WHERE user_id IS NOT NULL').all();
+      database.exec(failAt === 'sessions'
+        ? "CREATE TRIGGER fail_reset BEFORE UPDATE OF expires_at ON sessions BEGIN SELECT RAISE(ABORT, 'fixture-expiry-failure'); END"
+        : "CREATE TRIGGER fail_reset BEFORE INSERT ON activity BEGIN SELECT RAISE(ABORT, 'fixture-audit-failure'); END");
+      const logs = [];
+      subtest.mock.method(console, 'error', (...values) => logs.push(values));
+      const response = await worker.fetch(resetRequest(), env);
+      assert.equal(response.status, 500);
+      assertResetNoStore(response);
+      assert.deepEqual(logs, [['admin_password_reset_failed']]);
+      assert.deepEqual(database.prepare('SELECT * FROM users').all(), users);
+      assert.deepEqual(database.prepare('SELECT * FROM sessions WHERE user_id IS NOT NULL').all(), sessions);
+      assert.equal(database.prepare('SELECT COUNT(*) AS count FROM activity').get().count, 0);
+    });
+  }
+});
+
+test('password reset also redacts unexpected authentication errors and disables caching on failure', async (t) => {
+  const logs = [];
+  t.mock.method(console, 'error', (...values) => logs.push(values));
+  const env = {
+    ALLOWED_ORIGIN: 'https://example.test',
+    DB: { prepare() { throw new Error('sensitive-database-diagnostic-fixture'); } },
+  };
+  const response = await worker.fetch(resetRequest(), env);
+  assert.equal(response.status, 500);
+  assertResetNoStore(response);
+  assert.deepEqual(logs, [['password_reset_request_failed']]);
+  assert.deepEqual(await response.json(), { error: '서버 오류' });
+});
+
+test('an in-flight login cannot issue a new session after the verified password was reset', async (t) => {
+  const { database, env, oldPassword } = await passwordResetContext(t);
+  const originalDb = env.DB;
+  let intercepted = false;
+  const racingDb = {
+    ...originalDb,
+    prepare(sql) {
+      const statement = originalDb.prepare(sql);
+      if (!sql.includes('INSERT INTO sessions')) return statement;
+      return {
+        bind(...values) {
+          const bound = statement.bind(...values);
+          return {
+            async run() {
+              intercepted = true;
+              const reset = await worker.fetch(resetRequest(), env);
+              assert.equal(reset.status, 200);
+              return bound.run();
+            },
+          };
+        },
+      };
+    },
+  };
+  const response = await worker.fetch(loginRequest('/api/login', {
+    username: 'reset-target', password: oldPassword,
+  }), { ...env, DB: racingDb });
+  assert.equal(intercepted, true);
+  assert.equal(response.status, 401);
+  assert.equal(database.prepare('SELECT COUNT(*) AS count FROM sessions WHERE user_id = 1 AND expires_at > ?').get(Date.now()).count, 0);
+  assert.equal(database.prepare("SELECT COUNT(*) AS count FROM activity WHERE event = 'login'").get().count, 0);
 });
