@@ -1,103 +1,133 @@
-/* WordMaster presentation layer for the shared Toss-inspired study shell. */
+/* Daily activity is primary; review and manual practice remain one action away. */
 .wordmaster-page .wm-today-layout {
-  gap: 18px;
+  grid-template-columns: minmax(0,1.4fr) minmax(250px,1fr);
+  gap: 20px;
 }
 .wordmaster-page .wm-goal-card {
-  padding: clamp(24px, 4vw, 36px);
-  background: var(--surface);
+  gap: 14px;
+  padding: 28px;
 }
 .wordmaster-page .wm-review-card {
-  padding: clamp(22px, 3vw, 30px);
+  padding: 28px;
 }
 .wordmaster-page .wm-goal-number strong {
-  font-size: clamp(3.5rem, 8vw, 5.8rem);
-  font-weight: 780;
-  letter-spacing: -.065em;
+  font-size: clamp(48px,5vw,64px);
+  font-weight: 750;
+  letter-spacing: -.045em;
 }
 .wordmaster-page .wm-goal-number span {
   color: var(--text-3);
+  font-size: 18px;
 }
 .wordmaster-page .wm-goal-message {
   color: var(--text-2);
-  font-size: 1rem;
+  font-size: 15px;
+}
+.wordmaster-page .wm-section-title {
+  margin-bottom: 4px;
 }
 .wordmaster-page .wm-daily-progress {
-  height: 12px;
+  height: 10px;
   background: var(--surface-3);
 }
 .wordmaster-page .wm-daily-progress::-webkit-progress-value {
-  background: #3182f6;
+  background: #1b64da;
 }
 .wordmaster-page .wm-daily-progress::-moz-progress-bar {
-  background: #3182f6;
+  background: #1b64da;
 }
 .wordmaster-page .wm-today-breakdown {
   color: var(--text-3);
+  font-size: 12px;
 }
 .wordmaster-page .wm-start-button {
-  min-height: 56px;
+  min-height: 54px;
   margin-top: 8px;
-  border-radius: 16px;
-  font-size: 1rem;
+  border-radius: 14px;
+  font-size: 16px;
 }
 .wordmaster-page .wm-review-count strong {
-  color: #3182f6;
+  color: var(--accent);
+  font-size: 40px;
 }
 .wordmaster-page .wm-week-section {
-  margin-top: 8px;
   padding: 24px;
-  border-radius: 24px;
-  background: var(--surface);
-  box-shadow: var(--study-shadow-soft);
-}
-.wordmaster-page .wm-week-day.is-today {
-  background: rgba(49,130,246,.14);
-}
-.wordmaster-page .wm-week-day.is-complete .wm-week-dot {
-  background: #3182f6;
-  color: #fff;
-}
-.wordmaster-page .wm-dialog {
-  border-radius: 26px;
-  background: var(--surface);
-}
-.wordmaster-page .wm-goal-presets [aria-pressed="true"], .wordmaster-page .wm-recall-grades [aria-pressed="true"] {
-  background: #3182f6;
-  color: #fff;
-}
-.wordmaster-page .wm-question {
-  padding: clamp(24px, 5vw, 44px);
-  border: 0;
-  border-radius: 26px;
-  background: var(--surface);
-  box-shadow: var(--study-shadow-soft);
-}
-.wordmaster-page .wm-word {
-  font-size: clamp(2.4rem, 8vw, 4.7rem);
-  letter-spacing: -.04em;
-}
-.wordmaster-page .wm-answer-row {
-  gap: 10px;
-}
-.wordmaster-page .wm-answer-row .field-input {
-  min-height: 56px;
-  font-size: 1.05rem;
-}
-.wordmaster-page .wm-progress .wm-fill {
-  background: #3182f6;
-}
-.wordmaster-page .wm-feedback {
-  border: 0;
+  border: 1px solid var(--line-faint);
   border-radius: 22px;
   background: var(--surface);
   box-shadow: var(--study-shadow-soft);
 }
-.wordmaster-page .wm-score {
-  color: #3182f6;
+.wordmaster-page .wm-week-day.is-today {
+  background: var(--surface-3);
 }
-@media (max-width: 900px) {
+.wordmaster-page .wm-week-day.is-complete .wm-week-dot {
+  color: #fff;
+  background: #1b64da;
+}
+.wordmaster-page .wm-dialog {
+  border-radius: 24px;
+  background: var(--surface);
+}
+.wordmaster-page .wm-goal-presets [aria-pressed="true"], .wordmaster-page .wm-recall-grades [aria-pressed="true"] {
+  color: #fff;
+  background: #1b64da;
+}
+.wordmaster-page .wm-question {
+  padding: 32px;
+  border: 1px solid var(--line-faint);
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: var(--study-shadow-soft);
+}
+.wordmaster-page .wm-word {
+  font-size: clamp(36px,5vw,64px);
+  letter-spacing: -.035em;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.wordmaster-page .wm-answer-row {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  gap: 10px;
+}
+.wordmaster-page .wm-answer-row .field-input {
+  min-height: 54px;
+  font-size: 17px;
+}
+.wordmaster-page .wm-progress .wm-fill {
+  background: #1b64da;
+}
+.wordmaster-page .wm-score {
+  color: var(--accent);
+}
+.wordmaster-page .wm-actions-row {
+  flex-wrap: wrap;
+}
+.wordmaster-page .wm-feedback .list-group {
+  width: 100%;
+}
+@media (max-width: 860px) {
   .wordmaster-page .wm-today-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0,1fr);
+  }
+  .wordmaster-page .wm-review-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 8px 16px;
+  }
+  .wordmaster-page .wm-review-card .wm-card-icon {
+    display: none;
+  }
+  .wordmaster-page .wm-review-card h2 {
+    grid-column: 1;
+  }
+  .wordmaster-page .wm-review-count {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .wordmaster-page .wm-review-card > .text-secondary, .wordmaster-page .wm-review-card > .wm-wide-button, .wordmaster-page .wm-review-card > .wm-hint {
+    grid-column: 1 / -1;
   }
 }
 @media (max-width: 620px) {
@@ -105,18 +135,22 @@
     padding: 22px 20px;
   }
   .wordmaster-page .wm-week-section {
-    padding: 20px 14px;
+    padding: 20px 12px;
   }
-  .wordmaster-page .wm-goal-number strong {
-    font-size: 3.7rem;
+  .wordmaster-page .wm-week-section .wm-section-title {
+    padding-inline: 8px;
   }
   .wordmaster-page .wm-question {
-    padding: 26px 20px;
+    padding: 26px 18px;
   }
   .wordmaster-page .wm-answer-row {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0,1fr);
   }
   .wordmaster-page .wm-answer-row .btn {
     width: 100%;
+    min-height: 50px;
+  }
+  .wordmaster-page .wm-section-title > .text-secondary {
+    font-size: 12px;
   }
 }

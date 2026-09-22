@@ -1,10 +1,11 @@
 <!doctype html>
-<html lang="ko" class="auth-pending">
+<html lang="ko" class="auth-pending study-app">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
   <meta name="theme-color" content="#000000">
   <meta name="color-scheme" content="dark light">
+  <script src="/assets/js/study-shell.js?v=20260922-study-v2"></script>
   <meta name="description" content="사회·문화 1~5단원 개념 학습과 평가원 기출 78문항·개념 연습 20문항 웹앱">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="hvsdcm">
@@ -18,22 +19,24 @@
   <meta name="twitter:image" content="https://hvsdcm1.xyz/assets/og.png">
   <title>평가원 사회·문화 기출 회독</title>
   <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
-  <link rel="stylesheet" href="/assets/css/system.css?v=20260904-icons-v2">
+  <link rel="stylesheet" href="/assets/css/system.css?v=20260922-study-v2">
   <link rel="stylesheet" href="assets/css/style.css?v=20260908-study-refresh">
-  <link rel="stylesheet" href="/assets/css/study-toss.css?v=20260921-toss-v1">
-  <link rel="stylesheet" href="assets/css/toss.css?v=20260921-toss-v1">
+  <link rel="stylesheet" href="/assets/css/study-toss.css?v=20260922-study-v2">
+  <link rel="stylesheet" href="assets/css/toss.css?v=20260922-study-v2">
 </head>
 <body class="smstudy-page study-toss">
   <a class="skip-link" href="#app">본문으로 건너뛰기</a>
 
   <header class="topbar">
-    <div class="topbar-inner container-wide">
+    <div class="topbar-inner container-wide study-topbar">
       <a class="brand" href="/" aria-label="hvsdcm 홈"><img class="brand-mark" src="/assets/logo.svg" alt="">hvsdcm</a>
-      <span class="topbar-crumb">사회·문화</span>
-      <nav class="topbar-nav" aria-label="사이트 이동">
-        <a class="topbar-link" href="/"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-home"></use></svg><span class="topbar-link-text">홈</span></a>
-        <a class="topbar-link" href="/WordMaster/"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-book-open"></use></svg><span class="topbar-link-text">WordMaster</span></a>
+      <span class="topbar-crumb">학습실</span>
+      <nav class="study-routes" aria-label="학습실 이동">
+        <a class="study-route-link" href="/gichul/"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-file"></use></svg><span>기출</span></a>
+        <a class="study-route-link" href="/WordMaster/"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-book-open"></use></svg><span>워드마스터</span></a>
+        <a class="study-route-link" href="/smstudy/" aria-current="page"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-layers"></use></svg><span>사회·문화</span></a>
       </nav>
+      <button id="studyThemeToggle" class="study-theme-toggle" type="button" aria-label="다크 모드로 전환"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-monitor"></use></svg><span>다크 모드</span></button>
     </div>
   </header>
   <div class="topbar-spacer"></div>
@@ -61,15 +64,15 @@
     </div>
   </footer>
 
+  <div id="studyActionDock" class="study-action-dock" hidden><button id="studyQuickStart" class="btn btn-primary" type="button">선택 범위 퀴즈</button></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="/assets/js/study-shell.js?v=20260921-toss-v1"></script>
   <script src="/account.js?v=20260904-auth-gate-v1" data-app="smstudy" data-key="samun2027.study.v1"></script>
   <script src="assets/js/data.js"></script>
   <script src="assets/js/notebook-data.js"></script>
   <script src="assets/js/explanation-data.js"></script>
   <script src="/assets/js/study-utils.js"></script>
   <script src="assets/js/diagram.js?v=20260904-icons-v2"></script>
-  <script src="assets/js/app.js?v=20260908-study-refresh"></script>
+  <script src="assets/js/app.js?v=20260922-study-v2"></script>
 </body>
 </html>

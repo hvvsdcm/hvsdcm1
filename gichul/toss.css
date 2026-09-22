@@ -1,120 +1,159 @@
-/* Past-paper presentation layer for the shared Toss-inspired study shell. */
+/* Search is an inline rail on desktop and the same DOM in a native sheet on mobile. */
 .gichul-page .app-shell {
-  grid-template-columns: 240px minmax(0, 1fr);
+  grid-template-columns: 220px minmax(0,1fr);
 }
 .gichul-page #gichulFilters {
-  padding: 8px;
-  border: 0;
+  display: grid;
+  gap: 12px;
+  padding: 0;
   background: transparent;
 }
 .gichul-page .gi-filter {
-  margin: 0 0 8px;
-  border: 0;
+  min-width: 0;
+  margin: 0;
+  border: 1px solid var(--line-faint);
   border-radius: 16px;
   background: var(--surface);
   box-shadow: none;
 }
 .gichul-page .gi-filter .disclosure-head {
   min-height: 50px;
-  padding: 10px 12px;
+  padding: 12px 16px;
 }
 .gichul-page .gi-filter .disclosure-body {
   padding: 0 4px 6px;
+}
+.gichul-page .gi-filter .list-row {
+  min-height: 52px;
+  padding: 8px 12px;
 }
 .gichul-page .gi-subjects {
   gap: 4px;
 }
 .gichul-page .gi-subjects .sidebar-item {
-  min-height: 42px;
+  justify-content: start;
+  flex-direction: row;
+  padding: 10px 12px;
+  min-height: 44px;
+}
+.gichul-page .gi-subjects .sidebar-item[aria-current] {
+  background: var(--surface-3);
+  color: var(--accent);
 }
 .gichul-page .gi-body {
-  gap: 22px;
+  display: grid;
+  gap: 18px;
 }
-.gichul-page .toolbar {
-  padding: 10px;
-  gap: 8px;
+.gichul-page .gi-mode-toolbar {
+  position: static;
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
-.gichul-page .gi-count {
-  color: var(--text-3);
-  font-weight: 650;
+.gichul-page .gi-mode-toolbar .segmented {
+  width: 100%;
 }
-.gichul-page .gi-group {
-  scroll-margin-top: calc(var(--topbar-h) + 90px);
+.gichul-page .gi-mode-toolbar .segmented-btn {
+  flex: 1;
+}
+.gi-download-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border: 1px solid var(--line-faint);
+  border-radius: 18px;
+  background: var(--surface);
+}
+.gi-download-bar .gi-count {
+  flex: 1;
+  color: var(--text-2);
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 .gichul-page .gi-group .list-group {
-  overflow: clip;
+  overflow: hidden;
 }
 .gichul-page .gi-group .list-row {
-  min-height: 64px;
+  min-height: 74px;
+}
+.gichul-page .gi-group .list-row:has(input:checked) {
+  background: var(--surface-3);
+  box-shadow: inset 3px 0 var(--accent);
 }
 .gichul-page .gi-group .list-row-title {
-  font-size: .98rem;
+  font-size: 16px;
 }
 .gichul-page .gi-group .list-row-value {
-  font-size: .85rem;
+  font-size: 13px;
 }
 .gichul-page .gi-accessory .btn {
-  color: #3182f6;
+  color: var(--accent);
 }
 .gichul-page .gi-empty, .gichul-page .gi-alert {
-  border: 0;
-  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid var(--line-faint);
+  border-radius: 18px;
   background: var(--surface);
-  box-shadow: var(--study-shadow-soft);
 }
-.gichul-page input[type="checkbox"] {
-  accent-color: #3182f6;
+.gichul-page .study-filter-dialog #gichulFilters {
+  position: static;
+  max-height: none;
+  overflow: visible;
+  width: 100%;
+}
+.gichul-page .study-filter-dialog .sidebar-group {
+  display: block;
+}
+@media (max-width: 1023px) and (min-width: 861px) {
+  .gichul-page .app-shell {
+    display: grid;
+    grid-template-columns: 190px minmax(0,1fr);
+    gap: 20px;
+  }
 }
 @media (max-width: 860px) {
   .gichul-page .app-shell {
     display: block;
   }
   .gichul-page #gichulFilters {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    margin: 0 0 22px;
-    padding: 0;
-    overflow: visible;
-  }
-  .gichul-page #gichulFilters > * {
-    min-width: 0;
     margin: 0;
   }
-  .gichul-page #gichulFilters > .sidebar-group {
-    grid-column: 1 / -1;
-  }
-}
-@media (max-width: 620px) {
-  .gichul-page #gichulFilters {
-    grid-template-columns: 1fr;
-  }
-  .gichul-page #gichulFilters > .sidebar-group {
-    grid-column: auto;
-  }
-  .gichul-page .toolbar {
-    position: sticky;
-    top: calc(var(--topbar-h) + 6px);
+  .gichul-page .gi-download-bar {
+    position: fixed;
+    z-index: 80;
+    inset: auto 0 0;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 10px;
-  }
-  .gichul-page .toolbar .segmented {
-    grid-column: 1 / -1;
-  }
-  .gichul-page .toolbar .toolbar-spacer {
-    display: none;
-  }
-  .gichul-page .toolbar .gi-count {
-    align-self: center;
+    grid-template-columns: 1fr auto;
+    gap: 8px 12px;
+    margin: 0;
+    padding: 12px 20px max(12px, env(safe-area-inset-bottom));
+    border: 0;
+    border-top: 1px solid var(--line);
+    border-radius: 0;
   }
   .gichul-page #gichulMerge {
     grid-column: 1 / -1;
-    min-height: 50px;
+    min-height: 48px;
+    font-size: 16px;
   }
+  .gichul-page .app-page {
+    padding-bottom: 180px;
+  }
+  .gichul-page .app-footer {
+    padding-bottom: 140px;
+  }
+  .gichul-page .toast {
+    bottom: 140px;
+  }
+}
+@media (max-width: 620px) {
   .gichul-page .gi-group .list-row {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 6px 10px;
+    display: grid;
+    grid-template-columns: minmax(0,1fr) auto;
+    gap: 5px 10px;
   }
   .gichul-page .gi-group .list-row-value {
     grid-column: 1;
@@ -122,5 +161,19 @@
   .gichul-page .gi-accessory {
     grid-column: 2;
     grid-row: 1 / span 2;
+  }
+  .gichul-page .gi-group .list-row-title {
+    font-size: 15px;
+  }
+  .gichul-page .gi-group .list-row-value {
+    font-size: 12px;
+  }
+  .gichul-page .view-head-main {
+    width: 100%;
+  }
+}
+@media print {
+  .gichul-page .gi-download-bar, .gichul-page .study-filter-trigger {
+    display: none;
   }
 }
