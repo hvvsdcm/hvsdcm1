@@ -245,11 +245,11 @@
     const pickable = exams.filter((exam) => state.mode !== 'excerpt' || isExcerptable(exam));
     const count = state.selected.length;
     const allPicked = pickable.length > 0 && pickable.every((exam) => state.selected.includes(exam.id));
-    return `<div class="toolbar toolbar-sticky">`
+    return `<div class="toolbar gi-mode-toolbar">`
       + `<div class="segmented" role="group" aria-label="내려받기 범위">`
       + `<button class="segmented-btn" type="button" data-mode="full" aria-pressed="${state.mode === 'full'}">전체 시험지</button>`
       + `<button class="segmented-btn" type="button" data-mode="excerpt" aria-pressed="${state.mode === 'excerpt'}">선택과목 발췌</button>`
-      + `</div><span class="toolbar-spacer"></span>`
+      + `</div></div><div class="gi-download-bar" aria-label="선택한 시험지 내려받기">`
       + `<span class="gi-count">선택 ${count}개 / ${pickable.length}개</span>`
       + `<button class="btn btn-secondary btn-sm" type="button" data-bulk="${allPicked ? 'none' : 'all'}"`
       + `${pickable.length ? '' : ' disabled'}>${allPicked ? '전체 해제' : '전체 선택'}</button>`
@@ -502,9 +502,11 @@
     const firstPaint = !elements.filters.children.length;
     elements.filters.innerHTML = renderFilters(manifest, state);
     elements.body.innerHTML = renderBody(manifest, state);
+    const summary = document.getElementById('studyFilterSummary');
+    if (summary) summary.textContent = `${SUBJECT_LABEL[state.subject] || state.subject} · ${visibleExams(manifest, state).length}개 시험지`;
     if (matchMedia('(max-width: 860px)').matches) {
       elements.filters.querySelectorAll('.gi-filter').forEach((details, index) => {
-        details.open = firstPaint ? index === 0 : wasOpen.has(details.dataset.group);
+        details.open = firstPaint ? true : wasOpen.has(details.dataset.group);
       });
     }
   }

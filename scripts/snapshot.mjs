@@ -118,8 +118,9 @@ function inlineStyles(files) {
 }
 
 function page(title, note, items, styles = SMSTUDY_CSS) {
+  const studyClass = styles.includes('WordMaster/assets/css/toss.css') ? 'wordmaster-page' : 'smstudy-page';
   return normalize(`<!doctype html>
-<html lang="ko" data-snapshot="1">
+<html lang="ko" class="study-app" data-theme="light" data-snapshot="1">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -130,7 +131,7 @@ ${inlineStyles(styles)}
 ${SNAPSHOT_CSS}
 </style>
 </head>
-<body>
+<body class="study-toss ${studyClass}">
 <div class="snap-wrap">
 <div class="snap-note">${note}</div>
 ${items.join('\n')}
@@ -165,6 +166,7 @@ function documentSnapshot(file, { note, mutate = (html) => html }) {
   let html = source
     .replace(/\n?\s*<link\b[^>]*rel="stylesheet"[^>]*>/gu, '')
     .replace(/\n?\s*<script\b[^>]*>\s*<\/script>/gu, '');
+  if (source.includes('study-app')) html = html.replace('class="auth-pending study-app"', 'class="auth-pending study-app" data-theme="light"');
   html = html.replace('</head>', `${inlineStyles(hrefs)}\n<style>\n${DOCUMENT_SNAPSHOT_CSS}\n</style>\n</head>`);
   html = html.replace('<html lang="ko">', '<html lang="ko" data-snapshot="1">');
   html = mutate(html);

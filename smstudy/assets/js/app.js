@@ -313,8 +313,8 @@
 
         <!-- 항목마다 카드와 버튼을 반복하던 조판을 그룹 리스트 한 장으로 합쳤다
              (DESIGN.md §6). 행 자체가 동작이므로 행 안에 버튼을 또 두지 않는다. -->
-        <section aria-labelledby="quickTitle">
-          <h2 class="list-group-head" id="quickTitle">빠른 복습</h2>
+        <details class="sm-quick-review">
+          <summary><span id="quickTitle">빠른 복습</span><span>취약 문항 · 오답 · 누적</span></summary>
           <div class="list-group">
             <button id="weakQuiz" class="list-row list-row-nav" type="button">
               <span class="list-row-body">
@@ -344,7 +344,7 @@
               <span class="list-row-value num">${summary.done}</span>
             </button>
           </div>
-        </section>
+        </details>
       </div>`;
   }
 
@@ -357,18 +357,19 @@
         <div class="view-head-main">
           ${appIcon()}
           <div>
-            <h1>단원 목록</h1>
+            <h1>사회·문화</h1>
+            <p>개념을 이해하고, 기출로 확인해요.</p>
           </div>
         </div>
         <span class="badge badge-accent">출제 범위 ${state.selected.size}/${SUBUNITS.length}</span>
       </header>
 
       <div class="sm-layout">
+        <aside class="sm-home-tools">${renderStartPanel(stats())}</aside>
         <div class="sm-units">
           ${renderUnitJump()}
           ${UNITS.map(renderUnit).join('')}
         </div>
-        <aside>${renderStartPanel(stats())}</aside>
       </div>`;
     bindHome();
     requestAnimationFrame(() => app.focus({ preventScroll: true }));
@@ -442,8 +443,10 @@
       setUnitSelection(el.dataset.unit, !allSelected);
     }));
     document.querySelectorAll('.sub-check').forEach(el => el.addEventListener('change', () => {
-      el.checked ? state.selected.add(el.dataset.id) : state.selected.delete(el.dataset.id);
+      const id = el.dataset.id;
+      el.checked ? state.selected.add(id) : state.selected.delete(id);
       renderHome();
+      requestAnimationFrame(() => document.querySelector(`.sub-check[data-id="${id}"]`)?.focus({ preventScroll: true }));
     }));
     document.querySelectorAll('.list-row-stretch').forEach(el => el.addEventListener('click', () => renderConcept(el.dataset.id)));
     document.getElementById('qCount').addEventListener('change', e => state.count = e.target.value);
