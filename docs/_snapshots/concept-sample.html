@@ -293,7 +293,9 @@ html.study-app[data-theme="dark"] {
 html.study-app {
   --topbar-h: 72px;
 }
-@media (max-width: 620px) {
+/* 학습실 상단바는 780px 이하에서 두 줄(60 + 54)로 접힌다. study-toss.css의 상단바 규칙과 같은
+   경계를 쓴다 — 스페이서와 sticky 위치가 이 변수를 따라간다. */
+@media (max-width: 780px) {
   html.study-app {
     --topbar-h: 114px;
   }
@@ -2028,7 +2030,10 @@ ul.sm-bullets {
 }
 .sm-unit-jump .segmented-btn {
   position: relative;
-  min-width: 2.6em;
+  /* 로마 숫자는 한 줄에 묶어 둔다 — 2.6em은 안쪽 여백 28px를 뺀 뒤 11px만 남겨
+     "III"가 두 줄로 접혔고, 버튼 높이가 52px로 부풀었다. */
+  min-width: 3em;
+  white-space: nowrap;
   text-align: center;
   text-decoration: none;
   font-variant-numeric: tabular-nums;
@@ -3387,6 +3392,9 @@ html.study-app[data-theme="light"] .brand-mark {
   font-size: 15px;
   font-weight: 650;
   text-decoration: none;
+  /* 라벨은 한 줄이다 — "사회·문화"가 "사회·" "·" "문화"로 쪼개지지 않는다. 폭이 모자라면
+     780px 이하에서 상단바가 두 줄로 접힌다. */
+  white-space: nowrap;
 }
 .study-route-link[aria-current] {
   border-bottom-color: var(--accent);
@@ -3838,7 +3846,9 @@ html.study-app[data-theme="light"] .brand-mark {
     padding-bottom: 120px;
   }
 }
-@media (max-width: 620px) {
+/* 780px 이하에서는 상단바를 두 줄(브랜드+테마 토글 / 3열 학습 탭)로 접는다. 한 줄에 밀어 넣으면
+   좁은 구간(621~780px)에서 "사회·문화" 라벨이 "사회·" "·" "문화"로 쪼개지고 상단바 내용이 잘린다. */
+@media (max-width: 780px) {
   .study-toss .study-topbar {
     grid-template-columns: 1fr auto;
     grid-template-rows: 60px 54px;
@@ -3877,6 +3887,8 @@ html.study-app[data-theme="light"] .brand-mark {
     width: 16px;
     height: 16px;
   }
+}
+@media (max-width: 620px) {
   .study-toss .app-page {
     padding-inline: 16px;
     padding-top: 18px;

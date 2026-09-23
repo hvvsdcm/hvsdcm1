@@ -299,7 +299,9 @@ html.study-app[data-theme="dark"] {
 html.study-app {
   --topbar-h: 72px;
 }
-@media (max-width: 620px) {
+/* 학습실 상단바는 780px 이하에서 두 줄(60 + 54)로 접힌다. study-toss.css의 상단바 규칙과 같은
+   경계를 쓴다 — 스페이서와 sticky 위치가 이 변수를 따라간다. */
+@media (max-width: 780px) {
   html.study-app {
     --topbar-h: 114px;
   }
