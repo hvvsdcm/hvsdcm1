@@ -281,12 +281,12 @@
 .pl-choices .is-correct {
   border-color: var(--green);
   background: var(--green);
-  color: #000;
+  color: var(--fill-fg);
 }
 .pl-choices .is-wrong {
   border-color: var(--red);
   background: var(--red);
-  color: #000;
+  color: var(--fill-fg);
 }
 .pl-feedback {
   display: grid;

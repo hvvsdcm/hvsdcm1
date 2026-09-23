@@ -236,12 +236,12 @@ html.study-app[data-theme="light"] .brand-mark {
   box-shadow: none;
 }
 .study-toss .btn-primary {
-  background: #1b64da;
-  color: #fff;
+  background: var(--accent-strong);
+  color: var(--fill-fg);
   box-shadow: none;
 }
 .study-toss .btn-primary:hover:not(:disabled) {
-  background: #1556bd;
+  background: color-mix(in srgb, var(--accent-strong) 86%, #000);
 }
 .study-toss .btn-secondary {
   background: var(--surface-3);
@@ -307,7 +307,7 @@ html.study-app[data-theme="light"] .brand-mark {
 .study-toss input[type="checkbox"] {
   width: 22px;
   height: 22px;
-  accent-color: #1b64da;
+  accent-color: var(--accent);
 }
 .study-toss .list-row-accessory {
   min-width: 44px;

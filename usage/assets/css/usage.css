@@ -450,8 +450,16 @@
   padding-bottom: var(--space-2);
   border-bottom: 1px solid var(--line-faint);
 }
-.cp-candidate-facts dt, .cp-application strong {
+.cp-candidate-facts dt {
   color: var(--text-3);
+  font-size: var(--fs-micro);
+  font-weight: 600;
+}
+.cp-application strong {
+  /* .cp-application은 --surface-3 면이다. 여기에 --text-3을 쓰면 3.85:1로 캡션 하한
+     미달 — DESIGN.md §7 「주의(3b·3c 계약)」이 금지한 조합이다. 형제(p·ul·span)와
+     같은 --text-2로 맞춘다(--surface-3 위 5.42:1). */
+  color: var(--text-2);
   font-size: var(--fs-micro);
   font-weight: 600;
 }

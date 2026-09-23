@@ -641,13 +641,15 @@ ul.sm-deep-points li::marker {
 .sm-choice.is-correct {
   background: var(--green);
   border-color: var(--green);
-  color: #000;
+  /* 채움 면 라벨은 팔레트를 따라간다 — 스터디 라이트의 --green #087f5b는 어두워서
+     #000 고정이면 3.11:1이었다(본문 하한 4.5). var(--fill-fg)면 라이트 5.00 / 다크 11.59. */
+  color: var(--fill-fg);
   opacity: 1;
 }
 .sm-choice.is-wrong {
   background: var(--red);
   border-color: var(--red);
-  color: #000;
+  color: var(--fill-fg);
   opacity: 1;
 }
 /* ---- 채점 피드백 ---- */
