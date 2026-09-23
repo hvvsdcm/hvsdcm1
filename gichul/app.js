@@ -73,15 +73,6 @@
   const ROUND_LABEL = { '06': '6월', '09': '9월', csat: '수능' };
   const ROUND_FILE = { '06': '06', '09': '09', csat: '수능' };
 
-  function escapeHtml(value) {
-    return String(value)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
-  }
-
   // 오류 배너 아이콘 — 사이트 공통 스프라이트(assets/ui-icons.svg) 하나뿐이다(DESIGN.md §5).
   // 선 색은 .ui-icon 기본값(--text-3)이고 상태는 배너 제목과 보더가 말한다.
   function alertIcon() {
@@ -466,18 +457,22 @@
     toast: document.getElementById('toast'),
   };
 
+  // 공통 학습 유틸(assets/js/study-utils.js)은 index.html의 순서 계약상 이 파일보다 먼저
+  // 온다(scripts/validate.mjs). 이스케이프와 토스트를 화면마다 다시 쓰지 않는다.
+  // 불완전한 배포는 빈 화면 대신 오류 배너로 알린다.
+  const { createToast, escapeHtml } = window.HvsStudyUtils || {};
+  if (!escapeHtml) {
+    elements.body.innerHTML = failureBanner('공통 학습 도구를 불러오지 못했습니다.',
+      ['assets/js/study-utils.js가 로드되지 않았습니다.']);
+    return;
+  }
+
   let manifest = { exams: [] };
   let state = defaultState();
   let busy = false;
-  let toastTimer = 0;
 
-  function toast(message) {
-    if (!elements.toast) return;
-    elements.toast.textContent = message;
-    elements.toast.classList.add('open');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => elements.toast.classList.remove('open'), 2600);
-  }
+  // 표시 시간은 화면마다 다르다: 기출 2600ms, WordMaster·사회·문화 1900ms(기존 값 유지).
+  const toast = createToast(elements.toast, 2600);
 
   function restoreFilters() {
     try {

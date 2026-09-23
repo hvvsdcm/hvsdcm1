@@ -44,7 +44,11 @@ export function evaluateDiagramRenderer() {
   const context = {};
   context.window = context;
   vm.createContext(context);
-  vm.runInContext(readSource(DIAGRAM_SOURCE), context, { filename: DIAGRAM_SOURCE });
+  // 브라우저와 같은 순서로 평가한다: 공통 유틸이 다이어그램 렌더러보다 먼저다
+  // (index.html의 load order 계약과 같다 — diagram.js는 폴백 사본을 두지 않는다).
+  for (const file of [UTILS_SOURCE, DIAGRAM_SOURCE]) {
+    vm.runInContext(readSource(file), context, { filename: file });
+  }
   return context.SMSTUDY_DIAGRAM;
 }
 
@@ -317,6 +321,8 @@ export function createGichulRenderers(options = {}) {
   context.clearTimeout = () => {};
   context.console = { log() {}, warn() {}, error() {} };
   vm.createContext(context);
+  // 브라우저와 같은 순서: 공통 학습 유틸이 컨트롤러보다 먼저다 (index.html 계약).
+  vm.runInContext(readSource(UTILS_SOURCE), context, { filename: UTILS_SOURCE });
   const originalSource = readSource(GICHUL_APP_SOURCE);
   const source = typeof options.sourceTransform === 'function'
     ? options.sourceTransform(originalSource)

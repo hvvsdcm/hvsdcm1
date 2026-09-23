@@ -26,8 +26,10 @@
   // - 좁은 화면 분기는 venn의 장식 SVG를 숨기는 컨테이너 쿼리 하나뿐이다.
   //   나머지 형식은 CSS 조판이 이미 반응형이라 폴백 목록이 필요 없다.
 
-  const esc = (window.HvsStudyUtils && window.HvsStudyUtils.escapeHtml)
-    || ((value) => String(value).replace(/[&<>"']/gu, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])));
+  // 공통 유틸은 항상 이 파일보다 먼저 로드된다(index.html의 순서 계약). 스냅샷·검증
+  // 샌드박스(scripts/render-sandbox.mjs)도 같은 순서로 평가한다. 여기에 폴백 사본을 두면
+  // 이스케이프 규칙이 두 벌이 되어 한쪽만 고치는 일이 생긴다.
+  const { escapeHtml: esc } = window.HvsStudyUtils;
 
   // 순서가 의미를 갖는 형식은 <ol>로 낸다. matrix2x2·venn의 번호는 순서가 아니라
   // 도형과 라벨을 짝짓는 열쇠지만, 번호를 화면에 내므로 같은 <ol>을 쓴다.

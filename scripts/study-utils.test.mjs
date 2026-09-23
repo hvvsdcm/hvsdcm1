@@ -7,8 +7,10 @@ await import('../assets/js/study-utils.js');
 
 const {
   SORT_MODES,
+  createToast,
   matchesMeaningAnswer,
   matchesStudySearch,
+  shuffle,
   sortStudyItems,
 } = globalThis.HvsStudyUtils;
 const items = [
@@ -75,6 +77,55 @@ test('study search ignores Korean whitespace and shows all for a blank query', (
   assert.equal(matchesStudySearch('구 성 하 다', fields), true);
   assert.equal(matchesStudySearch('지어 내다', fields), true);
   assert.equal(matchesStudySearch('   ', fields), true);
+});
+
+test('the shared shuffle is Fisher–Yates: a uniform draw that never mutates its input', () => {
+  const source = Array.from({ length: 90 }, (_, index) => index);
+  const original = Math.random;
+  try {
+    // 상수 난수에서 Fisher–Yates의 결과는 하나로 정해진다. 비교 함수 셔플
+    // (sort(() => Math.random() - .5))은 같은 입력에서 다른 순서를 낸다 — 분포가
+    // 치우쳐 90문항 중 특정 문항이 거의 뽑히지 않던 원래 버그를 여기서 막는다.
+    Math.random = () => 0;
+    assert.deepEqual(shuffle([0, 1, 2, 3]), [1, 2, 3, 0]);
+  } finally {
+    Math.random = original;
+  }
+
+  const firstSlots = new Set();
+  for (let run = 0; run < 2000; run += 1) {
+    const drawn = shuffle(source).slice(0, 20);
+    assert.equal(new Set(drawn).size, 20, '한 회차에서 같은 문항이 두 번 나오면 안 된다');
+    firstSlots.add(drawn[0]);
+  }
+  assert.equal(firstSlots.size, 90, '90문항 전부가 첫 자리에 올 수 있어야 한다');
+  assert.deepEqual(source, Array.from({ length: 90 }, (_, index) => index), 'shuffle은 입력을 건드리지 않는다');
+});
+
+test('a toast shows the latest message and hides after its own delay', (t) => {
+  t.mock.timers.enable({ apis: ['setTimeout'] });
+  const element = { textContent: '', classes: new Set() };
+  element.classList = {
+    add: (name) => element.classes.add(name),
+    remove: (name) => element.classes.delete(name),
+    contains: (name) => element.classes.has(name),
+  };
+  const showToast = createToast(element, 1900);
+
+  showToast('첫 번째 메시지');
+  assert.equal(element.textContent, '첫 번째 메시지');
+  assert.equal(element.classList.contains('open'), true);
+
+  // 두 번째 메시지가 먼저 온 타이머에 지워지면 안 된다 — 타이머는 만든 자리마다 따로다.
+  t.mock.timers.tick(1000);
+  showToast('두 번째 메시지');
+  t.mock.timers.tick(1000);
+  assert.equal(element.textContent, '두 번째 메시지');
+  assert.equal(element.classList.contains('open'), true);
+
+  t.mock.timers.tick(900);
+  assert.equal(element.classList.contains('open'), false);
+  assert.equal(element.textContent, '두 번째 메시지');
 });
 
 test('WordMaster OCR delimiter repairs expose each real meaning as a grading alias', () => {

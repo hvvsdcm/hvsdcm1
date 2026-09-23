@@ -31,7 +31,7 @@
     return;
   }
 
-  const { SORT_MODES, escapeHtml: esc, sortStudyItems } = studyUtils;
+  const { SORT_MODES, createToast, escapeHtml: esc, sortStudyItems } = studyUtils;
 
   const SUBUNITS = UNITS.flatMap(unit => unit.subs.map(sub => ({
     ...sub,
@@ -91,13 +91,8 @@
     session: null,
     concept: null
   };
-  let toastTimer;
-  function showToast(msg) {
-    toast.textContent = msg;
-    toast.classList.add('open');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('open'), 1900);
-  }
+  // 토스트는 공용 팩토리 하나를 쓴다 — 표시 시간만 화면별로 다르다.
+  const showToast = createToast(toast);
   function compareQuestions(left, right) {
     return QUESTION_ORDER.get(left.id) - QUESTION_ORDER.get(right.id);
   }

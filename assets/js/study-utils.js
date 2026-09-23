@@ -160,13 +160,30 @@
     return indexed.map(({ item }) => item);
   }
 
+  // 토스트 한 줄: 요소에 open을 붙이고 표시 시간이 지나면 뗀다. WordMaster·사회·문화·기출이
+  // 같은 로직을 각자 복사해 갖고 있었다. 화면마다 다른 것은 표시 시간뿐이라 그 하나만 받는다
+  // (WordMaster·사회·문화 1900ms, 기출 2600ms). 타이머는 만든 자리마다 따로다 — 하나를
+  // 공유하면 두 번째 메시지가 첫 번째 타이머에 일찍 사라진다.
+  function createToast(element, duration = 1900) {
+    let timer = 0;
+    return (message) => {
+      if (!element) return;
+      element.textContent = message;
+      element.classList.add('open');
+      clearTimeout(timer);
+      timer = setTimeout(() => element.classList.remove('open'), duration);
+    };
+  }
+
   globalThis.HvsStudyUtils = Object.freeze({
     SORT_MODES,
     acceptedMeaningAliases,
+    createToast,
     escapeHtml,
     matchesStudySearch,
     matchesMeaningAnswer,
     normalizeMeaningAnswer,
+    normalizeStudySearch,
     shuffle,
     splitTopLevelAnswers,
     sortStudyItems,

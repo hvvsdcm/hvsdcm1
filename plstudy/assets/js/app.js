@@ -2,11 +2,19 @@
   'use strict';
   const app = document.getElementById('app');
   const storageKey = 'politicslaw2027.study.v1';
+  // 공통 학습 유틸(assets/js/study-utils.js)은 index.html의 순서 계약상 이 파일보다 먼저
+  // 온다(scripts/validate.mjs). 이스케이프·검색 정규화·셔플을 화면마다 다시 쓰지 않는다 —
+  // 셔플은 Fisher–Yates여야 한다: sort(() => Math.random() - .5)는 분포가 치우쳐
+  // 90문항 중 20개가 고르게 뽑히지 않는다. 불완전한 배포는 빈 화면 대신 오류로 알린다.
+  const { escapeHtml: esc, normalizeStudySearch: fold, shuffle } = window.HvsStudyUtils || {};
+  if (!esc) {
+    app.innerHTML = '<section class="pl-error"><h1>화면 로드 오류</h1><p>공통 학습 도구를 불러오지 못했습니다.</p></section>';
+    return;
+  }
   let data;
   let activeSub = null;
   let session = null;
   const progress = (() => { try { return JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch { return {}; } })();
-  const esc = (value) => String(value ?? '').replace(/[&<>"']/gu, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
   const save = () => {
     try {
       const serialized = JSON.stringify(progress);
@@ -16,15 +24,6 @@
   };
   const subunits = () => data.UNITS.flatMap((unit) => unit.subs.map((sub) => ({ ...sub, unitId: unit.id, unitTitle: unit.title })));
   const subById = (id) => subunits().find((sub) => sub.id === id);
-  // Fisher–Yates: sort(() => Math.random() - .5)는 분포가 치우쳐 90문항 중 20개가 고르게 뽑히지 않는다.
-  const shuffled = (rows) => {
-    const copy = [...rows];
-    for (let index = copy.length - 1; index > 0; index--) {
-      const swap = Math.floor(Math.random() * (index + 1));
-      [copy[index], copy[swap]] = [copy[swap], copy[index]];
-    }
-    return copy;
-  };
   function setNav(view) {
     document.querySelectorAll('.pl-nav').forEach((button) => {
       const active = button.dataset.view === view;
@@ -35,7 +34,6 @@
   }
   // 홈 화면 중단원 검색 — 메모리에만 두는 화면 상태다. 데이터·localStorage 계약을 바꾸지 않는다.
   let homeQuery = '';
-  const fold = (value) => String(value ?? '').toLowerCase().replace(/\s+/gu, '');
   const searchText = (sub) => fold([sub.unitId, sub.unitTitle, sub.id, sub.title, sub.summary, ...(sub.concepts || []).flatMap((concept) => [concept.term, concept.definition]), ...(sub.traps || [])].join('|'));
   function renderHome() {
     setNav('home'); activeSub = null; session = null;
@@ -44,7 +42,7 @@
     // 중단원은 행(제목 + 우측 진행값)이고 요약문은 개념 노트로 미룬다 (DESIGN.md §6·§6.1·§7.2).
     app.innerHTML = `<header class="view-head"><div class="view-head-main"><svg class="ui-icon" aria-hidden="true"><use href="/assets/ui-icons.svg?v=20260904-icons-v2#icon-scale"></use></svg><div><h1>단원 목록</h1></div></div><button class="btn btn-primary" type="button" data-random>랜덤 20문항</button></header><section class="pl-search" aria-label="중단원 검색"><label class="sr-only" for="plSearch">중단원 검색</label><div class="pl-search-row"><input id="plSearch" class="field-input field-input-sm" type="search" autocomplete="off" spellcheck="false" enterkeyhint="search" placeholder="단원명, 개념, 함정 검색" aria-describedby="plSearchCount" value="${esc(homeQuery)}"><button class="btn btn-secondary btn-sm pl-search-clear" type="button" data-clear hidden>지우기</button></div><span id="plSearchCount" class="pl-search-count" role="status" aria-live="polite"></span></section><div class="pl-units">${data.UNITS.map((unit, unitIndex) => { const unitRows = unit.subs.map((sub) => progress[sub.id] || {}); const unitCorrect = unitRows.reduce((sum, row) => sum + (row.correct || 0), 0); const unitAnswered = unitRows.reduce((sum, row) => sum + (row.answered || 0), 0); return `<details class="disclosure pl-unit" id="pl-unit-${unit.id}"${unitIndex === 0 ? ' open' : ''}><summary class="disclosure-head"><span class="pl-unit-num" aria-hidden="true">${unit.id}</span><span class="disclosure-title">${esc(unit.title)}</span><span class="disclosure-hint num">${unitCorrect}/${unitAnswered}</span></summary><div class="disclosure-body">${unit.subs.map((sub) => { const row = progress[sub.id] || {}; return `<button type="button" class="list-row list-row-nav pl-sub" data-sub="${sub.id}"><span class="list-row-body"><span class="list-row-title">${esc(sub.title)}</span></span><span class="list-row-value num">${row.correct || 0}/${row.answered || 0}</span></button>`; }).join('')}</div></details>`; }).join('')}</div><p class="pl-empty" hidden></p>`;
     app.querySelectorAll('[data-sub]').forEach((button) => button.addEventListener('click', () => renderConcept(button.dataset.sub)));
-    app.querySelector('[data-random]').addEventListener('click', () => startQuiz(shuffled(data.QUESTIONS).slice(0, 20), '전체 랜덤'));
+    app.querySelector('[data-random]').addEventListener('click', () => startQuiz(shuffle(data.QUESTIONS).slice(0, 20), '전체 랜덤'));
     const input = app.querySelector('#plSearch'); const count = app.querySelector('#plSearchCount'); const clear = app.querySelector('[data-clear]'); const empty = app.querySelector('.pl-empty');
     const applyFilter = () => {
       homeQuery = input.value; const query = fold(homeQuery); let shown = 0;

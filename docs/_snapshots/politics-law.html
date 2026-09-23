@@ -2336,5 +2336,7 @@ html.auth-pending body {
       <main id="app" class="app-main" tabindex="-1"><p class="pl-loading">학습 데이터를 불러오는 중입니다.</p></main>
     </div>
   </div>
+  <!-- 이스케이프·검색 정규화·셔플은 사이트 공통 유틸 하나만 쓴다 (load order 계약:
+       account.js → 콘텐츠 로더 → 공통 학습 유틸 → 화면 컨트롤러). -->
 </body>
 </html>
