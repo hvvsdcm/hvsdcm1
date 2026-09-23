@@ -22,7 +22,6 @@
 
   const {
     SORT_MODES,
-    acceptedMeaningAliases,
     createToast,
     escapeHtml,
     matchesMeaningAnswer,
@@ -134,10 +133,6 @@
     const n = Number.parseInt(value, 10);
     if (!Number.isFinite(n)) return 1;
     return Math.min(MAX_DAY, Math.max(1, n));
-  }
-
-  function acceptedAliases(item) {
-    return acceptedMeaningAliases(item, db.customAliases[item.id] || []);
   }
 
   function checkAnswer(item, input) {

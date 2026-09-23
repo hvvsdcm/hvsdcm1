@@ -177,7 +177,6 @@
 
   globalThis.HvsStudyUtils = Object.freeze({
     SORT_MODES,
-    acceptedMeaningAliases,
     createToast,
     escapeHtml,
     matchesStudySearch,
