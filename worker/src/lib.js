@@ -2,6 +2,9 @@ const encoder = new TextEncoder();
 
 export const DAY_MS = 86_400_000;
 export const SESSION_DURATION_MS = 30 * DAY_MS;
+// 세션 활동 시각(last_seen_at)을 다시 쓰는 최소 간격. 관리자 세션 목록은 분 단위 창을 쓰므로
+// 이 지연은 표시 정확도에 영향을 주지 않으면서 저장마다 발생하던 쓰기를 없앤다.
+export const SESSION_TOUCH_INTERVAL_MS = 60_000;
 
 export const now = () => Date.now();
 
@@ -103,15 +106,21 @@ export async function authenticate(request, env, requiredRole = 'user') {
     return null;
   }
 
+  // 학습 화면은 저장할 때마다(디바운스 350ms) 인증 요청을 보낸다. 값이 그대로면 세션 행을 다시 쓰지
+  // 않고, 마지막 활동 시각만 최대 이 간격까지 지연 갱신한다. IP·UA가 바뀌면 즉시 반영한다.
   const ipAddress = clientIp(request);
   const userAgent = (request.headers.get('user-agent') || '').slice(0, 240);
-  await env.DB.prepare(`
-    UPDATE sessions
-    SET last_seen_at = ?, ip_hash = ?, ip_address = ?, user_agent = ?
-    WHERE token_hash = ?
-  `)
-    .bind(now(), await sha256(ipAddress), ipAddress, userAgent, session.token_hash)
-    .run();
+  const seenAt = now();
+  const identityChanged = session.ip_address !== ipAddress || session.user_agent !== userAgent;
+  if (identityChanged || seenAt - Number(session.last_seen_at || 0) >= SESSION_TOUCH_INTERVAL_MS) {
+    await env.DB.prepare(`
+      UPDATE sessions
+      SET last_seen_at = ?, ip_hash = ?, ip_address = ?, user_agent = ?
+      WHERE token_hash = ?
+    `)
+      .bind(seenAt, await sha256(ipAddress), ipAddress, userAgent, session.token_hash)
+      .run();
+  }
   return session;
 }
 

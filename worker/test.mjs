@@ -588,6 +588,53 @@ test('an unchanged shared answer does not add another activity event', async () 
   assert.equal(activityWrites, 0);
 });
 
+test('session activity refresh skips unchanged rows and applies identity changes immediately', async () => {
+  const sessionUpdates = [];
+  const buildEnv = (session) => ({
+    ALLOWED_ORIGIN: 'https://hvsdcm1.xyz',
+    DB: {
+      prepare(sql) {
+        const query = sql.replace(/\s+/gu, ' ').trim();
+        return {
+          bind(...values) {
+            if (query.startsWith('SELECT s.*, u.username, u.disabled FROM sessions')) {
+              return { async first() { return session; } };
+            }
+            if (query.startsWith('UPDATE sessions SET last_seen_at')) {
+              return { async run() { sessionUpdates.push(values); return { success: true }; } };
+            }
+            if (query.startsWith('SELECT data, updated_at FROM progress')) {
+              return { async first() { return null; } };
+            }
+            throw new Error(`Unexpected session SQL in test: ${query}`);
+          },
+        };
+      },
+    },
+  });
+  const request = (ip, agent = 'Example Browser') => new Request('https://api.test/api/progress/wordmaster', {
+    headers: { authorization: 'Bearer user-token', 'cf-connecting-ip': ip, 'user-agent': agent },
+  });
+  const base = {
+    token_hash: 'hash', user_id: 7, role: 'user', username: 'learner', disabled: 0,
+    ip_address: '203.0.113.8', user_agent: 'Example Browser', last_seen_at: Date.now(),
+  };
+
+  const fresh = await worker.fetch(request('203.0.113.8'), buildEnv({ ...base }));
+  assert.equal(fresh.status, 200);
+  assert.equal(sessionUpdates.length, 0, '같은 IP·UA의 최근 활동은 세션 행을 다시 쓰지 않는다');
+
+  const stale = await worker.fetch(request('203.0.113.8'), buildEnv({ ...base, last_seen_at: Date.now() - 120_000 }));
+  assert.equal(stale.status, 200);
+  assert.equal(sessionUpdates.length, 1, '활동 시각이 오래되면 갱신한다');
+
+  const moved = await worker.fetch(request('198.51.100.9'), buildEnv({ ...base }));
+  assert.equal(moved.status, 200);
+  assert.equal(sessionUpdates.length, 2, 'IP가 바뀌면 즉시 기록한다');
+  assert.equal(sessionUpdates[1][2], '198.51.100.9');
+  assert.equal(sessionUpdates[1][4], 'hash');
+});
+
 test('authenticated gichul routes stream only manifest-mapped PDFs with no-store CORS', async () => {
   const id = '2024-06-korean-hwajak-question';
   const pdfBytes = new TextEncoder().encode('%PDF-fixture');
