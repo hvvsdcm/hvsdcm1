@@ -588,6 +588,55 @@ test('an unchanged shared answer does not add another activity event', async () 
   assert.equal(activityWrites, 0);
 });
 
+test('progress saves are idempotent in real SQLite: identical data writes no row and no activity', async (t) => {
+  let DatabaseSync;
+  try { ({ DatabaseSync } = await import('node:sqlite')); } catch { DatabaseSync = null; }
+  if (!DatabaseSync) return t.skip('node:sqlite unavailable');
+  const database = new DatabaseSync(':memory:');
+  t.after(() => database.close());
+  for (const migration of ['0001_init.sql', '0004_session_ip_address.sql']) {
+    database.exec(readFileSync(new URL(`./migrations/${migration}`, import.meta.url), 'utf8'));
+  }
+  const timestamp = Date.now();
+  database.prepare(`
+    INSERT INTO users(username, password_hash, password_salt, created_at, disabled)
+    VALUES ('learner', 'hash', 'salt', ?, 0)
+  `).run(timestamp);
+  const userId = database.prepare('SELECT id FROM users WHERE username = ?').get('learner').id;
+  database.prepare(`
+    INSERT INTO sessions(token_hash, user_id, role, created_at, expires_at, last_seen_at)
+    VALUES (?, ?, 'user', ?, ?, ?)
+  `).run(await sha256('user-token'), userId, timestamp, timestamp + 60_000, timestamp);
+  const env = { ALLOWED_ORIGIN: 'https://hvsdcm1.xyz', DB: sqliteD1(database) };
+
+  const put = (data) => worker.fetch(new Request('https://api.test/api/progress/smstudy', {
+    method: 'PUT',
+    headers: { authorization: 'Bearer user-token', 'content-type': 'application/json' },
+    body: JSON.stringify({ data }),
+  }), env);
+  const row = () => database.prepare('SELECT data, updated_at FROM progress WHERE user_id = ? AND app = ?')
+    .get(userId, 'smstudy');
+  const activityCount = () => database.prepare('SELECT COUNT(*) count FROM activity').get().count;
+
+  assert.equal((await put({ seen: 1 })).status, 200);
+  assert.equal(row().data, JSON.stringify({ seen: 1 }));
+  assert.equal(activityCount(), 1, '실제로 바뀐 저장은 활동으로 남긴다');
+  const firstUpdatedAt = row().updated_at;
+
+  assert.equal((await put({ seen: 1 })).status, 200);
+  assert.equal(activityCount(), 1, '같은 내용을 다시 저장해도 활동 행이 늘지 않는다');
+  assert.equal(row().updated_at, firstUpdatedAt, '같은 내용이면 진행 행도 다시 쓰지 않는다');
+
+  assert.equal((await put({ seen: 2 })).status, 200);
+  assert.equal(row().data, JSON.stringify({ seen: 2 }));
+  assert.equal(activityCount(), 2, '내용이 바뀌면 활동으로 남긴다');
+
+  const read = await worker.fetch(new Request('https://api.test/api/progress/smstudy', {
+    headers: { authorization: 'Bearer user-token' },
+  }), env);
+  assert.deepEqual((await read.json()).data, { seen: 2 });
+});
+
 test('session activity refresh skips unchanged rows and applies identity changes immediately', async () => {
   const sessionUpdates = [];
   const buildEnv = (session) => ({
