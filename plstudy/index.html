@@ -57,6 +57,9 @@
 
   <script src="/account.js?v=20260904-auth-gate-v1" data-app="plstudy" data-key="politicslaw2027.study.v1"></script>
   <script src="assets/js/data.js"></script>
-  <script src="assets/js/app.js?v=20260908-study-refresh"></script>
+  <!-- 이스케이프·검색 정규화·셔플은 사이트 공통 유틸 하나만 쓴다 (load order 계약:
+       account.js → 콘텐츠 로더 → 공통 학습 유틸 → 화면 컨트롤러). -->
+  <script src="/assets/js/study-utils.js?v=20260924-shared-utils-v1"></script>
+  <script src="assets/js/app.js?v=20260924-shared-utils-v1"></script>
 </body>
 </html>

@@ -1750,13 +1750,19 @@ async function progress(request, env, app) {
       return json({ error: '기록이 너무 큽니다.' }, 413);
     }
 
-    await env.DB.prepare(`
+    // 저장 내용이 같으면 행을 건드리지 않는다. 학습 화면은 디바운스 350ms로 저장하므로
+    // 상태가 그대로인 저장이 반복되고, 그때마다 progress 행과 activity 행을 다시 쓰고 있었다.
+    // 답안 저장(/api/answers/accept)과 같은 규칙으로 맞춘다 — 실제로 바뀐 저장만 활동으로 남긴다.
+    const write = await env.DB.prepare(`
       INSERT INTO progress(user_id, app, data, updated_at)
       VALUES (?, ?, ?, ?)
       ON CONFLICT(user_id, app)
       DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at
+      WHERE data IS NOT excluded.data
     `).bind(session.user_id, app, rawData, now()).run();
-    await logActivity(env, session.user_id, 'progress_sync', app);
+    if (write?.meta?.changes !== 0) {
+      await logActivity(env, session.user_id, 'progress_sync', app);
+    }
     return json({ ok: true });
   }
 

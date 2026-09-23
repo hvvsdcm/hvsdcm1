@@ -220,7 +220,10 @@ function validateUiContracts() {
   const systemCss = readFileSync(path.join(ROOT, 'assets/css/system.css'), 'utf8');
   const wordMasterCss = readFileSync(path.join(ROOT, 'WordMaster/assets/css/style.css'), 'utf8');
   const wordMasterJs = readFileSync(path.join(ROOT, 'WordMaster/assets/js/app.js'), 'utf8');
+  const studyUtilsJs = readFileSync(path.join(ROOT, 'assets/js/study-utils.js'), 'utf8');
   const smstudyJs = readFileSync(path.join(ROOT, 'smstudy/assets/js/app.js'), 'utf8');
+  const plstudyJs = readFileSync(path.join(ROOT, 'plstudy/assets/js/app.js'), 'utf8');
+  const gichulJs = readFileSync(path.join(ROOT, 'gichul/app.js'), 'utf8');
   const wordMasterHtml = readFileSync(path.join(ROOT, 'WordMaster/index.html'), 'utf8');
   const smstudyHtml = readFileSync(path.join(ROOT, 'smstudy/index.html'), 'utf8');
   const smstudyCss = readFileSync(path.join(ROOT, 'smstudy/assets/css/style.css'), 'utf8');
@@ -336,13 +339,18 @@ function validateUiContracts() {
   }
   check(wordMasterCss.includes('grid-template-columns: minmax(0, 1fr) auto'), 'WordMaster: answer row must use a shrink-safe column');
   check(wordMasterJs.includes('function setNav('), 'WordMaster: sidebar state must follow the rendered view');
-  check(wordMasterJs.includes("toast.classList.add('open')"), 'WordMaster: toast must use the shared .toast.open contract');
+  // 토스트는 공용 팩토리(assets/js/study-utils.js) 하나가 만든다 — 화면마다 사본을 두지 않는다.
+  // `.toast.open` 계약은 단일 원본에서 확인하고, 화면 파일에는 그 구현이 다시 나타나면 안 된다
+  // (다시 복사하면 한쪽만 고치는 드리프트가 생긴다). 표시 시간만 화면별로 다르다.
+  check(/classList\.add\('open'\)/u.test(studyUtilsJs) && /classList\.remove\('open'\)/u.test(studyUtilsJs),
+    'study-utils.js: the shared toast factory must drive the .toast.open contract');
+  const toastCopies = [wordMasterJs, smstudyJs, plstudyJs, gichulJs].filter((source) => /classList\.(?:add|remove)\('open'\)/u.test(source));
+  check(toastCopies.length === 0, `toast implementation must exist once (study-utils.js); copies found in ${toastCopies.length} surface files`);
   check(wordMasterJs.includes('wrongCount: cumulativeWrongCount'), 'WordMaster: wrong-rate ties must use cumulative mistakes');
 
   check(smstudyCss.includes('@media print'), 'smstudy: printable concept-note stylesheet is missing');
   check(smstudyCss.includes('.sm-media-fallback'), 'smstudy: KICE image fallback styling is missing');
   check(smstudyJs.includes('function setNav('), 'smstudy: sidebar state must follow the rendered view');
-  check(smstudyJs.includes("toast.classList.add('open')"), 'smstudy: toast must use the shared .toast.open contract');
   // 이미지 폴백 — 존재 검사 두 개를 AND로 묶으면 서로 다른 요소를 봐도 통과한다 (LESSONS 규칙 4).
   // 실제로 마크업의 속성만 바꿔도 바인더 쪽 선택자 문자열이 남아 모든 검사가 통과했다 (review B-4).
   // 그래서 선택자를 **바인더에서 도출**해 그 값으로 마크업 한 덩어리를 검사한다.
@@ -642,6 +650,13 @@ function validateGichulFrontend() {
     'gichul/app.js: renderers must be reachable as window.GICHUL_RENDER so the snapshot renders the real markup');
   check(appSource.includes('window.PDFLib'),
     'gichul/app.js: merging must use the vendored window.PDFLib');
+  // 첫 화면에서 526KB(207KB gzip) 벤더 번들을 받지 않는다. 지연 로딩이 사라지면
+  // 기출 화면 전송량이 다시 4배가 되므로 여기서 계약으로 잡는다.
+  const gichulHtml = readFileSync(path.join(ROOT, 'gichul/index.html'), 'utf8');
+  check(!/<script\b[^>]*\bsrc=["'][^"']*pdf-lib/u.test(gichulHtml),
+    'gichul/index.html: pdf-lib must not be loaded eagerly — load it on demand from gichul/app.js');
+  check(appSource.includes('loadPdfLib') && appSource.includes('/assets/vendor/pdf-lib/pdf-lib.min.js'),
+    'gichul/app.js: the on-demand pdf-lib loader (loadPdfLib + vendored path) is missing');
   const renderSection = appSource.slice(
     appSource.indexOf('function renderFilters'),
     appSource.indexOf('function planSegments'),
@@ -1835,14 +1850,16 @@ function validateGlobalsAndOrder() {
   // 표면별 스크립트 로드 순서 (§3.1)
   const expectedOrders = {
     'index.html': ['/assets/js/site-icons.js?v=20260904-icons-v1', '/assets/js/home.js?v=20260904-icons-v2'],
-    'WordMaster/index.html': ["/assets/js/study-shell.js?v=20260922-study-v2","/account.js?v=20260921-daily-v1","assets/js/words.js?v=20260904-icons-v2","/assets/js/study-utils.js","assets/js/scheduler.js?v=20260921-daily-v1","assets/js/daily-ui.js?v=20260921-daily-v1","assets/js/app.js?v=20260922-auto-v1"],
-    'smstudy/index.html': ["/assets/js/study-shell.js?v=20260922-study-v2","/account.js?v=20260904-auth-gate-v1","assets/js/data.js","assets/js/notebook-data.js","assets/js/explanation-data.js","/assets/js/study-utils.js","assets/js/diagram.js?v=20260904-icons-v2","assets/js/app.js?v=20260922-study-v2"],
-    'plstudy/index.html': ['/account.js?v=20260904-auth-gate-v1', 'assets/js/data.js', 'assets/js/app.js?v=20260908-study-refresh'],
+    'WordMaster/index.html': ["/assets/js/study-shell.js?v=20260922-study-v2","/account.js?v=20260921-daily-v1","assets/js/words.js?v=20260904-icons-v2","/assets/js/study-utils.js?v=20260924-shared-utils-v1","assets/js/scheduler.js?v=20260921-daily-v1","assets/js/daily-ui.js?v=20260921-daily-v1","assets/js/app.js?v=20260924-shared-utils-v1"],
+    'smstudy/index.html': ["/assets/js/study-shell.js?v=20260922-study-v2","/account.js?v=20260904-auth-gate-v1","assets/js/data.js","assets/js/notebook-data.js","assets/js/explanation-data.js","/assets/js/study-utils.js?v=20260924-shared-utils-v1","assets/js/diagram.js?v=20260924-shared-utils-v1","assets/js/app.js?v=20260924-shared-utils-v1"],
+    'plstudy/index.html': ['/account.js?v=20260904-auth-gate-v1', 'assets/js/data.js', '/assets/js/study-utils.js?v=20260924-shared-utils-v1', 'assets/js/app.js?v=20260924-shared-utils-v1'],
     'admin/index.html': ['/admin/assets/js/admin.js?v=20260921-password-reset-v1'],
     'usage/index.html': ['/usage/assets/js/competition.js?v=20260904-icons-v2', '/usage/assets/js/page.js?v=20260904-icons-v2'],
-    // 기출은 전역 데이터 선행 계약을 따른다: 세션(account) → pdf-lib → 컨트롤러.
+    // 기출은 전역 데이터 선행 계약을 따른다: 세션(account) → 공통 학습 유틸 → 컨트롤러.
+    // pdf-lib은 여기 없다 — 526KB 벤더 번들을 첫 화면에서 받지 않고 병합 시점에
+    // app.js가 동적으로 받는다(validateGichulFrontend가 그 지연 로딩을 검사한다).
     // 목록 데이터는 이 순서 어디에도 없다 — 로그인 뒤 API에서만 온다 (plan.md §3).
-    'gichul/index.html': ["/assets/js/study-shell.js?v=20260922-study-v2","/account.js?v=20260904-auth-gate-v1","/assets/vendor/pdf-lib/pdf-lib.min.js","/gichul/app.js?v=20260922-study-v2"],
+    'gichul/index.html': ["/assets/js/study-shell.js?v=20260922-study-v2","/account.js?v=20260904-auth-gate-v1","/assets/js/study-utils.js?v=20260924-shared-utils-v1","/gichul/app.js?v=20260924-shared-utils-v1"],
     'behavior-lab/index.html': ['/behavior-lab/assets/js/app.js?v=20260901-v16'],
   };
   for (const [file, order] of Object.entries(expectedOrders)) {

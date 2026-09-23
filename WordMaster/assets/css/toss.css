@@ -31,10 +31,10 @@
   background: var(--surface-3);
 }
 .wordmaster-page .wm-daily-progress::-webkit-progress-value {
-  background: #1b64da;
+  background: var(--accent-strong);
 }
 .wordmaster-page .wm-daily-progress::-moz-progress-bar {
-  background: #1b64da;
+  background: var(--accent-strong);
 }
 .wordmaster-page .wm-today-breakdown {
   color: var(--text-3);
@@ -61,16 +61,16 @@
   background: var(--surface-3);
 }
 .wordmaster-page .wm-week-day.is-complete .wm-week-dot {
-  color: #fff;
-  background: #1b64da;
+  color: var(--fill-fg);
+  background: var(--accent-strong);
 }
 .wordmaster-page .wm-dialog {
   border-radius: 24px;
   background: var(--surface);
 }
 .wordmaster-page .wm-goal-presets [aria-pressed="true"], .wordmaster-page .wm-recall-grades [aria-pressed="true"] {
-  color: #fff;
-  background: #1b64da;
+  color: var(--fill-fg);
+  background: var(--accent-strong);
 }
 .wordmaster-page .wm-question {
   padding: 32px;
@@ -95,7 +95,7 @@
   font-size: 17px;
 }
 .wordmaster-page .wm-progress .wm-fill {
-  background: #1b64da;
+  background: var(--accent-strong);
 }
 .wordmaster-page .wm-score {
   color: var(--accent);

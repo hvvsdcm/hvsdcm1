@@ -68,6 +68,19 @@
    채움 버튼: #000 on --accent-strong #ffffff = 21.00 (사용)
               --text on --accent-strong       = 1.09 ✗ (금지 — 검정만)
               #fff on --accent #f5f5f7        = 1.09 ✗ (--accent 위 흰 글자 금지)
+   채움 면 라벨(--fill-fg)은 면 밝기를 따라간다 — 팔레트별로 면이 뒤집히기 때문이다:
+     :root            #000 on --accent-strong #ffffff = 21.00
+                      #000 on --green #d6d6d8 = 14.47
+                      #000 on --red #e5e5e7 = 16.69
+     스터디 라이트     #fff on #1b64da = 5.41
+                      #fff on #087f5b = 5.00
+                      #fff on #b42336 = 6.49
+     스터디 다크       #000 on #80b6ff = 10.05
+                      #000 on #5dd6a0 = 11.59
+                      #000 on #ff8b95 = 9.38
+     인쇄              #fff on #0e5570 = 8.23
+                      #fff on #187341 = 5.89
+                      #fff on #a3231b = 7.46
    선택 영역: --text on (--accent .35 over bg)      = 6.76
               --text on (--accent .35 over surface) = 5.42
    헤어라인(장식 구획선, 그래픽 3:1 요건 대상 아님 — 컨트롤 경계로 쓰지 않는다):
@@ -102,6 +115,12 @@
   --accent: #f5f5f7;
   --accent-strong: #ffffff;
   /* 채움 버튼 배경. 라벨은 #fff 고정(4.70:1) */
+  --fill-fg: #000;
+  /* 강조·상태 **채움 면** 위 라벨 전용 잉크. 채움 면의 밝기가 팔레트마다 달라 값이 뒤집힌다 —
+     채움 면이 밝으면 #000, 어두우면 #fff다(스터디 라이트만 #fff). 채움 면이 아닌 곳에 쓰지 않는다.
+     :root #000 on --accent-strong #ffffff 21.00 / on --green #d6d6d8 14.47 / on --red #e5e5e7 16.69
+     스터디 라이트 #fff on #1b64da 5.41 / on #087f5b 5.00 / on #b42336 6.49
+     스터디 다크   #000 on #80b6ff 10.05 / on #5dd6a0 11.59 / on #ff8b95 9.38 */
   --accent-soft: rgba(255,255,255,.12);
   --green: #d6d6d8;
   --green-soft: rgba(214,214,216,.14);
@@ -227,6 +246,7 @@ html.study-app[data-theme="light"] {
   --text-4: #8b95a1;
   --accent: #1b64da;
   --accent-strong: #1b64da;
+  --fill-fg: #fff;
   --accent-soft: #e8f1ff;
   --green: #087f5b;
   --green-soft: #e8f7ef;
@@ -258,6 +278,7 @@ html.study-app[data-theme="dark"] {
   --text-4: #7d8b9c;
   --accent: #80b6ff;
   --accent-strong: #80b6ff;
+  --fill-fg: #000;
   --accent-soft: #223a56;
   --green: #5dd6a0;
   --green-soft: #18392c;
@@ -272,7 +293,9 @@ html.study-app[data-theme="dark"] {
 html.study-app {
   --topbar-h: 72px;
 }
-@media (max-width: 620px) {
+/* 학습실 상단바는 780px 이하에서 두 줄(60 + 54)로 접힌다. study-toss.css의 상단바 규칙과 같은
+   경계를 쓴다 — 스페이서와 sticky 위치가 이 변수를 따라간다. */
+@media (max-width: 780px) {
   html.study-app {
     --topbar-h: 114px;
   }
@@ -653,6 +676,10 @@ hr {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  /* 텍스트가 보이는 폭에서도 터치 타깃은 44px이다 — 실브라우저 감사에서 라벨 링크가
+     21px 높이로 WCAG 2.5.8 하한(24px)에 미달했다. 상단바 높이(64/72px) 안에서
+     세로 중앙 정렬되므로 레이아웃은 그대로다. */
+  min-height: 44px;
   font-size: var(--fs-caption);
   font-weight: 500;
   color: var(--text-2);
@@ -688,7 +715,6 @@ hr {
 @media (max-width: 420px) {
   .topbar-link:has(.topbar-link-text) {
     min-width: 44px;
-    min-height: 44px;
     justify-content: center;
     gap: 0;
   }
@@ -742,10 +768,12 @@ hr {
 }
 .btn-primary {
   background: var(--accent-strong);
-  color: #000;
+  color: var(--fill-fg);
 }
 .btn-primary:hover {
-  background: #d8d8da;
+  /* 채움 면의 86% + 검정 14%. 팔레트마다 면 밝기가 달라도 한 단계만 내려간다
+     (--fill-fg 기준 :root 15.17 / 스터디 라이트 6.81 / 스터디 다크 7.51). */
+  background: color-mix(in srgb, var(--accent-strong) 86%, #000);
 }
 .btn-secondary {
   background: var(--surface-3);
@@ -1757,7 +1785,9 @@ html.auth-pending body {
 }
 .workspace-app .sidebar-label {
   padding-inline: 12px;
-  color: #777e8f;
+  /* 토큰화 이전 하드코딩 #777e8f는 --surface #161617 위 4.45:1로 캡션 하한(4.5)에
+     0.05 미달이었다(실브라우저 감사 320~1280px 전 폭). --text-3는 같은 면에서 4.99:1. */
+  color: var(--text-3);
   font-size: .59rem;
   letter-spacing: .14em;
 }
@@ -1884,7 +1914,13 @@ html.auth-pending body {
     --text-3: #4f5963;
     --text-4: #68737d;
     --accent: #176785;
+    --accent-strong: #0e5570;
     --accent-soft: #eef8fc;
+    /* 인쇄 팔레트의 채움 면은 테마와 무관하게 전부 어둡다 — 라벨은 흰색 고정.
+       #fff on --accent-strong #0e5570 8.23 / on --green #187341 5.89 / on --red #a3231b 7.46
+       (이전에는 --accent-strong이 테마 값 그대로여서 다크 테마 인쇄 시 #80b6ff 면이
+        흰 종이 위 1.89:1로 사라졌다.) */
+    --fill-fg: #fff;
     --green: #187341;
     --green-soft: #eff9f3;
     --red: #a3231b;
@@ -2512,6 +2548,9 @@ html.study-app[data-theme="light"] .brand-mark {
   font-size: 15px;
   font-weight: 650;
   text-decoration: none;
+  /* 라벨은 한 줄이다 — "사회·문화"가 "사회·" "·" "문화"로 쪼개지지 않는다. 폭이 모자라면
+     780px 이하에서 상단바가 두 줄로 접힌다. */
+  white-space: nowrap;
 }
 .study-route-link[aria-current] {
   border-bottom-color: var(--accent);
@@ -2697,12 +2736,12 @@ html.study-app[data-theme="light"] .brand-mark {
   box-shadow: none;
 }
 .study-toss .btn-primary {
-  background: #1b64da;
-  color: #fff;
+  background: var(--accent-strong);
+  color: var(--fill-fg);
   box-shadow: none;
 }
 .study-toss .btn-primary:hover:not(:disabled) {
-  background: #1556bd;
+  background: color-mix(in srgb, var(--accent-strong) 86%, #000);
 }
 .study-toss .btn-secondary {
   background: var(--surface-3);
@@ -2768,7 +2807,7 @@ html.study-app[data-theme="light"] .brand-mark {
 .study-toss input[type="checkbox"] {
   width: 22px;
   height: 22px;
-  accent-color: #1b64da;
+  accent-color: var(--accent);
 }
 .study-toss .list-row-accessory {
   min-width: 44px;
@@ -2963,7 +3002,9 @@ html.study-app[data-theme="light"] .brand-mark {
     padding-bottom: 120px;
   }
 }
-@media (max-width: 620px) {
+/* 780px 이하에서는 상단바를 두 줄(브랜드+테마 토글 / 3열 학습 탭)로 접는다. 한 줄에 밀어 넣으면
+   좁은 구간(621~780px)에서 "사회·문화" 라벨이 "사회·" "·" "문화"로 쪼개지고 상단바 내용이 잘린다. */
+@media (max-width: 780px) {
   .study-toss .study-topbar {
     grid-template-columns: 1fr auto;
     grid-template-rows: 60px 54px;
@@ -3002,6 +3043,8 @@ html.study-app[data-theme="light"] .brand-mark {
     width: 16px;
     height: 16px;
   }
+}
+@media (max-width: 620px) {
   .study-toss .app-page {
     padding-inline: 16px;
     padding-top: 18px;
@@ -3095,10 +3138,10 @@ html.study-app[data-theme="light"] .brand-mark {
   background: var(--surface-3);
 }
 .wordmaster-page .wm-daily-progress::-webkit-progress-value {
-  background: #1b64da;
+  background: var(--accent-strong);
 }
 .wordmaster-page .wm-daily-progress::-moz-progress-bar {
-  background: #1b64da;
+  background: var(--accent-strong);
 }
 .wordmaster-page .wm-today-breakdown {
   color: var(--text-3);
@@ -3125,16 +3168,16 @@ html.study-app[data-theme="light"] .brand-mark {
   background: var(--surface-3);
 }
 .wordmaster-page .wm-week-day.is-complete .wm-week-dot {
-  color: #fff;
-  background: #1b64da;
+  color: var(--fill-fg);
+  background: var(--accent-strong);
 }
 .wordmaster-page .wm-dialog {
   border-radius: 24px;
   background: var(--surface);
 }
 .wordmaster-page .wm-goal-presets [aria-pressed="true"], .wordmaster-page .wm-recall-grades [aria-pressed="true"] {
-  color: #fff;
-  background: #1b64da;
+  color: var(--fill-fg);
+  background: var(--accent-strong);
 }
 .wordmaster-page .wm-question {
   padding: 32px;
@@ -3159,7 +3202,7 @@ html.study-app[data-theme="light"] .brand-mark {
   font-size: 17px;
 }
 .wordmaster-page .wm-progress .wm-fill {
-  background: #1b64da;
+  background: var(--accent-strong);
 }
 .wordmaster-page .wm-score {
   color: var(--accent);

@@ -98,7 +98,10 @@ ul.sm-bullets {
 }
 .sm-unit-jump .segmented-btn {
   position: relative;
-  min-width: 2.6em;
+  /* 로마 숫자는 한 줄에 묶어 둔다 — 2.6em은 안쪽 여백 28px를 뺀 뒤 11px만 남겨
+     "III"가 두 줄로 접혔고, 버튼 높이가 52px로 부풀었다. */
+  min-width: 3em;
+  white-space: nowrap;
   text-align: center;
   text-decoration: none;
   font-variant-numeric: tabular-nums;
@@ -641,13 +644,15 @@ ul.sm-deep-points li::marker {
 .sm-choice.is-correct {
   background: var(--green);
   border-color: var(--green);
-  color: #000;
+  /* 채움 면 라벨은 팔레트를 따라간다 — 스터디 라이트의 --green #087f5b는 어두워서
+     #000 고정이면 3.11:1이었다(본문 하한 4.5). var(--fill-fg)면 라이트 5.00 / 다크 11.59. */
+  color: var(--fill-fg);
   opacity: 1;
 }
 .sm-choice.is-wrong {
   background: var(--red);
   border-color: var(--red);
-  color: #000;
+  color: var(--fill-fg);
   opacity: 1;
 }
 /* ---- 채점 피드백 ---- */

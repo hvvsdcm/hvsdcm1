@@ -22,13 +22,16 @@
 
   const {
     SORT_MODES,
-    acceptedMeaningAliases,
+    createToast,
     escapeHtml,
     matchesMeaningAnswer,
     matchesStudySearch,
     normalizeMeaningAnswer,
     sortStudyItems,
   } = studyUtils;
+
+  // 토스트는 공용 팩토리 하나를 쓴다 — 표시 시간만 화면별로 다르다.
+  const showToast = createToast(toast, 1900);
 
   // 행·헤더 아이콘은 키 → ui-icons.svg 심볼 id 상수 하나에서 나온다 (DESIGN.md §5 v14).
   // 페이로드의 emoji 필드는 읽지 않는다 — 화면에 이모지를 렌더하지 않는다. 키는 항상
@@ -82,7 +85,6 @@
 
   let db = loadDb();
   db.learning = scheduler.normalize(db.learning, WORDS, db.stats);
-  let toastTimer = null;
   const dailyUi = window.HvsWordmasterDailyUi.create({
     app, words: WORDS, scheduler, getDb: () => db, save: saveDb,
     start: startDailyQuiz, resume: resumeSavedSession, settings: renderSettings,
@@ -131,10 +133,6 @@
     const n = Number.parseInt(value, 10);
     if (!Number.isFinite(n)) return 1;
     return Math.min(MAX_DAY, Math.max(1, n));
-  }
-
-  function acceptedAliases(item) {
-    return acceptedMeaningAliases(item, db.customAliases[item.id] || []);
   }
 
   function checkAnswer(item, input) {
@@ -923,13 +921,6 @@
     saveDb();
     renderStatsPage();
     showToast('학습 기록을 초기화했습니다.');
-  }
-
-  function showToast(message) {
-    toast.textContent = message;
-    toast.classList.add('open');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('open'), 1900);
   }
 
   function goHomeWithConfirm() {

@@ -17,6 +17,31 @@
 
   const FILTER_KEY = 'hvsdcm.gichul.filters.v1';
 
+  // pdf-lib은 병합 버튼을 실제로 눌렀을 때만 필요하다. 예전에는 index.html이
+  // <script src>로 항상 먼저 받아서 첫 화면 전송량의 78%(526KB raw / 207KB gzip)를
+  // 차지했다. 이제 병합 시점에 동적으로 받고, 같은 문서 안에서는 한 번만 받는다.
+  const PDF_LIB_SRC = '/assets/vendor/pdf-lib/pdf-lib.min.js';
+  let pdfLibPromise = null;
+  function loadPdfLib() {
+    if (window.PDFLib) return Promise.resolve(window.PDFLib);
+    if (!pdfLibPromise) {
+      pdfLibPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = PDF_LIB_SRC;
+        script.onload = () => (window.PDFLib
+          ? resolve(window.PDFLib)
+          : reject(new Error('PDF 라이브러리를 읽지 못했습니다.')));
+        script.onerror = () => {
+          // 다음 시도가 다시 받을 수 있게 실패한 약속은 버린다.
+          pdfLibPromise = null;
+          reject(new Error('PDF 라이브러리를 받지 못했습니다.'));
+        };
+        document.head.append(script);
+      });
+    }
+    return pdfLibPromise;
+  }
+
   // 라벨은 화면 표기의 단일 원본이다. 매니페스트는 코드(korean/hwajak/06)만 담고,
   // 사람이 읽는 이름은 여기 한 곳에서만 정의한다.
   const SUBJECT_LABEL = {
@@ -47,15 +72,6 @@
   };
   const ROUND_LABEL = { '06': '6월', '09': '9월', csat: '수능' };
   const ROUND_FILE = { '06': '06', '09': '09', csat: '수능' };
-
-  function escapeHtml(value) {
-    return String(value)
-      .replaceAll('&', '&amp;')
-      .replaceAll('<', '&lt;')
-      .replaceAll('>', '&gt;')
-      .replaceAll('"', '&quot;')
-      .replaceAll("'", '&#39;');
-  }
 
   // 오류 배너 아이콘 — 사이트 공통 스프라이트(assets/ui-icons.svg) 하나뿐이다(DESIGN.md §5).
   // 선 색은 .ui-icon 기본값(--text-3)이고 상태는 배너 제목과 보더가 말한다.
@@ -441,18 +457,22 @@
     toast: document.getElementById('toast'),
   };
 
+  // 공통 학습 유틸(assets/js/study-utils.js)은 index.html의 순서 계약상 이 파일보다 먼저
+  // 온다(scripts/validate.mjs). 이스케이프와 토스트를 화면마다 다시 쓰지 않는다.
+  // 불완전한 배포는 빈 화면 대신 오류 배너로 알린다.
+  const { createToast, escapeHtml } = window.HvsStudyUtils || {};
+  if (!escapeHtml) {
+    elements.body.innerHTML = failureBanner('공통 학습 도구를 불러오지 못했습니다.',
+      ['assets/js/study-utils.js가 로드되지 않았습니다.']);
+    return;
+  }
+
   let manifest = { exams: [] };
   let state = defaultState();
   let busy = false;
-  let toastTimer = 0;
 
-  function toast(message) {
-    if (!elements.toast) return;
-    elements.toast.textContent = message;
-    elements.toast.classList.add('open');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => elements.toast.classList.remove('open'), 2600);
-  }
+  // 표시 시간은 화면마다 다르다: 기출 2600ms, WordMaster·사회·문화 1900ms(기존 값 유지).
+  const toast = createToast(elements.toast, 2600);
 
   function restoreFilters() {
     try {
@@ -545,6 +565,14 @@
     if (button) button.disabled = true;
     status(`<p class="gi-progress">${escapeHtml(`${segments.length}개 파일을 받는 중입니다…`)}</p>`);
 
+    // 라이브러리 내려받기를 PDF 받기와 겹쳐서 대기 시간을 숨긴다. 실패는 아래 catch가
+    // "병합에 실패했습니다" 배너로 내보낸다 — 부분 병합 파일은 여전히 만들지 않는다.
+    // 파일 받기가 먼저 실패해 여기서 돌아서면 이 약속을 아무도 기다리지 않으므로,
+    // 거부를 "처리됨"으로 표시해 콘솔에 unhandled rejection을 남기지 않는다. 아래
+    // await는 그대로 거부를 던져 기존 오류 배너 경로를 지킨다.
+    const pdfLibReady = loadPdfLib();
+    pdfLibReady.catch(() => {});
+
     // 파일 단위로 한 번씩만 받는다. 그리고 **전부 성공한 뒤에만** 병합한다 —
     // 부분 병합 파일은 내놓지 않는다는 계약(plan.md §4)이 여기 구현된다.
     const keys = [...new Set(segments.map((segment) => segment.key))];
@@ -569,7 +597,7 @@
     }
 
     try {
-      const { PDFDocument } = window.PDFLib;
+      const { PDFDocument } = await pdfLibReady;
       const merged = await PDFDocument.create();
       const loaded = new Map();
       for (const segment of segments) {
