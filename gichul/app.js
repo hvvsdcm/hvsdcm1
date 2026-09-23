@@ -17,6 +17,31 @@
 
   const FILTER_KEY = 'hvsdcm.gichul.filters.v1';
 
+  // pdf-lib은 병합 버튼을 실제로 눌렀을 때만 필요하다. 예전에는 index.html이
+  // <script src>로 항상 먼저 받아서 첫 화면 전송량의 78%(526KB raw / 207KB gzip)를
+  // 차지했다. 이제 병합 시점에 동적으로 받고, 같은 문서 안에서는 한 번만 받는다.
+  const PDF_LIB_SRC = '/assets/vendor/pdf-lib/pdf-lib.min.js';
+  let pdfLibPromise = null;
+  function loadPdfLib() {
+    if (window.PDFLib) return Promise.resolve(window.PDFLib);
+    if (!pdfLibPromise) {
+      pdfLibPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = PDF_LIB_SRC;
+        script.onload = () => (window.PDFLib
+          ? resolve(window.PDFLib)
+          : reject(new Error('PDF 라이브러리를 읽지 못했습니다.')));
+        script.onerror = () => {
+          // 다음 시도가 다시 받을 수 있게 실패한 약속은 버린다.
+          pdfLibPromise = null;
+          reject(new Error('PDF 라이브러리를 받지 못했습니다.'));
+        };
+        document.head.append(script);
+      });
+    }
+    return pdfLibPromise;
+  }
+
   // 라벨은 화면 표기의 단일 원본이다. 매니페스트는 코드(korean/hwajak/06)만 담고,
   // 사람이 읽는 이름은 여기 한 곳에서만 정의한다.
   const SUBJECT_LABEL = {
@@ -545,6 +570,10 @@
     if (button) button.disabled = true;
     status(`<p class="gi-progress">${escapeHtml(`${segments.length}개 파일을 받는 중입니다…`)}</p>`);
 
+    // 라이브러리 내려받기를 PDF 받기와 겹쳐서 대기 시간을 숨긴다. 실패는 아래 catch가
+    // "병합에 실패했습니다" 배너로 내보낸다 — 부분 병합 파일은 여전히 만들지 않는다.
+    const pdfLibReady = loadPdfLib();
+
     // 파일 단위로 한 번씩만 받는다. 그리고 **전부 성공한 뒤에만** 병합한다 —
     // 부분 병합 파일은 내놓지 않는다는 계약(plan.md §4)이 여기 구현된다.
     const keys = [...new Set(segments.map((segment) => segment.key))];
@@ -569,7 +598,7 @@
     }
 
     try {
-      const { PDFDocument } = window.PDFLib;
+      const { PDFDocument } = await pdfLibReady;
       const merged = await PDFDocument.create();
       const loaded = new Map();
       for (const segment of segments) {

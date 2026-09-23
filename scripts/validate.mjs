@@ -642,6 +642,13 @@ function validateGichulFrontend() {
     'gichul/app.js: renderers must be reachable as window.GICHUL_RENDER so the snapshot renders the real markup');
   check(appSource.includes('window.PDFLib'),
     'gichul/app.js: merging must use the vendored window.PDFLib');
+  // 첫 화면에서 526KB(207KB gzip) 벤더 번들을 받지 않는다. 지연 로딩이 사라지면
+  // 기출 화면 전송량이 다시 4배가 되므로 여기서 계약으로 잡는다.
+  const gichulHtml = readFileSync(path.join(ROOT, 'gichul/index.html'), 'utf8');
+  check(!/<script\b[^>]*\bsrc=["'][^"']*pdf-lib/u.test(gichulHtml),
+    'gichul/index.html: pdf-lib must not be loaded eagerly — load it on demand from gichul/app.js');
+  check(appSource.includes('loadPdfLib') && appSource.includes('/assets/vendor/pdf-lib/pdf-lib.min.js'),
+    'gichul/app.js: the on-demand pdf-lib loader (loadPdfLib + vendored path) is missing');
   const renderSection = appSource.slice(
     appSource.indexOf('function renderFilters'),
     appSource.indexOf('function planSegments'),
@@ -1840,9 +1847,11 @@ function validateGlobalsAndOrder() {
     'plstudy/index.html': ['/account.js?v=20260904-auth-gate-v1', 'assets/js/data.js', 'assets/js/app.js?v=20260908-study-refresh'],
     'admin/index.html': ['/admin/assets/js/admin.js?v=20260921-password-reset-v1'],
     'usage/index.html': ['/usage/assets/js/competition.js?v=20260904-icons-v2', '/usage/assets/js/page.js?v=20260904-icons-v2'],
-    // 기출은 전역 데이터 선행 계약을 따른다: 세션(account) → pdf-lib → 컨트롤러.
+    // 기출은 전역 데이터 선행 계약을 따른다: 세션(account) → 컨트롤러.
+    // pdf-lib은 여기 없다 — 526KB 벤더 번들을 첫 화면에서 받지 않고 병합 시점에
+    // app.js가 동적으로 받는다(validateGichulFrontend가 그 지연 로딩을 검사한다).
     // 목록 데이터는 이 순서 어디에도 없다 — 로그인 뒤 API에서만 온다 (plan.md §3).
-    'gichul/index.html': ["/assets/js/study-shell.js?v=20260922-study-v2","/account.js?v=20260904-auth-gate-v1","/assets/vendor/pdf-lib/pdf-lib.min.js","/gichul/app.js?v=20260922-study-v2"],
+    'gichul/index.html': ["/assets/js/study-shell.js?v=20260922-study-v2","/account.js?v=20260904-auth-gate-v1","/gichul/app.js?v=20260922-study-v2"],
     'behavior-lab/index.html': ['/behavior-lab/assets/js/app.js?v=20260901-v16'],
   };
   for (const [file, order] of Object.entries(expectedOrders)) {

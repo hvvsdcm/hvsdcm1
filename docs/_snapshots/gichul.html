@@ -2942,5 +2942,8 @@ html.study-app[data-theme="light"] .brand-mark {
     <div class="study-sheet-foot"><button class="btn btn-primary" type="button" data-close-filters>선택한 조건으로 보기</button></div>
   </dialog>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <!-- pdf-lib(526KB raw / 207KB gzip)은 병합 버튼을 누를 때만 필요하다. 여기서 미리
+       받지 않고 gichul/app.js의 loadPdfLib()가 병합 시점에 한 번만 동적으로 받는다
+       (scripts/validate.mjs가 이 지연 로딩 계약을 검사한다). -->
 </body>
 </html>
